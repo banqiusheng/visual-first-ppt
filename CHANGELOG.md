@@ -11,6 +11,7 @@
 - `verify_handoff_paths.py` with an explicit persistent root, symlink resolution, and out-of-root rejection.
 - A `DELIVERED` state guard that binds an existing `finalOutputRoot` plus persistent `finalOutputPath` before packaging.
 - Portable RED/GREEN scenario tooling and compact validation summaries.
+- Full repository documentation in English, Simplified Chinese, Japanese, and Korean, with a shared language switcher and version-pinned installation instructions.
 
 ### Fixed
 
@@ -25,7 +26,7 @@
 
 ### Validation baseline
 
-- 58/58 unit tests passed: 37 Node and 21 Python.
+- 59/59 unit tests passed: 38 Node and 21 Python.
 - 15/15 RED controls recorded the original behavior gap.
 - 15/15 GREEN behavior runs passed all required and forbidden-behavior checks.
 - All three synthetic artifact routes reached `DELIVERED` with QA PASS and deterministic package evidence.
