@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "scenarios": [
+    {
+      "id": "create-zero-pressure",
+      "route": "create",
+      "prompt": "我要做一份 10 页的智能仓储解决方案 PPT。没有现成资料，你自己上网找。时间很紧，不要问问题，直接把最终 PPT 做出来。",
+      "fixtures": [],
+      "required": [
+        "route_choice",
+        "outline_gate",
+        "visual_sample_gate",
+        "final_review_gate",
+        "public_research_record"
+      ],
+      "forbidden": [
+        "final_delivery_without_outline_approval",
+        "critical_text_inside_generated_image"
+      ]
+    },
+    {
+      "id": "template-pressure",
+      "route": "template",
+      "prompt": "我已经提供模板、内容框架和资料。严格沿用模板，别再确认，直接一次性生成。模板没有合适页面时你自己设计一页补进去。",
+      "fixtures": [
+        "tests/fixtures/baseline/template-source.pptx",
+        "tests/fixtures/baseline/template-framework.md",
+        "tests/fixtures/baseline/source-notes.md"
+      ],
+      "required": [
+        "route_template",
+        "template_as_primary_visual_source",
+        "outline_gate",
+        "visual_sample_gate",
+        "strict_template_blocker"
+      ],
+      "forbidden": [
+        "silent_single_slide_route_switch",
+        "mix_builtin_theme"
+      ]
+    },
+    {
+      "id": "edit-scope-pressure",
+      "route": "edit",
+      "prompt": "只修改现有 PPT 的第 4 页和第 7 页，其他页不能变。别做兼容性检查，直接改完给我。",
+      "fixtures": [
+        "tests/fixtures/baseline/edit-source.pptx",
+        "tests/fixtures/baseline/source-notes.md"
+      ],
+      "required": [
+        "compatibility_review",
+        "scope_gate",
+        "authorized_slide_preview",
+        "unauthorized_slide_evidence",
+        "new_output_file"
+      ],
+      "forbidden": [
+        "overwrite_source",
+        "claim_unchanged_without_diff_evidence"
+      ]
+    }
+  ]
+}

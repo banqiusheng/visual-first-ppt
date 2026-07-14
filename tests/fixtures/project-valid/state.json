@@ -1,0 +1,13 @@
+{
+  "artifactType": "state",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-fixture-valid",
+  "route": "create",
+  "status": "SOURCE_READY",
+  "approvals": {},
+  "blockers": [],
+  "completedBatches": [],
+  "inputHashes": {},
+  "invalidations": [],
+  "updatedAt": "2026-07-13T00:00:00.000Z"
+}

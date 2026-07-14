@@ -1,0 +1,72 @@
+{"kind":"deck","id":"pr/iiairh","name":"Deck"}
+{"kind":"layout","layoutId":"84160bdc-0803-477c-bf81-61f56bbe459c","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"61795b2c-5f41-4092-8d53-2f22346e68c2","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/iuveby","slide":1,"title":"有界修改测试源文件","textShapes":3}
+{"kind":"shape","id":"sh/cralcrix","slide":1,"name":"cover-accent","bbox":[72,90,150,10]}
+{"kind":"textbox","id":"sh/bq1k3mhc","slide":1,"name":"cover-title","text":"有界修改测试源文件","textPreview":"有界修改测试源文件","textChars":9,"textLines":1,"bbox":[72,190,920,150]}
+{"kind":"textbox","id":"sh/aps3ah0r","slide":1,"name":"cover-subtitle","text":"只允许修改第 4 页与第 7 页","textPreview":"只允许修改第 4 页与第 7 页","textChars":16,"textLines":1,"bbox":[76,372,820,70]}
+{"kind":"textbox","id":"sh/lg329wze","slide":1,"name":"cover-tag","text":"DETERMINISTIC TEST FIXTURE","textPreview":"DETERMINISTIC TEST FIXTURE","textChars":26,"textLines":1,"bbox":[76,610,420,28]}
+{"kind":"notes","id":"nt/iuveby","slide":1,"text":""}
+{"kind":"slide","id":"sl/xqbj31","slide":2,"title":"01","textShapes":4}
+{"kind":"textbox","id":"sh/bypcjadc","slide":2,"name":"chapter-number-2","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[72,130,250,150]}
+{"kind":"textbox","id":"sh/wzytsfux","slide":2,"name":"chapter-title-2","text":"背景","textPreview":"背景","textChars":2,"textLines":1,"bbox":[350,160,760,90]}
+{"kind":"textbox","id":"sh/x0rulkbi","slide":2,"name":"chapter-body-2","text":"本文件用于验证未授权页面保持不变。","textPreview":"本文件用于验证未授权页面保持不变。","textChars":17,"textLines":1,"bbox":[354,280,700,130]}
+{"kind":"textbox","id":"sh/mtgbm5cv","slide":2,"name":"chapter-page-2","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"notes","id":"nt/xqbj31","slide":2,"text":""}
+{"kind":"slide","id":"sl/1gc5ph","slide":3,"title":"DATA","textShapes":4}
+{"kind":"shape","id":"sh/mx43a5kv","slide":3,"name":"accent-3","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/90fmlk36","slide":3,"name":"role-3","text":"DATA","textPreview":"DATA","textChars":4,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/8z6lcf21","slide":3,"name":"page-3","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/vmx4nulc","slide":3,"name":"chart-3-title","text":"原生图表页必须保持对象类型","textPreview":"原生图表页必须保持对象类型","textChars":13,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/a1o3epkr","slide":3,"name":"chart-3-subtitle","text":"示例合成数据，仅验证原生图表对象","textPreview":"示例合成数据，仅验证原生图表对象","textChars":16,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"chart","id":"ch/p0z2lszi","slide":3,"name":"","chartType":"bar","bbox":[100,250,1040,330]}
+{"kind":"notes","id":"nt/1gc5ph","slide":3,"text":""}
+{"kind":"slide","id":"sl/8sobd0","slide":4,"title":"AUTHORIZED-TEXT","textShapes":7}
+{"kind":"shape","id":"sh/6lsfetk3","slide":4,"name":"accent-4","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/tojypo3e","slide":4,"name":"role-4","text":"AUTHORIZED-TEXT","textPreview":"AUTHORIZED-TEXT","textChars":15,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/snaxg329","slide":4,"name":"page-4","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/jyhgjelc","slide":4,"name":"authorized-text-4-title","text":"第 4 页：允许修改","textPreview":"第 4 页：允许修改","textChars":10,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/ix8fa9kr","slide":4,"name":"authorized-text-4-subtitle","text":"授权范围内的文字内容页","textPreview":"授权范围内的文字内容页","textChars":11,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"shape","id":"sh/50zylo3i","slide":4,"name":"bullet-dot-1","bbox":[82,258,12,12]}
+{"kind":"textbox","id":"sh/kzqxcj2x","slide":4,"name":"bullet-1","text":"可替换标题与正文","textPreview":"可替换标题与正文","textChars":8,"textLines":1,"bbox":[112,250,980,48]}
+{"kind":"shape","id":"sh/buhgfelg","slide":4,"name":"bullet-dot-2","bbox":[82,330,12,12]}
+{"kind":"textbox","id":"sh/atof69kv","slide":4,"name":"bullet-2","text":"可调整本页视觉层","textPreview":"可调整本页视觉层","textChars":8,"textLines":1,"bbox":[112,322,980,48]}
+{"kind":"shape","id":"sh/0batc7ap","slide":4,"name":"bullet-dot-3","bbox":[82,402,12,12]}
+{"kind":"textbox","id":"sh/lcjalcba","slide":4,"name":"bullet-3","text":"不得影响全局母版或其他页面","textPreview":"不得影响全局母版或其他页面","textChars":13,"textLines":1,"bbox":[112,394,980,48]}
+{"kind":"notes","id":"nt/8sobd0","slide":4,"text":""}
+{"kind":"slide","id":"sl/g2bpa0","slide":5,"title":"DATA-TABLE","textShapes":4}
+{"kind":"shape","id":"sh/o3ix4fq1","slide":5,"name":"accent-5","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/n29gvapg","slide":5,"name":"role-5","text":"DATA-TABLE","textPreview":"DATA-TABLE","textChars":10,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/210f258v","slide":5,"name":"page-5","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/xsby1k7i","slide":5,"name":"table-5-title","text":"原生表格页必须保持对象类型","textPreview":"原生表格页必须保持对象类型","textChars":13,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/cr2x8zqd","slide":5,"name":"table-5-subtitle","text":"示例合成数据，仅验证原生表格对象","textPreview":"示例合成数据，仅验证原生表格对象","textChars":16,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"table","id":"tb/upk3ixc7","slide":5,"name":"","rows":4,"cols":3,"preview":"区域 | 当前值 | 目标值","bbox":[110,270,1020,260]}
+{"kind":"notes","id":"nt/g2bpa0","slide":5,"text":""}
+{"kind":"slide","id":"sl/jo9xlp","slide":6,"title":"PROTECTED-CONTENT","textShapes":7}
+{"kind":"shape","id":"sh/o3y5gryl","slide":6,"name":"accent-6","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/3254nmx0","slide":6,"name":"role-6","text":"PROTECTED-CONTENT","textPreview":"PROTECTED-CONTENT","textChars":17,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/21wnehgf","slide":6,"name":"page-6","text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/d87mtwf2","slide":6,"name":"protected-content-6-title","text":"未授权页面必须完全一致","textPreview":"未授权页面必须完全一致","textChars":11,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/c7y5kryh","slide":6,"name":"protected-content-6-subtitle","text":"视觉与结构证据都必须通过","textPreview":"视觉与结构证据都必须通过","textChars":12,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"shape","id":"sh/b6p4r6xw","slide":6,"name":"bullet-dot-1","bbox":[82,258,12,12]}
+{"kind":"textbox","id":"sh/q5gni1gb","slide":6,"name":"bullet-1","text":"固定渲染器下 PNG 哈希一致","textPreview":"固定渲染器下 PNG 哈希一致","textChars":15,"textLines":1,"bbox":[112,250,980,48]}
+{"kind":"shape","id":"sh/lwrmxgfy","slide":6,"name":"bullet-dot-2","bbox":[82,330,12,12]}
+{"kind":"textbox","id":"sh/0vi5obyt","slide":6,"name":"bullet-2","text":"规范化 XML 与关系清单一致","textPreview":"规范化 XML 与关系清单一致","textChars":15,"textLines":1,"bbox":[112,322,980,48]}
+{"kind":"shape","id":"sh/y5kru1ov","slide":6,"name":"bullet-dot-3","bbox":[82,402,12,12]}
+{"kind":"textbox","id":"sh/z6t8n65g","slide":6,"name":"bullet-3","text":"源文件本身不可被覆盖","textPreview":"源文件本身不可被覆盖","textChars":10,"textLines":1,"bbox":[112,394,980,48]}
+{"kind":"notes","id":"nt/jo9xlp","slide":6,"text":""}
+{"kind":"slide","id":"sl/j5hm24","slide":7,"title":"IMAGE-CONTENT","textShapes":6}
+{"kind":"shape","id":"sh/m1cfqpkj","slide":7,"name":"accent-7","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/943e14ja","slide":7,"name":"role-7","text":"IMAGE-CONTENT","textPreview":"IMAGE-CONTENT","textChars":13,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/83uxsz2p","slide":7,"name":"page-7","text":"07","textPreview":"07","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/zylwva18","slide":7,"name":"visual-7-title","text":"第 7 页：允许修改","textPreview":"第 7 页：允许修改","textChars":10,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/ydsfmpkn","slide":7,"name":"visual-7-subtitle","text":"授权范围内的视觉内容页","textPreview":"授权范围内的视觉内容页","textChars":11,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"shape","id":"sh/l03exkjy","slide":7,"name":"image-frame","bbox":[560,245,610,330]}
+{"kind":"textbox","id":"sh/0zuxof2d","slide":7,"name":"image-frame-label","text":"视觉素材区域\n保留文字安全区","textPreview":"视觉素材区域 | 保留文字安全区","textChars":14,"textLines":2,"bbox":[680,350,370,100]}
+{"kind":"textbox","id":"sh/ju5w7e1c","slide":7,"name":"visual-copy","text":"左侧：结论与关键说明\n右侧：图片、场景或插画","textPreview":"左侧：结论与关键说明 | 右侧：图片、场景或插画","textChars":22,"textLines":2,"bbox":[86,300,380,140]}
+{"kind":"notes","id":"nt/j5hm24","slide":7,"text":""}
+{"kind":"slide","id":"sl/86x2me","slide":8,"title":"输出必须是新文件","textShapes":3}
+{"kind":"textbox","id":"sh/87algnal","slide":8,"name":"ending-title","text":"输出必须是新文件","textPreview":"输出必须是新文件","textChars":8,"textLines":1,"bbox":[120,210,980,100]}
+{"kind":"textbox","id":"sh/761knit0","slide":8,"name":"ending-body","text":"交付前展示完整预览与未授权页对比结果","textPreview":"交付前展示完整预览与未授权页对比结果","textChars":18,"textLines":1,"bbox":[240,350,800,90]}
+{"kind":"textbox","id":"sh/m5s3edsf","slide":8,"name":"ending-page","text":"08","textPreview":"08","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"notes","id":"nt/86x2me","slide":8,"text":""}

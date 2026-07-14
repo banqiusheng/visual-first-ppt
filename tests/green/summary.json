@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceRetention": {
+    "publicCandidate": "summary-and-hashes-only",
+    "rawEvidenceIncluded": false,
+    "replaySupport": "tests/scenarios/"
+  },
+  "runCount": 15,
+  "microtestProtocol": {
+    "freshGenerationContextPerRun": true,
+    "freshIndependentReviewerPerRun": true,
+    "firstUserVisibleResponseOnly": true,
+    "unchangedRubric": "tests/scenarios/rubric.json",
+    "isolatedWorkingDirectories": true
+  },
+  "versions": {
+    "model": "gpt-5.5 via codex-cli 0.142.0 ephemeral",
+    "reviewerModel": "gpt-5.5 via codex-cli 0.142.0 ephemeral",
+    "node": "v24.14.0",
+    "presentationsBundle": "26.709.11516",
+    "renderer": "not invoked in first-response microtest"
+  },
+  "fixtureHashes": {
+    "tests/fixtures/baseline/template-source.pptx": "4b8e9811345f602409d7b30d67982feeb617a911abd10733c8dccbd016bcf2dc",
+    "tests/fixtures/baseline/template-framework.md": "3681dc9db93f01a3897248aa040e9db52ef03c9190ca281d93d332e0e59e01c9",
+    "tests/fixtures/baseline/source-notes.md": "4168107d71e1a6c43bc8336849cb6069357725f339e429dd3d544865ecc9ca75",
+    "tests/fixtures/baseline/edit-source.pptx": "a9ff293ff61527b9dc80d7770a229cfbeaa78d7918580b4dbef150f1b6565b17"
+  },
+  "allScenarios": {
+    "requiredItems": 75,
+    "requiredPasses": 75,
+    "requiredFailures": 0,
+    "requiredPassRate": 1,
+    "forbiddenChecks": 30,
+    "forbiddenAbsent": 30,
+    "forbiddenPresent": 0,
+    "forbiddenAbsenceRate": 1
+  },
+  "scenarios": {
+    "create-zero-pressure": {
+      "runs": 5,
+      "passingRuns": 5,
+      "requiredItems": 25,
+      "requiredPasses": 25,
+      "requiredPassRate": 1,
+      "forbiddenChecks": 10,
+      "forbiddenAbsent": 10,
+      "forbiddenAbsenceRate": 1
+    },
+    "template-pressure": {
+      "runs": 5,
+      "passingRuns": 5,
+      "requiredItems": 25,
+      "requiredPasses": 25,
+      "requiredPassRate": 1,
+      "forbiddenChecks": 10,
+      "forbiddenAbsent": 10,
+      "forbiddenAbsenceRate": 1
+    },
+    "edit-scope-pressure": {
+      "runs": 5,
+      "passingRuns": 5,
+      "requiredItems": 25,
+      "requiredPasses": 25,
+      "requiredPassRate": 1,
+      "forbiddenChecks": 10,
+      "forbiddenAbsent": 10,
+      "forbiddenAbsenceRate": 1
+    }
+  },
+  "baselineToGreen": {
+    "baseline": {
+      "requiredItems": 75,
+      "requiredPasses": 1,
+      "requiredFailures": 74,
+      "requiredPassRate": 0.0133333333,
+      "forbiddenChecks": 30,
+      "forbiddenAbsent": 27,
+      "forbiddenPresent": 3,
+      "forbiddenAbsenceRate": 0.9
+    },
+    "green": {
+      "requiredItems": 75,
+      "requiredPasses": 75,
+      "requiredFailures": 0,
+      "requiredPassRate": 1,
+      "forbiddenChecks": 30,
+      "forbiddenAbsent": 30,
+      "forbiddenPresent": 0,
+      "forbiddenAbsenceRate": 1
+    },
+    "requiredPassRateGain": 0.9866666667,
+    "forbiddenAbsenceRateGain": 0.09999999999999998
+  },
+  "preservedFailureEvidence": {
+    "retainedLocally": true,
+    "includedInPublicCandidate": false,
+    "roundCount": 5
+  },
+  "runtimeBoundary": "The Skill governs the first user-visible response after it is read. A host may batch attachment listing into the same pre-read shell command; round-04 execution evidence preserves that host-loading limitation, which is outside the unchanged response rubric."
+}

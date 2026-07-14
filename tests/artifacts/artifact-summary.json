@@ -1,0 +1,144 @@
+{
+  "artifactType": "threeRouteForwardTestSummary",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-07-13T09:38:14Z",
+  "fixtureClassification": "neutral-synthetic-public-source",
+  "evidenceRetention": {
+    "publicCandidate": "summary-and-hashes-only",
+    "rawEvidenceIncluded": false,
+    "replaySupport": "tests/artifacts/support/"
+  },
+  "routes": {
+    "create": {
+      "projectId": "ppt-19eba29f-93ef-49d7-957e-b14341929af4",
+      "prompt": "授权执行 Tasks 1–11 的本地非安装工作；Task 10 使用中性合成主题完成三路线前向测试。",
+      "title": "校园节能 30 天试点（中性前向测试）",
+      "approvals": {
+        "outline": {
+          "approvedArtifactHash": "sha256:0f691a732134875e13ee5c20c1810eb3309ceeeae69ec2de73f95ce96aa19724"
+        },
+        "visual": {
+          "approvedArtifactHash": "sha256:850decd56d311e8fa0011e81ec55d98a80f667d82f29c54241a559d71d134dac"
+        },
+        "final": {
+          "approvedArtifactHash": "sha256:618dd5f6b8f6bfa01b9c7512a9fd666c3e446b333a8c1f6e60b6e6e74a3e4bb1"
+        }
+      },
+      "inputHashes": {
+        "dataContract": "sha256:e170abb362d6bcaf20c0138332b8766265fd5fb6907768a874b5b8a2f12cf818"
+      },
+      "outputHashes": {
+        "pptx": "sha256:618dd5f6b8f6bfa01b9c7512a9fd666c3e446b333a8c1f6e60b6e6e74a3e4bb1",
+        "pdf": "sha256:41b449ec1f74d7da904644cee30c2402bef5b4106fb48a316d92cd7bef678dab",
+        "qaReport": "sha256:e01f7cf03840a94ed2f6269e95da2495719f8c4f633ee514a257e68b774beb21",
+        "deliveryZip": "sha256:060323571168e317df7153a3a023a4377fb78f6f899d7d9614b2a52cbe246f3f"
+      },
+      "result": {
+        "state": "DELIVERED",
+        "qaVerdict": "PASS",
+        "automatedChecks": "11/11",
+        "manualSlides": "8/8",
+        "minimumManualScore": 4,
+        "clientSmoke": {
+          "client": "LibreOffice Impress headless import/export",
+          "status": "PASS",
+          "scope": "file-open and PDF-export smoke",
+          "microsoftPowerPointGui": "NOT_RUN"
+        }
+      }
+    },
+    "template": {
+      "projectId": "ppt-e37c0bbc-2652-46fa-88bd-889554d9fd18",
+      "prompt": "Task 10 strict-template forward test: use the approved create-route deck as the only visual source and split overflow through duplicated source layouts.",
+      "title": "教师 AI 共创四周试点（严格模板前向测试）",
+      "approvals": {
+        "outline": {
+          "approvedArtifactHash": "sha256:b99300b4ee77e172c86f01de809f05dc30db92448b039d1823b43cbe6e714cbd"
+        },
+        "visual": {
+          "approvedArtifactHash": "sha256:995fa238b06e546c93e4d926c474aeba23acb9876b78748a5b564adaad1c5514"
+        },
+        "final": {
+          "approvedArtifactHash": "sha256:16f90d45b1ae8ee0da4c5e6edaaa2498e2b0a5a33f9ffa3f0155a4f17a0d96af"
+        }
+      },
+      "inputHashes": {
+        "templatePptx": "sha256:618dd5f6b8f6bfa01b9c7512a9fd666c3e446b333a8c1f6e60b6e6e74a3e4bb1",
+        "dataContract": "sha256:cfbd216c38c4cae5ec1bccd8425103916acdb1179b9b4cef720c50b409218be3"
+      },
+      "outputHashes": {
+        "pptx": "sha256:16f90d45b1ae8ee0da4c5e6edaaa2498e2b0a5a33f9ffa3f0155a4f17a0d96af",
+        "pdf": "sha256:4719bd8fc3c153d389f6285c2c8ddc1782f08fea757616c830a992c00809ca8f",
+        "qaReport": "sha256:c07dd26d1cbffe45b2fe67b12fc259668ca4491d78168b97477425913403be76",
+        "deliveryZip": "sha256:5ddfbdd7cc0026dcefd7bfdb620e8366dc497265cd1013a610b208fcf388b0e1"
+      },
+      "result": {
+        "state": "DELIVERED",
+        "qaVerdict": "PASS",
+        "automatedChecks": "11/11",
+        "manualSlides": "9/9",
+        "minimumManualScore": 4,
+        "clientSmoke": {
+          "client": "LibreOffice Impress headless import/export",
+          "status": "PASS",
+          "scope": "file-open and PDF-export smoke",
+          "microsoftPowerPointGui": "NOT_RUN"
+        },
+        "templateFidelity": "PASS",
+        "overflowResolution": "duplicated-source-layout"
+      }
+    },
+    "edit": {
+      "projectId": "ppt-926da22e-2e6f-40e9-9d7d-43c425b93b9a",
+      "prompt": "Task 10 bounded-edit forward test: authorize exactly slides 4 and 7; preserve the source file and prove every other slide unchanged.",
+      "title": "校园节能试点边界编辑",
+      "approvals": {
+        "scope": {
+          "approvedArtifactHash": "sha256:b276f4cc1e3584483a8b727d975771ed3ea674d2da4ed04e60414cbcdb68f861"
+        },
+        "diffPreview": {
+          "approvedArtifactHash": "sha256:1690c9f7aa0d209659bf219d5c95cb11113bcaba2587ba22e7422ef84be9905a"
+        },
+        "final": {
+          "approvedArtifactHash": "sha256:a201221595032de80b6400460f1e7c42f3f80cfbc9f65ce52e721a6b45be3dea"
+        }
+      },
+      "inputHashes": {
+        "sourcePptx": "sha256:618dd5f6b8f6bfa01b9c7512a9fd666c3e446b333a8c1f6e60b6e6e74a3e4bb1",
+        "dataContract": "sha256:216767e1a6978d5b55ce1756d60ac73625b7acf57a4f2a5bf2212364109f3dfc"
+      },
+      "outputHashes": {
+        "pptx": "sha256:a201221595032de80b6400460f1e7c42f3f80cfbc9f65ce52e721a6b45be3dea",
+        "pdf": "sha256:da0e764bb3ab1923dcadfd4df2e3a7a51999e2c6631bf5df0ba154fe29081775",
+        "qaReport": "sha256:246f6582de5a8ca81ae443bfd9525c6745143fd1fc88baf891de42dde0515f22",
+        "deliveryZip": "sha256:b3eac03a089f49b67b325827f756465c6d4392331f28e582c2a4f83715812c83"
+      },
+      "result": {
+        "state": "DELIVERED",
+        "qaVerdict": "PASS",
+        "automatedChecks": "14/14",
+        "manualSlides": "8/8",
+        "minimumManualScore": 4,
+        "clientSmoke": {
+          "client": "LibreOffice Impress headless import/export",
+          "status": "PASS",
+          "scope": "file-open and PDF-export smoke",
+          "microsoftPowerPointGui": "NOT_RUN"
+        },
+        "authorizedSlides": [4, 7],
+        "changedUnauthorizedSlides": [],
+        "changedGlobalParts": [],
+        "sourceHashPreserved": true
+      }
+    }
+  },
+  "toolVersions": {
+    "python": "3.12.13",
+    "node": "v24.14.0",
+    "presentationsBundle": "26.709.11516",
+    "pptxRenderer": "Presentations render_slides.py via bundled LibreOffice",
+    "pdfProducer": "LibreOfficeDev 26.8.0.0.alpha0 (AARCH64)",
+    "pdfCreator": "Impress"
+  },
+  "overallResult": "PASS"
+}

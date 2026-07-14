@@ -1,0 +1,176 @@
+{
+  "artifactType": "themeCatalog",
+  "schemaVersion": "1.0.0",
+  "themes": [
+    {
+      "id": "minimal-business",
+      "labelZh": "极简商务",
+      "useWhen": ["管理层简报与方案概览", "低到中等信息密度的商务沟通"],
+      "avoidWhen": ["需要强情绪叙事", "儿童或娱乐型活动展示"],
+      "palettes": {
+        "light": {"background":"#F7F8FA","surface":"#FFFFFF","primary":"#17324D","secondary":"#496A82","accent":"#2E7D8A","text":"#17212B","muted":"#6D7883"},
+        "dark": {"background":"#111820","surface":"#1B2631","primary":"#D9E7F2","secondary":"#8FA9BC","accent":"#57C3C8","text":"#F4F7FA","muted":"#A4B0BA"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":30,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 restrained corporate editorial composition, quiet geometry, generous negative space, one clear focal subject, realistic materials, clean lighting",
+      "negativePrompt": "no embedded critical text or precise data, no fake logos, no decorative clutter, no distorted people, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"muted"},"chart":{"series":["accent","secondary"],"grid":"subtle"}},
+      "pageRoles": {"cover":"single headline with restrained hero visual","chapter":"large chapter number and short thesis","content":"asymmetric text and visual split","data":"one chart plus one takeaway","ending":"quiet summary and next action"},
+      "safeZone": {"top":"7%","right":"7%","bottom":"7%","left":"7%","imageFocusRule":"keep focal subject outside title column","cropRule":"crop from edge while preserving face and product geometry"},
+      "density": "low-to-medium", "rhythm": "alternate open visual pages with structured evidence pages"
+    },
+    {
+      "id": "consulting-report",
+      "labelZh": "咨询汇报",
+      "useWhen": ["决策建议与经营诊断", "多论点、多数据的正式汇报"],
+      "avoidWhen": ["纯品牌情绪片", "需要大面积沉浸式图片的发布会"],
+      "palettes": {
+        "light": {"background":"#F4F6F8","surface":"#FFFFFF","primary":"#12355B","secondary":"#4C6380","accent":"#D66B2C","text":"#17202A","muted":"#75808C"},
+        "dark": {"background":"#101923","surface":"#192737","primary":"#E1EBF5","secondary":"#93A9BF","accent":"#F08A4B","text":"#F8FAFC","muted":"#AAB6C2"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Arial","numberFont":"Arial","titleSize":28,"bodySize":15,"captionSize":9},
+      "imagePromptBase": "16:9 analytical consulting report visual, precise modular grid, restrained documentary image, clear hierarchy, high information discipline",
+      "negativePrompt": "no embedded critical text or precise data, no ornamental infographics, no vague icons, no fake documents, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"light"},"chart":{"series":["primary","accent","secondary"],"labels":"direct"}},
+      "pageRoles": {"cover":"issue-led title and client-neutral motif","chapter":"section thesis with progress marker","content":"answer-first headline with evidence modules","data":"chart-led page with implication box","ending":"recommendation roadmap and decision request"},
+      "safeZone": {"top":"6%","right":"5%","bottom":"6%","left":"5%","imageFocusRule":"reserve upper-left headline and lower-right source zones","cropRule":"use documentary crops without covering evidence modules"},
+      "density": "medium-to-high", "rhythm": "answer first, evidence second, implication third"
+    },
+    {
+      "id": "future-tech",
+      "labelZh": "科技未来",
+      "useWhen": ["AI、云、机器人与数字化方案", "需要表现系统感和未来感的产品叙事"],
+      "avoidWhen": ["政务公文式汇报", "强调传统文化质感的主题"],
+      "palettes": {
+        "light": {"background":"#F2F7FF","surface":"#FFFFFF","primary":"#143E78","secondary":"#315E9A","accent":"#00A6C8","text":"#10233F","muted":"#687B95"},
+        "dark": {"background":"#07111F","surface":"#0E2038","primary":"#78AFFF","secondary":"#4D78B8","accent":"#22D3EE","text":"#EAF4FF","muted":"#8EA7C2"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":31,"bodySize":15,"captionSize":9},
+      "imagePromptBase": "16:9 cinematic future technology scene, layered depth, luminous cyan accents, clean interfaces without readable text, believable materials, strong safe zone",
+      "negativePrompt": "no embedded critical text or precise data, no illegible interface glyphs, no neon overload, no science-fiction weapon, no watermark",
+      "nativeTextStyles": {"title":{"weight":"semibold","color":"text"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"surface","accentRule":"accent"},"chart":{"series":["accent","primary","secondary"],"glow":"none"}},
+      "pageRoles": {"cover":"immersive hero scene with clear title safe zone","chapter":"numbered luminous portal motif","content":"layered system modules around one focal concept","data":"dark or light analytic panel with native chart","ending":"future-state horizon and action statement"},
+      "safeZone": {"top":"7%","right":"7%","bottom":"8%","left":"8%","imageFocusRule":"place luminous focal point opposite the headline zone","cropRule":"preserve horizon, faces, hands, and device edges"},
+      "density": "medium", "rhythm": "alternate immersive scenes and disciplined system diagrams"
+    },
+    {
+      "id": "product-launch",
+      "labelZh": "产品发布",
+      "useWhen": ["新品发布与产品路演", "突出单一产品价值和关键卖点"],
+      "avoidWhen": ["长篇政策解读", "高密度审计或研究数据"],
+      "palettes": {
+        "light": {"background":"#F7F7F5","surface":"#FFFFFF","primary":"#202124","secondary":"#5F6368","accent":"#6A5CFF","text":"#17181A","muted":"#777A80"},
+        "dark": {"background":"#090A0D","surface":"#17181D","primary":"#F5F6F8","secondary":"#B5B7BF","accent":"#9A8CFF","text":"#FFFFFF","muted":"#989BA4"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":34,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 premium product launch key visual, one hero object, dramatic controlled lighting, tactile materials, generous negative space, clean stage composition",
+      "negativePrompt": "no embedded critical text or precise data, no fake product labels, no cluttered collage, no distorted hardware, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"text"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"accent","grid":"none"},"chart":{"series":["accent","secondary"],"labels":"minimal"}},
+      "pageRoles": {"cover":"full-bleed hero with short product promise","chapter":"single benefit statement and detail crop","content":"feature-benefit proof with product close-up","data":"one launch metric with supporting native chart","ending":"availability, next step, and hero reprise"},
+      "safeZone": {"top":"8%","right":"8%","bottom":"8%","left":"8%","imageFocusRule":"keep hero product clear of title and CTA zones","cropRule":"never cut controls, ports, logo area, or primary silhouette"},
+      "density": "low", "rhythm": "build anticipation, reveal product, prove value, close decisively"
+    },
+    {
+      "id": "editorial-story",
+      "labelZh": "杂志叙事",
+      "useWhen": ["品牌故事与案例叙事", "人物、城市、文化与趋势观察"],
+      "avoidWhen": ["逐项合规审查", "需要统一严密表格网格的汇报"],
+      "palettes": {
+        "light": {"background":"#F6F1E8","surface":"#FFFDF8","primary":"#3A3028","secondary":"#786A5D","accent":"#B64E3C","text":"#28221D","muted":"#887E74"},
+        "dark": {"background":"#1B1714","surface":"#2A2420","primary":"#F2E8DB","secondary":"#B9A99A","accent":"#E2725B","text":"#FFF8EE","muted":"#B3A79D"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Georgia","numberFont":"Arial","titleSize":32,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 contemporary editorial photography layout, human-scale detail, tactile natural light, strong cropping, considered negative space, magazine pacing",
+      "negativePrompt": "no embedded critical text or precise data, no fake newspaper copy, no sensational collage, no distorted faces or hands, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"hairline"},"chart":{"series":["accent","secondary"],"labels":"editorial"}},
+      "pageRoles": {"cover":"bold crop, short title, issue-like kicker","chapter":"full image with a single narrative line","content":"editorial columns with image-caption relationship","data":"humanized statistic with a small native chart","ending":"closing quote or reflective next step"},
+      "safeZone": {"top":"7%","right":"6%","bottom":"9%","left":"7%","imageFocusRule":"leave a quiet editorial column for native copy","cropRule":"favor meaningful detail while preserving gaze direction"},
+      "density": "medium", "rhythm": "alternate full-bleed emotion, detail, and analytical pause"
+    },
+    {
+      "id": "education-training",
+      "labelZh": "教育培训",
+      "useWhen": ["学校、职教和教师培训方案", "课程讲解、学习路径与能力模型"],
+      "avoidWhen": ["奢侈品发布", "极度严肃的审计或司法材料"],
+      "palettes": {
+        "light": {"background":"#F4F9F7","surface":"#FFFFFF","primary":"#205B52","secondary":"#4F7E76","accent":"#F2A33A","text":"#17332F","muted":"#6D827E"},
+        "dark": {"background":"#10211F","surface":"#19332F","primary":"#D8F1EB","secondary":"#8EB6AD","accent":"#FFC15A","text":"#F4FBF9","muted":"#A0B9B3"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":30,"bodySize":17,"captionSize":10},
+      "imagePromptBase": "16:9 warm contemporary education scene, authentic diverse learners and teachers, clear learning activity, natural daylight, optimistic but credible, spacious text safe zone",
+      "negativePrompt": "no embedded critical text or precise data, no staged stock-photo smiles, no distorted students or hands, no school logo, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"soft"},"chart":{"series":["primary","accent","secondary"],"labels":"clear"}},
+      "pageRoles": {"cover":"education context visual and outcome promise","chapter":"learning-stage marker with simple illustration","content":"concept, example, and action in clear blocks","data":"learner outcome chart with plain-language takeaway","ending":"pilot plan, roles, and next-step checklist"},
+      "safeZone": {"top":"7%","right":"7%","bottom":"7%","left":"7%","imageFocusRule":"keep faces and learning actions away from text zones","cropRule":"preserve hands, learning materials, and inclusive group context"},
+      "density": "medium", "rhythm": "explain, demonstrate, practice, summarize"
+    },
+    {
+      "id": "academic-defense",
+      "labelZh": "学术答辩",
+      "useWhen": ["论文答辩与科研汇报", "方法、实验、结果与局限的证据链"],
+      "avoidWhen": ["纯情绪品牌故事", "没有证据基础的愿景路演"],
+      "palettes": {
+        "light": {"background":"#F7F9FB","surface":"#FFFFFF","primary":"#243B64","secondary":"#5E7192","accent":"#2A8C82","text":"#19243A","muted":"#748096"},
+        "dark": {"background":"#111827","surface":"#1F2937","primary":"#DCE7F7","secondary":"#98A9C3","accent":"#4FD1C5","text":"#F7FAFC","muted":"#AAB4C4"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Calibri","numberFont":"Arial","titleSize":27,"bodySize":15,"captionSize":9},
+      "imagePromptBase": "16:9 rigorous academic presentation visual, clear scientific subject, neutral laboratory or field context, precise composition, restrained depth, ample annotation-safe space",
+      "negativePrompt": "no embedded critical text or precise data, no invented scientific labels, no speculative result imagery, no distorted equipment, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"thin"},"chart":{"series":["primary","accent","secondary"],"labels":"complete"}},
+      "pageRoles": {"cover":"research question, author context, restrained domain image","chapter":"question or hypothesis with section number","content":"method or argument with explicit evidence chain","data":"native figure or table with result and caveat","ending":"conclusion, limits, and discussion prompts"},
+      "safeZone": {"top":"6%","right":"6%","bottom":"8%","left":"6%","imageFocusRule":"reserve caption and source area below factual visuals","cropRule":"do not crop measurement context or relevant experimental apparatus"},
+      "density": "medium-to-high", "rhythm": "question, method, result, interpretation, limitation"
+    },
+    {
+      "id": "government-formal",
+      "labelZh": "政务正式",
+      "useWhen": ["政府、教育局和公共机构正式汇报", "政策解读、工作总结与实施方案"],
+      "avoidWhen": ["潮流消费品牌发布", "需要强烈娱乐感的活动提案"],
+      "palettes": {
+        "light": {"background":"#F8F6F1","surface":"#FFFFFF","primary":"#8E1F2D","secondary":"#7B5B3E","accent":"#C99732","text":"#2B2521","muted":"#80766D"},
+        "dark": {"background":"#241819","surface":"#382325","primary":"#F4D9D6","secondary":"#C5A98E","accent":"#E4B85A","text":"#FFF8F4","muted":"#C2B3AA"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"SimSun","numberFont":"Arial","titleSize":28,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 dignified public-service visual, orderly civic or education context, natural documentary light, balanced symmetry, restrained red and gold accents, ample formal title space",
+      "negativePrompt": "no embedded critical text or precise data, no unauthorized emblem, no ceremonial exaggeration, no fake official document, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"thin"},"chart":{"series":["primary","accent","secondary"],"labels":"formal"}},
+      "pageRoles": {"cover":"formal title block and verified contextual image","chapter":"numbered workstream with restrained motif","content":"policy point, measure, owner, and outcome","data":"official-statistic treatment with native source note","ending":"implementation priorities and accountability"},
+      "safeZone": {"top":"7%","right":"6%","bottom":"7%","left":"6%","imageFocusRule":"preserve formal title symmetry and document source zone","cropRule":"avoid ambiguous symbols, cropped flags, or incomplete public signage"},
+      "density": "medium-to-high", "rhythm": "context, requirement, measure, progress, next action"
+    },
+    {
+      "id": "neo-chinese",
+      "labelZh": "新中式",
+      "useWhen": ["中国文化、文旅与东方品牌叙事", "需要克制传统意象和现代排版的方案"],
+      "avoidWhen": ["高密度软件架构说明", "赛博朋克或强霓虹科技发布"],
+      "palettes": {
+        "light": {"background":"#F3EFE6","surface":"#FBF8F1","primary":"#344A3F","secondary":"#7A6651","accent":"#B44A3C","text":"#292720","muted":"#817B70"},
+        "dark": {"background":"#17201C","surface":"#243029","primary":"#E6E0D2","secondary":"#B5A58E","accent":"#D46A58","text":"#FAF6ED","muted":"#B1AA9D"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"SimSun","numberFont":"Arial","titleSize":31,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 modern Chinese visual language, restrained ink-like atmosphere, natural mineral colors, contemporary architecture or craft detail, asymmetrical void, elegant texture",
+      "negativePrompt": "no embedded critical text or precise data, no costume cliché, no imitation calligraphy, no excessive dragons or lanterns, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"hairline"},"chart":{"series":["primary","accent","secondary"],"labels":"restrained"}},
+      "pageRoles": {"cover":"quiet landscape or craft detail with vertical accent","chapter":"large numeral and restrained seal-like color block","content":"modern grid balanced by intentional void","data":"native chart on paper-like surface","ending":"calm synthesis and invitation"},
+      "safeZone": {"top":"8%","right":"8%","bottom":"8%","left":"8%","imageFocusRule":"use intentional void as the native text field","cropRule":"preserve architectural lines, material texture, and visual breathing room"},
+      "density": "low-to-medium", "rhythm": "open, detail, evidence, reflection"
+    },
+    {
+      "id": "creative-energy",
+      "labelZh": "创意活力",
+      "useWhen": ["创意提案、活动与青年沟通", "需要高能量但仍可读的概念展示"],
+      "avoidWhen": ["严肃监管材料", "需要克制权威感的正式答辩"],
+      "palettes": {
+        "light": {"background":"#FFF8F1","surface":"#FFFFFF","primary":"#4B2E83","secondary":"#256E8A","accent":"#F05A47","text":"#261D34","muted":"#746A7E"},
+        "dark": {"background":"#191326","surface":"#2A2040","primary":"#E5D8FF","secondary":"#76D1EA","accent":"#FF745F","text":"#FFF8FF","muted":"#B8ABC8"}
+      },
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":33,"bodySize":16,"captionSize":10},
+      "imagePromptBase": "16:9 energetic contemporary creative composition, bold geometric movement, tactile collage-like depth without text fragments, expressive color blocks, clear focal hierarchy",
+      "negativePrompt": "no embedded critical text or precise data, no random typography fragments, no chaotic sticker overload, no distorted people, no watermark",
+      "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"accent-soft"},"chart":{"series":["accent","secondary","primary"],"labels":"direct"}},
+      "pageRoles": {"cover":"bold motion field with one concise promise","chapter":"oversized number and directional color block","content":"modular cards with one playful visual anchor","data":"high-contrast native chart with one hero number","ending":"energetic recap and clear call to action"},
+      "safeZone": {"top":"7%","right":"7%","bottom":"7%","left":"7%","imageFocusRule":"keep energetic shapes behind, not through, native text","cropRule":"preserve movement direction and avoid cutting faces or gestures"},
+      "density": "medium", "rhythm": "burst, pause, proof, burst, close"
+    }
+  ]
+}

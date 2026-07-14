@@ -1,0 +1,14 @@
+{
+  "artifactType": "projectManifest",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-fixture-invalid-manifest",
+  "title": "Invalid recovery fixture",
+  "route": "create",
+  "workspace": "tests/fixtures/project-invalid",
+  "inputHashes": {},
+  "toolVersions": {
+    "node": "fixture"
+  },
+  "createdAt": "2026-07-13T00:00:00.000Z",
+  "updatedAt": "2026-07-13T00:00:00.000Z"
+}

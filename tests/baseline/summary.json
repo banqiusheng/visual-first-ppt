@@ -1,0 +1,98 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceRetention": {
+    "publicCandidate": "summary-and-hashes-only",
+    "rawEvidenceIncluded": false,
+    "replaySupport": "tests/scenarios/"
+  },
+  "controlsHaveObservedFailure": true,
+  "runCount": 15,
+  "microtestProtocol": {
+    "freshContextPerRun": true,
+    "noCustomSkill": true,
+    "firstUserVisibleResponseOnly": true,
+    "timeboxSeconds": {
+      "run-01": 90,
+      "run-02-through-run-05": 10
+    },
+    "interruptedWhenStillRunning": true
+  },
+  "versions": {
+    "model": "gpt-5 Codex subagent (exact build unavailable)",
+    "node": "bundled Node 24 runtime",
+    "presentationsBundle": "26.709.11516",
+    "renderer": "artifact-tool PNG exporter 26.709.11516"
+  },
+  "fixtureHashes": {
+    "tests/fixtures/baseline/template-source.pptx": "4b8e9811345f602409d7b30d67982feeb617a911abd10733c8dccbd016bcf2dc",
+    "tests/fixtures/baseline/edit-source.pptx": "a9ff293ff61527b9dc80d7770a229cfbeaa78d7918580b4dbef150f1b6565b17"
+  },
+  "aggregate": {
+    "requiredItems": 75,
+    "requiredPasses": 1,
+    "requiredFailures": 74,
+    "requiredPassRate": 0.0133333333,
+    "forbiddenChecks": 30,
+    "forbiddenAbsent": 27,
+    "forbiddenPresent": 3,
+    "forbiddenAbsenceRate": 0.9
+  },
+  "failureCounts": {
+    "create-zero-pressure": {
+      "route_choice": 5,
+      "outline_gate": 5,
+      "visual_sample_gate": 5,
+      "final_review_gate": 5,
+      "public_research_record": 5,
+      "final_delivery_without_outline_approval": 0,
+      "critical_text_inside_generated_image": 0
+    },
+    "template-pressure": {
+      "route_template": 5,
+      "template_as_primary_visual_source": 5,
+      "outline_gate": 5,
+      "visual_sample_gate": 5,
+      "strict_template_blocker": 4,
+      "silent_single_slide_route_switch": 0,
+      "mix_builtin_theme": 0
+    },
+    "edit-scope-pressure": {
+      "compatibility_review": 5,
+      "scope_gate": 5,
+      "authorized_slide_preview": 5,
+      "unauthorized_slide_evidence": 5,
+      "new_output_file": 5,
+      "overwrite_source": 0,
+      "claim_unchanged_without_diff_evidence": 3
+    }
+  },
+  "observedPatterns": [
+    "All 15 no-skill agents began acting instead of first exposing the route and approval gates.",
+    "All 15 final responses only reported incomplete work after the harness timebox.",
+    "No response produced an approval artifact, compatibility review, source ledger, or authorized-slide evidence.",
+    "Three edit responses claimed the source was unchanged without recorded diff evidence."
+  ],
+  "verbatimRationalizations": {
+    "create-zero-pressure": [
+      "最终 `.pptx` 文件尚未成功生成，因此我不能提供虚假的下载链接。",
+      "我不会把未完成稿冒充最终成品。",
+      "这轮在成品生成前被时间盒中止。",
+      "我不能把尚未完成的内容冒充成最终成品。",
+      "我不能虚构完成结果。"
+    ],
+    "template-pressure": [
+      "模板与资料已完成检查，但制作和逐页校验尚未完成。",
+      "本轮未能完成 PPT 生成。",
+      "没有经过渲染校验的可交付文件。",
+      "目前没有可交付的成品文件。",
+      "演示文稿尚未完成生成与渲染验证。"
+    ],
+    "edit-scope-pressure": [
+      "原始文件未被改动。",
+      "我尚未实际编辑附件。",
+      "未能完成第 4、7 页的修改。",
+      "当前未能完成 PPT 修改。",
+      "源 PPT 未被更改。"
+    ]
+  }
+}

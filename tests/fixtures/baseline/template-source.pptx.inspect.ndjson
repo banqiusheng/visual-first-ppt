@@ -1,0 +1,51 @@
+{"kind":"deck","id":"pr/2seddi","name":"Deck"}
+{"kind":"layout","layoutId":"5ca51c88-21e8-4319-a3aa-1470c6c5af52","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"a59fd692-68df-4c97-b236-f1e7cf3377c8","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/0ysvjc","slide":1,"title":"中性模板源文件","textShapes":3}
+{"kind":"shape","id":"sh/tc3atcjy","slide":1,"name":"cover-accent","bbox":[72,90,150,10]}
+{"kind":"textbox","id":"sh/69crihk7","slide":1,"name":"cover-title","text":"中性模板源文件","textPreview":"中性模板源文件","textChars":7,"textLines":1,"bbox":[72,190,920,150]}
+{"kind":"textbox","id":"sh/ralsrm1s","slide":1,"name":"cover-subtitle","text":"六类页面角色 · 固定回归测试夹具","textPreview":"六类页面角色 · 固定回归测试夹具","textChars":17,"textLines":1,"bbox":[76,372,820,70]}
+{"kind":"textbox","id":"sh/47a9g721","slide":1,"name":"cover-tag","text":"DETERMINISTIC TEST FIXTURE","textPreview":"DETERMINISTIC TEST FIXTURE","textChars":26,"textLines":1,"bbox":[76,610,420,28]}
+{"kind":"notes","id":"nt/0ysvjc","slide":1,"text":""}
+{"kind":"slide","id":"sl/asfggw","slide":2,"title":"01","textShapes":4}
+{"kind":"textbox","id":"sh/5s7i183i","slide":2,"name":"chapter-number-2","text":"01","textPreview":"01","textChars":2,"textLines":1,"bbox":[72,130,250,150]}
+{"kind":"textbox","id":"sh/ipwzqt4r","slide":2,"name":"chapter-title-2","text":"章节页","textPreview":"章节页","textChars":3,"textLines":1,"bbox":[350,160,760,90]}
+{"kind":"textbox","id":"sh/jqp0zylc","slide":2,"name":"chapter-body-2","text":"用于章节转换与节奏控制。","textPreview":"用于章节转换与节奏控制。","textChars":12,"textLines":1,"bbox":[354,280,700,130]}
+{"kind":"textbox","id":"sh/svy1wn2t","slide":2,"name":"chapter-page-2","text":"02","textPreview":"02","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"notes","id":"nt/asfggw","slide":2,"text":""}
+{"kind":"slide","id":"sl/dd4ol8","slide":3,"title":"CONTENT","textShapes":7}
+{"kind":"shape","id":"sh/1cbqxwvi","slide":3,"name":"accent-3","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/e9kr21w7","slide":3,"name":"role-3","text":"CONTENT","textPreview":"CONTENT","textChars":7,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/fat8v6ds","slide":3,"name":"page-3","text":"03","textPreview":"03","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/ozm98be9","slide":3,"name":"content-3-title","text":"内容页强调一个结论","textPreview":"内容页强调一个结论","textChars":9,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/p0vq1gvu","slide":3,"name":"content-3-subtitle","text":"正文保持原生可编辑","textPreview":"正文保持原生可编辑","textChars":9,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"shape","id":"sh/2xkr61w3","slide":3,"name":"bullet-dot-1","bbox":[82,258,12,12]}
+{"kind":"textbox","id":"sh/nyd8z6do","slide":3,"name":"bullet-1","text":"一页只承担一个叙事任务","textPreview":"一页只承担一个叙事任务","textChars":11,"textLines":1,"bbox":[112,250,980,48]}
+{"kind":"shape","id":"sh/c3m9cbe5","slide":3,"name":"bullet-dot-2","bbox":[82,330,12,12]}
+{"kind":"textbox","id":"sh/x4va5gvq","slide":3,"name":"bullet-2","text":"标题表达结论，而不是只写主题","textPreview":"标题表达结论，而不是只写主题","textChars":14,"textLines":1,"bbox":[112,322,980,48]}
+{"kind":"shape","id":"sh/pgf6po3a","slide":3,"name":"bullet-dot-3","bbox":[82,402,12,12]}
+{"kind":"textbox","id":"sh/of6pgjmp","slide":3,"name":"bullet-3","text":"信息不足时优先精简或拆页","textPreview":"信息不足时优先精简或拆页","textChars":12,"textLines":1,"bbox":[112,394,980,48]}
+{"kind":"notes","id":"nt/dd4ol8","slide":3,"text":""}
+{"kind":"slide","id":"sl/n2keoo","slide":4,"title":"IMAGE-CONTENT","textShapes":6}
+{"kind":"shape","id":"sh/c72dc3u9","slide":4,"name":"accent-4","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/r6tcjyto","slide":4,"name":"role-4","text":"IMAGE-CONTENT","textPreview":"IMAGE-CONTENT","textChars":13,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/qlkvadc3","slide":4,"name":"page-4","text":"04","textPreview":"04","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/pkbuh8by","slide":4,"name":"visual-4-title","text":"图片内容页预留明确安全区","textPreview":"图片内容页预留明确安全区","textChars":12,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/4jid83ud","slide":4,"name":"visual-4-subtitle","text":"模板允许视觉替换，但不允许关键文字进入图片","textPreview":"模板允许视觉替换，但不允许关键文字进入图片","textChars":21,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"shape","id":"sh/3i9cfyts","slide":4,"name":"image-frame","bbox":[560,245,610,330]}
+{"kind":"textbox","id":"sh/2h0b6tc7","slide":4,"name":"image-frame-label","text":"视觉素材区域\n保留文字安全区","textPreview":"视觉素材区域 | 保留文字安全区","textChars":14,"textLines":2,"bbox":[680,350,370,100]}
+{"kind":"textbox","id":"sh/9gvutsb2","slide":4,"name":"visual-copy","text":"左侧：结论与关键说明\n右侧：图片、场景或插画","textPreview":"左侧：结论与关键说明 | 右侧：图片、场景或插画","textChars":22,"textLines":2,"bbox":[86,300,380,140]}
+{"kind":"notes","id":"nt/n2keoo","slide":4,"text":""}
+{"kind":"slide","id":"sl/75tspg","slide":5,"title":"DATA","textShapes":4}
+{"kind":"shape","id":"sh/690fedcz","slide":5,"name":"accent-5","bbox":[0,0,18,720]}
+{"kind":"textbox","id":"sh/tcby98bq","slide":5,"name":"role-5","text":"DATA","textPreview":"DATA","textChars":4,"textLines":1,"bbox":[72,42,320,30]}
+{"kind":"textbox","id":"sh/8bihg3u5","slide":5,"name":"page-5","text":"05","textPreview":"05","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"textbox","id":"sh/vetgbitw","slide":5,"name":"chart-5-title","text":"数据页使用原生可编辑图表","textPreview":"数据页使用原生可编辑图表","textChars":12,"textLines":1,"bbox":[72,92,1040,78]}
+{"kind":"textbox","id":"sh/udkzidsb","slide":5,"name":"chart-5-subtitle","text":"示例合成数据，仅验证原生图表对象","textPreview":"示例合成数据，仅验证原生图表对象","textChars":16,"textLines":1,"bbox":[72,170,1000,52]}
+{"kind":"chart","id":"ch/d0f6hg3u","slide":5,"name":"","chartType":"bar","bbox":[100,250,1040,330]}
+{"kind":"notes","id":"nt/75tspg","slide":5,"text":""}
+{"kind":"slide","id":"sl/2vtibj","slide":6,"title":"结束页回应开场","textShapes":3}
+{"kind":"textbox","id":"sh/fupsv614","slide":6,"name":"ending-title","text":"结束页回应开场","textPreview":"结束页回应开场","textChars":7,"textLines":1,"bbox":[120,210,980,100]}
+{"kind":"textbox","id":"sh/0vyt4bip","slide":6,"name":"ending-body","text":"下一步由用户根据真实任务确认","textPreview":"下一步由用户根据真实任务确认","textChars":14,"textLines":1,"bbox":[240,350,800,90]}
+{"kind":"textbox","id":"sh/1w7axwju","slide":6,"name":"ending-page","text":"06","textPreview":"06","textChars":2,"textLines":1,"bbox":[1160,650,54,26]}
+{"kind":"notes","id":"nt/2vtibj","slide":6,"text":""}

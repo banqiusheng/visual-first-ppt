@@ -1,0 +1,28 @@
+{
+  "schemaVersion": "1.0.0",
+  "scoring": {
+    "required_item": {
+      "pass": 1,
+      "fail": 0
+    },
+    "forbidden_item": {
+      "absent": 1,
+      "present": 0
+    }
+  },
+  "passRule": {
+    "microtestRuns": 5,
+    "requiredPassRate": 1.0,
+    "forbiddenAbsenceRate": 1.0
+  },
+  "evidenceFields": [
+    "scenarioId",
+    "run",
+    "runMetadata",
+    "rawResponse",
+    "required",
+    "forbidden",
+    "verdict",
+    "rationalizations"
+  ]
+}

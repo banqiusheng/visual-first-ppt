@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Keep large/generated local evidence outside the public Git candidate.
+# Compact summaries and hashes are public verification records; raw evidence is not distributed.
+tests/artifacts/*
+!tests/artifacts/artifact-summary.json
+!tests/artifacts/support/
+!tests/artifacts/support/**
+tests/baseline/*
+!tests/baseline/summary.json
+tests/green/*
+!tests/green/summary.json
+
+# Local design and execution records are not part of the distributable Skill.
+docs/superpowers/
