@@ -158,9 +158,10 @@ DEST="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
 test ! -e "$DEST"
 mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
+node "$DEST/scripts/doctor.mjs" --skill-root "$DEST" --json
 ```
 
-`test ! -e` 보호 절차는 기존 Skill을 실수로 덮어쓰는 일을 방지합니다. 복사 후 다음 Codex 턴에서 먼저 `$visual-first-ppt`를 명시적으로 호출하세요. 감지되지 않을 때만 새 Codex 작업을 시작한 뒤 다시 명시적으로 호출하세요.
+`test ! -e` 보호 절차는 기존 Skill을 실수로 덮어쓰는 일을 방지합니다. 위의 마지막 명령은 저장소 복사본이 아니라 `$DEST`에 설치된 복사본을 대상으로 doctor를 실행합니다. 빠른 시작 3단계에 따라 `PASS`, `WARN`, `FAIL`을 해석하고 활성화 확인을 완료하세요. 두 항목 모두 근거가 갖춰지기 전에는 `SETUP_VERIFIED`로 기록하지 마세요. 복사 후 다음 Codex 턴에서 먼저 `$visual-first-ppt`를 명시적으로 호출하세요. 감지되지 않을 때만 새 Codex 작업을 시작한 뒤 다시 명시적으로 호출하세요.
 
 ## 요청 예시
 

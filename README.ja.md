@@ -158,9 +158,10 @@ DEST="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
 test ! -e "$DEST"
 mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
+node "$DEST/scripts/doctor.mjs" --skill-root "$DEST" --json
 ```
 
-`test ! -e` のガードにより、既存の Skill を誤って置き換えることを防ぎます。コピー後の次の Codex ターンで、まず `$visual-first-ppt` を明示的に呼び出してください。検出されない場合にだけ新しい Codex タスクを開始し、もう一度明示的に呼び出します。
+`test ! -e` のガードにより、既存の Skill を誤って置き換えることを防ぎます。上記の最後のコマンドは、リポジトリのコピーではなく `$DEST` のインストール済みコピーに対して doctor を実行します。クイックスタートの手順 3 に従って `PASS`、`WARN`、`FAIL` を解釈し、起動確認を完了してください。両方の証拠がそろうまで `SETUP_VERIFIED` と記録してはいけません。コピー後の次の Codex ターンで、まず `$visual-first-ppt` を明示的に呼び出してください。検出されない場合にだけ新しい Codex タスクを開始し、もう一度明示的に呼び出します。
 
 ## リクエスト例
 

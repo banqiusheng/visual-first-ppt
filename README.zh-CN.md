@@ -158,9 +158,10 @@ DEST="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
 test ! -e "$DEST"
 mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
+node "$DEST/scripts/doctor.mjs" --skill-root "$DEST" --json
 ```
 
-`test ! -e` 用于避免意外覆盖已经安装的同名 Skill。复制完成后的下一轮，请先显式调用 `$visual-first-ppt`；如果仍未识别，再新建一个 Codex 任务并重新显式调用。
+`test ! -e` 用于避免意外覆盖已经安装的同名 Skill。上述最后一条命令会对 `$DEST` 中的已安装副本运行 doctor，而不是检查仓库副本。请按快速开始第 3 步解释 `PASS`、`WARN`、`FAIL`，然后完成激活检查；两项均有证据前不得记录 `SETUP_VERIFIED`。复制完成后的下一轮，请先显式调用 `$visual-first-ppt`；如果仍未识别，再新建一个 Codex 任务并重新显式调用。
 
 ## 使用示例
 

@@ -202,15 +202,22 @@ def _inspect_regular_file(root: Path, relative: PurePosixPath) -> tuple[Path | N
 def _path_rule_codes(relative: PurePosixPath) -> set[str]:
     parts = relative.parts
     name = parts[-1]
+    suffix = Path(name).suffix.casefold()
     codes: set[str] = set()
-    if Path(name).suffix.casefold() in {".pyc", ".pyo"}:
+    if suffix in {".pyc", ".pyo"}:
         codes.add("PYTHON_BYTECODE")
     if "__pycache__" in parts:
         codes.add("PYTHON_CACHE")
     if ".venv" in parts:
         codes.add("VIRTUAL_ENVIRONMENT")
-    if "dist" in parts[:-1] and Path(name).suffix.casefold() == ".zip":
+    if "dist" in parts[:-1] and suffix == ".zip":
         codes.add("DISTRIBUTION_ARCHIVE")
+    if len(parts) > 1 and parts[0] == ".superpowers":
+        codes.add("LOCAL_PLANNING_RECORD")
+    if len(parts) > 3 and parts[:3] == ("tests", "agent-forward", "runs"):
+        codes.add("RAW_AGENT_EVIDENCE")
+    if name.casefold() in {".jsonl", ".log"} or suffix in {".jsonl", ".log"}:
+        codes.add("RAW_EXECUTION_LOG")
     return codes
 
 

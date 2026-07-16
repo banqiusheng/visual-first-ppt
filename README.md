@@ -158,9 +158,10 @@ DEST="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
 test ! -e "$DEST"
 mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
+node "$DEST/scripts/doctor.mjs" --skill-root "$DEST" --json
 ```
 
-The `test ! -e` guard prevents accidental replacement of an existing Skill. On the next Codex turn, explicitly invoke `$visual-first-ppt`; if it is not discovered, start a new Codex task and invoke it again.
+The `test ! -e` guard prevents accidental replacement of an existing Skill. The final command runs doctor against the installed copy at `$DEST`, not the repository checkout. Follow Quick Start step 3 to interpret `PASS`, `WARN`, and `FAIL`, then complete the activation check; do not record `SETUP_VERIFIED` until both have evidence. On the next Codex turn, explicitly invoke `$visual-first-ppt`; if it is not discovered, start a new Codex task and invoke it again.
 
 ## Example requests
 

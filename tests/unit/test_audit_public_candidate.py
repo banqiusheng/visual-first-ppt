@@ -108,6 +108,54 @@ class AuditPublicCandidateTests(unittest.TestCase):
             },
         )
 
+    def test_local_planning_raw_agent_evidence_and_logs_are_rejected(self) -> None:
+        paths = [
+            self._write(".superpowers/sdd/plan.md", "local plan\n"),
+            self._write(
+                "tests/agent-forward/runs/attempt-99/response.txt",
+                "raw response\n",
+            ),
+            self._write(".jsonl", "{}\n"),
+            self._write(".log", "raw log\n"),
+            self._write("logs/agent-trace.jsonl", "{}\n"),
+            self._write("logs/runner.log", "raw log\n"),
+        ]
+
+        findings = audit_paths(self.root, paths)
+
+        self.assertEqual(
+            {(finding.path, finding.code) for finding in findings},
+            {
+                (".superpowers/sdd/plan.md", "LOCAL_PLANNING_RECORD"),
+                (".jsonl", "RAW_EXECUTION_LOG"),
+                (".log", "RAW_EXECUTION_LOG"),
+                ("logs/agent-trace.jsonl", "RAW_EXECUTION_LOG"),
+                ("logs/runner.log", "RAW_EXECUTION_LOG"),
+                (
+                    "tests/agent-forward/runs/attempt-99/response.txt",
+                    "RAW_AGENT_EVIDENCE",
+                ),
+            },
+        )
+
+    def test_local_record_path_rules_do_not_match_similarly_named_paths(self) -> None:
+        paths = [
+            self._write(".superpowers", "publishable fixture\n"),
+            self._write(".superpowers-local/plan.md", "publishable fixture\n"),
+            self._write(
+                "tests/agent-forward/runs",
+                "publishable fixture\n",
+            ),
+            self._write(
+                "tests/agent-forward/runs-archive/response.txt",
+                "publishable fixture\n",
+            ),
+            self._write("logs/runner.logger", "publishable fixture\n"),
+            self._write("logs/trace.jsonlines", "publishable fixture\n"),
+        ]
+
+        self.assertEqual(audit_paths(self.root, paths), [])
+
     def test_file_larger_than_ten_mib_is_blocked_without_reading_it(self) -> None:
         candidate = self.root / "large.bin"
         with candidate.open("wb") as stream:

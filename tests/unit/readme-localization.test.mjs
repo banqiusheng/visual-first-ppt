@@ -50,6 +50,8 @@ const QUICK_START_PROMPT_TOKENS = [
 ];
 const INSTALLED_DOCTOR_COMMAND =
   'node "$SKILL_ROOT/scripts/doctor.mjs" --skill-root "$SKILL_ROOT" --json';
+const INSTALLED_DEST_DOCTOR_COMMAND =
+  'node "$DEST/scripts/doctor.mjs" --skill-root "$DEST" --json';
 const RECOVERY_ROUTE_LABELS = {
   "README.md": ["Skill-only recovery:", "Plugin recovery:"],
   "README.zh-CN.md": ["Skill-only 恢复：", "Plugin 恢复："],
@@ -157,6 +159,12 @@ const INSTALL_ACTIVATION_PATTERNS = {
   "README.zh-CN.md": /下一轮.*显式调用.*\$visual-first-ppt.*仍未识别.*新建.*Codex 任务/s,
   "README.ja.md": /次の Codex ターン.*\$visual-first-ppt.*明示的に呼び出.*検出されない場合.*新しい Codex タスク/s,
   "README.ko.md": /다음 Codex 턴.*\$visual-first-ppt.*명시적으로 호출.*감지되지.*새 Codex 작업/s,
+};
+const INSTALL_DOCTOR_REFERENCE_PATTERNS = {
+  "README.md": /Quick Start step 3[\s\S]*SETUP_VERIFIED/i,
+  "README.zh-CN.md": /快速开始第 3 步[\s\S]*SETUP_VERIFIED/s,
+  "README.ja.md": /クイックスタートの手順 3[\s\S]*SETUP_VERIFIED/s,
+  "README.ko.md": /빠른 시작 3단계[\s\S]*SETUP_VERIFIED/s,
 };
 const PLUGIN_DOCTOR_BOUNDARY_PATTERNS = {
   "README.md": [
@@ -419,6 +427,17 @@ test("all localized READMEs expose the same release and workflow contract", asyn
       installSection,
       INSTALL_ACTIVATION_PATTERNS[readmeFile],
       `${readmeFile} Install section must use the next-turn-then-new-task Skill activation path`,
+    );
+    const copyIndex = installSection.indexOf('cp -R skills/visual-first-ppt "$DEST"');
+    const installedDoctorIndex = installSection.indexOf(INSTALLED_DEST_DOCTOR_COMMAND);
+    assert.ok(
+      copyIndex >= 0 && installedDoctorIndex > copyIndex,
+      `${readmeFile} Install section must run doctor against the installed copy after copying it`,
+    );
+    assert.match(
+      installSection,
+      INSTALL_DOCTOR_REFERENCE_PATTERNS[readmeFile],
+      `${readmeFile} Install section must point beginners back to Quick Start step 3`,
     );
     for (const pattern of PLUGIN_DOCTOR_BOUNDARY_PATTERNS[readmeFile]) {
       assert.match(verifyStep, pattern, `${readmeFile} Plugin doctor guidance must fail closed`);

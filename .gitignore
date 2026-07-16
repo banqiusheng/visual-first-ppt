@@ -17,4 +17,5 @@ tests/agent-forward/runs/
 dist/
 
 # Local design and execution records are not part of the distributable Skill.
+.superpowers/
 docs/superpowers/

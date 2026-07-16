@@ -1,6 +1,6 @@
 # Changelog
 
-## [0.2.0] - 2026-07-14
+## [0.2.0] - 2026-07-16
 
 ### Added
 
@@ -13,12 +13,14 @@
 
 - Existing installations now require an exact target, a version or content comparison, path-specific approval, and a recoverable upgrade plan. Similarly named project-data directories are not treated as installations.
 - Setup verification now distinguishes copied files, installed-root diagnostics, Codex activation, and full PPT production capability.
+- The standalone Skill copy-install path in all four READMEs now runs doctor against the installed copy and points beginners back to Quick Start step 3 before activation.
 - Release and installation guidance is pinned to `v0.2.0`; unresolved tags fail closed instead of falling back to `main` or an unpinned archive.
 
 ### Fixed
 
 - Copied doctor scripts now execute correctly across the macOS `/var` and `/private/var` path alias.
 - Installer verification no longer treats a copied `SKILL.md` alone as proof of a usable installation.
+- Public-candidate safeguards now ignore local `.superpowers/` records and fail closed on local execution records, raw `tests/agent-forward/runs/` evidence, and `.jsonl`/`.log` logs even if they enter the Git candidate.
 
 ## [0.1.0] - 2026-07-14
 
