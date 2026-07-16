@@ -1,0 +1,129 @@
+name: Release candidate
+
+"on":
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-candidate:
+    name: Validate tagged release candidate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tagged repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "20"
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.10"
+      - name: Verify annotated tag, main ancestry, and version surfaces
+        id: tag-gate
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "tag must be strict semver" >&2; exit 1; }
+          test "$GITHUB_REF_TYPE" = "tag"
+          test "$(git cat-file -t "refs/tags/$TAG")" = "tag"
+          TAG_OBJECT="$(git rev-parse "refs/tags/$TAG")"
+          TAG_COMMIT="$(git rev-parse "refs/tags/$TAG^{commit}")"
+          test "$(git rev-parse HEAD)" = "$TAG_COMMIT"
+          git fetch --force --no-tags origin "+refs/heads/main:refs/remotes/origin/main"
+          MAIN_COMMIT="$(git rev-parse refs/remotes/origin/main)"
+          git merge-base --is-ancestor "$TAG_COMMIT" refs/remotes/origin/main
+          {
+            printf 'tag_object=%s\n' "$TAG_OBJECT"
+            printf 'tag_commit=%s\n' "$TAG_COMMIT"
+            printf 'main_commit=%s\n' "$MAIN_COMMIT"
+          } >>"$GITHUB_OUTPUT"
+          VERSION="${TAG#v}"
+          export VERSION
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ["VERSION"]
+          tag = f"v{version}"
+          manifest = json.loads(Path(".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+          if manifest.get("version") != version:
+              raise SystemExit("Plugin manifest version does not match tag")
+
+          marketplace = json.loads(Path(".agents/plugins/marketplace.json").read_text(encoding="utf-8"))
+          plugins = marketplace.get("plugins")
+          matches = [item for item in plugins if isinstance(item, dict) and item.get("name") == "visual-first-ppt"] if isinstance(plugins, list) else []
+          if len(matches) != 1 or matches[0].get("source", {}).get("ref") != tag:
+              raise SystemExit("Marketplace ref does not match tag")
+
+          for readme_name in ("README.md", "README.zh-CN.md", "README.ja.md", "README.ko.md"):
+              text = Path(readme_name).read_text(encoding="utf-8")
+              required = (
+                  f"--ref {tag}",
+                  f"/tree/{tag}/skills/visual-first-ppt",
+                  f"--branch {tag}",
+                  f"/releases/tag/{tag}",
+              )
+              if any(item not in text for item in required):
+                  raise SystemExit(f"{readme_name} does not consistently reference {tag}")
+
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          if not re.search(rf"^## \[{re.escape(version)}\] - \d{{4}}-\d{{2}}-\d{{2}}$", changelog, re.MULTILINE):
+              raise SystemExit("CHANGELOG does not contain the tagged release heading")
+          PY
+      - name: Install development requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements-dev.txt
+      - name: Test, audit, and compare tagged builds
+        shell: bash
+        env:
+          TAG: ${{ github.ref_name }}
+          VERIFIED_TAG_OBJECT: ${{ steps.tag-gate.outputs.tag_object }}
+          VERIFIED_TAG_COMMIT: ${{ steps.tag-gate.outputs.tag_commit }}
+          VERIFIED_MAIN_COMMIT: ${{ steps.tag-gate.outputs.main_commit }}
+        run: |
+          set -euo pipefail
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          [[ "$VERIFIED_TAG_OBJECT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_TAG_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_MAIN_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          test "$(git rev-parse "refs/tags/$TAG")" = "$VERIFIED_TAG_OBJECT"
+          test "$(git rev-parse "refs/tags/$TAG^{commit}")" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse HEAD)" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$VERIFIED_MAIN_COMMIT"
+          git merge-base --is-ancestor "$VERIFIED_TAG_COMMIT" refs/remotes/origin/main
+          VERSION="${TAG#v}"
+          node --test tests/unit/*.test.mjs
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests/unit -p 'test_*.py' -v
+          git diff --exit-code -- .
+          git diff --cached --exit-code -- .
+          WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"
+          test -z "$WORKTREE_STATUS" || { printf '%s\n' "$WORKTREE_STATUS" >&2; exit 1; }
+          python scripts/audit_public_candidate.py --root . --candidate tracked
+          python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-a" --version "$VERSION"
+          python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-b" --version "$VERSION"
+          diff -qr "$RUNNER_TEMP/dist-a" "$RUNNER_TEMP/dist-b"
+      - name: Upload validated release candidate
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: visual-first-ppt-release-candidate-${{ github.ref_name }}
+          path: |
+            ${{ runner.temp }}/dist-a/visual-first-ppt-skill-${{ github.ref_name }}.zip
+            ${{ runner.temp }}/dist-a/visual-first-ppt-plugin-${{ github.ref_name }}.zip
+            ${{ runner.temp }}/dist-a/SHA256SUMS
+          if-no-files-found: error
+          compression-level: 0

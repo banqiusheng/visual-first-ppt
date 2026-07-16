@@ -4,6 +4,92 @@
 
 # Visual-First PPT
 
+<!-- BEGIN NEWBIE_QUICK_START -->
+## 新手快速开始
+
+![四阶段新手流程](docs/assets/newbie-quick-start.svg)
+
+### 1. 先确认安装目标
+
+安装任何内容之前，先确认 `SETUP_TARGET`：选择 `Plugin` 或 `Skill-only`，并说明当前属于全新安装、已有安装还是未知状态。如果用户只说“帮我把这个弄好，然后做个 PPT”，Codex 必须把环境配置和 PPT 制作拆成两个独立步骤；在达到 `SETUP_VERIFIED` 前，不能猜安装范围，也不能先替用户选择 PPT 路线。
+
+### 2. 安装固定版本
+
+桌面端最简单的方式是在 Plugin 目录中选择并安装 **Visual-First PPT**。命令行是过程透明的备用方式，并且会执行两个彼此独立的动作：
+
+本 README 中以 `codex` 开头的命令，是供用户手动执行的透明备用方案。活跃的 Codex Agent 不得在工具动作中直接、通过 Shell 或包装器运行 `codex` 可执行文件，包括 `codex plugin ...`。Agent 只能使用当前宿主直接提供的管理控件，或执行下面针对 `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` 的限定只读检查。
+
+```bash
+codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.2.0
+codex plugin add visual-first-ppt@visual-first-ppt-marketplace
+```
+
+第一条命令只登记固定在 `v0.2.0` 标签的 Marketplace，并不代表 Plugin 已经安装；第二条命令才会安装 Plugin。Plugin 安装完成后，请新建一个 Codex 任务。
+
+如果只安装 Skill，请把下面的提示词发给 Codex：
+
+```text
+请使用 $skill-installer 从下面的固定版本安装 visual-first-ppt：
+https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt
+安装前检查是否已经存在同名 Skill；如果存在，请以 EXISTING_INSTALLATION 停止，不要覆盖。
+安装完成后告诉我是否需要新建 Codex 任务，并说明如何使用 $visual-first-ppt 开始。
+无论本轮只是说明安装方法，还是实际执行安装，都请用完整的 verification_plan 区块收尾，其中必须包含已安装副本的 doctor 命令、预期与实际结果、激活检查和 setup 状态。
+```
+
+### 3. 验证后才能声称成功
+
+安装命令执行结束，不等于产品已经可用。`node skills/visual-first-ppt/scripts/doctor.mjs --json` 检查的是仓库副本，不能代替对已安装副本的验证。默认 Skill-only 安装请运行：
+
+```bash
+SKILL_ROOT="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
+node "$SKILL_ROOT/scripts/doctor.mjs" --skill-root "$SKILL_ROOT" --json
+```
+
+如果安装的是 Plugin，只能使用当前宿主直接暴露的 Skill 根目录和 Plugin 信息。如果宿主没有暴露该根目录，请停止并说明阻塞原因；不得猜测或扫描 Plugin 管理的存储。请对宿主暴露的根目录运行上述 doctor 检查，然后新建 Codex 任务，显式调用 `$visual-first-ppt`。只有安装入口、doctor 结果和激活检查都有证据时，才能记录 `SETUP_VERIFIED`。doctor 退出码 `2` 只说明本地必需文件通过、可选生产能力尚未确认，不能据此声称已经具备完整 PPT 生产能力。完整排障顺序见 `SUPPORT.md`。
+
+<!-- BEGIN INSTALL_VERIFICATION_RESPONSE -->
+凡是与安装有关的答复，包括仅提供说明、并未实际执行安装的答复，都必须按以下顺序收尾；只写“安装并验证”不算具体验证方法：
+
+- `verification_plan`：`REQUIRED`。
+- `installed_target`：准确的已安装 Skill 根目录，或宿主直接暴露的 Plugin Skill 根目录。
+- `doctor_command`：Skill-only 先设置 `SKILL_ROOT="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"`，再运行 `node "$SKILL_ROOT/scripts/doctor.mjs" --skill-root "$SKILL_ROOT" --json`；Plugin 只能代入宿主直接暴露的准确 Skill 根目录。
+- `expected_doctor_result`：`exit 0` 且 JSON 为 `PASS` 表示全部必需检查通过；`exit 2` 且 JSON 为 `WARN` 只表示本地要求通过、未暴露的生产能力仍未确认；`exit 1` 且 JSON 为 `FAIL` 表示不可用。
+- `doctor_result`：实际退出码和 JSON 状态；仅提供说明时填写 `NOT_RUN`，无法取得安装根目录或执行检查时填写 `NOT_AVAILABLE`。
+- `activation_check`：在新的 Codex 轮次或任务中显式调用 `$visual-first-ppt` 后得到的结果。
+- `setup_status`：在安装入口、doctor 结果和激活检查三项证据齐全前填写 `SETUP_NOT_VERIFIED`；全部齐全后才能填写 `SETUP_VERIFIED`。
+<!-- END INSTALL_VERIFICATION_RESPONSE -->
+
+### 4. 已有安装必须可回滚
+
+如果安装以 `EXISTING_INSTALLATION` 停止，不要直接覆盖。把下面的提示词发给 Codex：
+
+```text
+电脑里可能已有 visual-first-ppt。请只读检查：先确认准确目标属于 Skill-only 还是 Plugin，不要把同名项目数据目录当成安装。如果没有找到真实安装，请报告 EXISTING_INSTALLATION_NOT_FOUND，列出检查过的位置和候选版本 v0.2.0，并让我提供准确路径或选择全新安装；此时不要申请升级授权。
+Skill-only 恢复：请把这次任务视为安装或升级任务，不是 PPT 制作任务；不要调用已安装的 $visual-first-ppt 工作流。优先检查 ${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt；只有用户明确提供其他绝对 Skill 路径时，才检查该路径。不要运行 codex 可执行文件，也不要无边界搜索主目录。不要读取认证文件，也不要枚举无关环境。先把准确的 Skill 目标与固定的 v0.2.0 做只读版本或内容比较，展示差异和准确路径，然后停在针对该路径的 UPGRADE_APPROVED 授权。只有我批准后，才把旧 Skill 移到带时间戳的同级备份，在全新目标中安装，运行 doctor 并显式调用 $visual-first-ppt 验证；安装或验证失败时执行 ROLLBACK 并恢复备份。不要合并或递归删除旧副本。
+Plugin 恢复：只使用当前宿主直接提供的 Plugin 控件。不要在当前活跃任务中运行 codex plugin 命令。仅使用 Codex 支持的 Plugin 管理、更新和回滚控制。不要猜测、移动、重命名或递归删除 Plugin 管理的存储。如果无法确认任何受支持且可恢复的更新或回滚路径，请停止并说明阻塞原因；不要申请或使用 `UPGRADE_APPROVED`。
+```
+
+### 5. 开始制作第一份 PPT
+
+如果 `Presentations` 或 `imagegen` 缺失或尚未验证，不得假装能力可用，也不得声称已有最终文件；先按以下结构给出准确恢复点：
+
+<!-- BEGIN CAPABILITY_RECOVERY_RESPONSE -->
+- `capability_status`：`BLOCKED_CAPABILITY`。
+- `missing_capabilities`：准确列出 `Presentations` 与 `imagegen` 中缺失或未验证的能力。
+- `resume_after_capabilities_ready`：当前宿主暴露并验证两项能力后，新建 Codex 任务并显式调用 `$visual-first-ppt`。
+- `resume_without_manifest`：`ROUTE_SELECTION_OR_BRIEF`；从 `create`、`template`、`edit` 中选择路线，再从 Brief 继续。
+- `resume_with_manifest`：验证 `project-manifest.json` 或用户提供的 project ID，只从其中记录的 `RECORDED_GATE` 恢复。
+<!-- END CAPABILITY_RECOVERY_RESPONSE -->
+
+Skill 安装并验证后的下一轮请显式调用它；如果仍未被识别，请新建一个 Codex 任务。然后使用下面的提示词开始：
+
+```text
+请使用 $visual-first-ppt。先让我从 create、template、edit 三条路线中选择一条，并在完整制作前遵循对应的审批门禁。
+```
+
+第一次回复通常会停在路线选择和审批协议，这是正常设计，不代表任务卡住。
+<!-- END NEWBIE_QUICK_START -->
+
 `visual-first-ppt` 是一个面向 Codex 的 PPT 制作 Skill，通过带审批门禁的“视觉优先”流程，从 0 创建演示文稿、套用已有模板或框架，或者在授权范围内修改现有 PPTX。
 
 生成式图片负责氛围、场景和视觉辅助；关键文字、精确数字、表格、图表、引用与审批证据则保留为原生可编辑对象。最终交付的不只是一个好看的文件，还包括明确的审批记录、质量检查证据和可持续访问的交付路径。
@@ -64,7 +150,7 @@ PPT 制作常见两个极端：文件可编辑，但视觉效果普通；或者�
 为了保证可复现，建议克隆已发布的版本标签，并且只复制可分发的 Skill 目录：
 
 ```bash
-git clone --branch v0.1.0 --depth 1 \
+git clone --branch v0.2.0 --depth 1 \
   https://github.com/banqiusheng/visual-first-ppt.git
 cd visual-first-ppt
 
@@ -74,7 +160,7 @@ mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
 ```
 
-`test ! -e` 用于避免意外覆盖已经安装的同名 Skill。复制完成后，请新建一个 Codex 任务，让 Skill 被干净识别。
+`test ! -e` 用于避免意外覆盖已经安装的同名 Skill。复制完成后的下一轮，请先显式调用 `$visual-first-ppt`；如果仍未识别，再新建一个 Codex 任务并重新显式调用。
 
 ## 使用示例
 
@@ -125,7 +211,7 @@ SKILL_CREATOR="${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator"
 
 ## 验证证据
 
-- 59/59 项单元测试通过：Node 38 项、Python 21 项，覆盖多语言文档、持久目录和公开证据边界。
+- 仓库内的 Node 与 Python 测试套件是可执行的发布证据。发布校验要求全部测试通过；每次运行都会报告当次准确数量，不在 README 中保留容易过期的固定总数。
 - 未加载 Skill 的 15/15 个 RED 压力样本都至少漏掉一项必要协议。
 - 加载 Skill 后的 15/15 个 GREEN 行为样本全部通过：75/75 项必需行为通过，30/30 项禁止行为均未出现。
 - 合成的 `create`、严格 `template` 和局部 `edit` 三条路线均达到 `DELIVERED`，且 QA 为 PASS；精简结果和哈希见 [`tests/artifacts/artifact-summary.json`](tests/artifacts/artifact-summary.json)。
@@ -153,6 +239,6 @@ SKILL_CREATOR="${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator"
 
 ## 版本与许可证
 
-- 当前版本：[`v0.1.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.1.0)
+- 当前版本：[`v0.2.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.2.0)
 - 更新记录：[`CHANGELOG.md`](CHANGELOG.md)
 - 开源许可证：MIT，详见 [`LICENSE`](LICENSE)

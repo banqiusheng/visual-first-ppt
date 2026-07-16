@@ -1,0 +1,29 @@
+{
+  "name": "visual-first-ppt",
+  "version": "0.2.0",
+  "description": "Create, template, and safely edit editable PowerPoint decks with visual-first generation and explicit approval gates.",
+  "author": {
+    "name": "banqiusheng",
+    "url": "https://github.com/banqiusheng"
+  },
+  "homepage": "https://github.com/banqiusheng/visual-first-ppt",
+  "repository": "https://github.com/banqiusheng/visual-first-ppt",
+  "license": "MIT",
+  "keywords": ["powerpoint", "pptx", "presentations", "image-generation"],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Visual-First PPT",
+    "shortDescription": "Create and safely edit editable PowerPoint decks",
+    "longDescription": "Build a presentation from zero, follow an existing template, or make bounded edits with native critical content, generated visual support, approval gates, QA, and deterministic delivery.",
+    "developerName": "banqiusheng",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/banqiusheng/visual-first-ppt",
+    "defaultPrompt": [
+      "Use $visual-first-ppt to create an editable PowerPoint deck from zero.",
+      "Use $visual-first-ppt to follow my existing PPT template.",
+      "Use $visual-first-ppt to edit only the authorized slides in my PPTX."
+    ],
+    "brandColor": "#2457D6"
+  }
+}

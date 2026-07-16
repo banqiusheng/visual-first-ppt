@@ -1,0 +1,328 @@
+name: Publish GitHub Release
+
+"on":
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Annotated semantic-version tag to publish
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Validate and publish an existing tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate requested tag input
+        shell: bash
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          TAG="$INPUT_TAG"
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "tag must be strict semver" >&2; exit 1; }
+      - name: Check out requested tag
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+        with:
+          ref: "refs/tags/${{ inputs.tag }}"
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: "20"
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.10"
+      - name: Verify annotated tag, main ancestry, and version surfaces
+        id: tag-gate
+        shell: bash
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          TAG="$INPUT_TAG"
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          test "$(git cat-file -t "refs/tags/$TAG")" = "tag"
+          TAG_OBJECT="$(git rev-parse "refs/tags/$TAG")"
+          TAG_COMMIT="$(git rev-parse "refs/tags/$TAG^{commit}")"
+          test "$(git rev-parse HEAD)" = "$TAG_COMMIT"
+          git fetch --force --no-tags origin "+refs/heads/main:refs/remotes/origin/main"
+          MAIN_COMMIT="$(git rev-parse refs/remotes/origin/main)"
+          git merge-base --is-ancestor "$TAG_COMMIT" refs/remotes/origin/main
+          {
+            printf 'tag_object=%s\n' "$TAG_OBJECT"
+            printf 'tag_commit=%s\n' "$TAG_COMMIT"
+            printf 'main_commit=%s\n' "$MAIN_COMMIT"
+          } >>"$GITHUB_OUTPUT"
+          VERSION="${TAG#v}"
+          export VERSION
+          python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          version = os.environ["VERSION"]
+          tag = f"v{version}"
+          manifest = json.loads(Path(".codex-plugin/plugin.json").read_text(encoding="utf-8"))
+          if manifest.get("version") != version:
+              raise SystemExit("Plugin manifest version does not match tag")
+
+          marketplace = json.loads(Path(".agents/plugins/marketplace.json").read_text(encoding="utf-8"))
+          plugins = marketplace.get("plugins")
+          matches = [item for item in plugins if isinstance(item, dict) and item.get("name") == "visual-first-ppt"] if isinstance(plugins, list) else []
+          if len(matches) != 1 or matches[0].get("source", {}).get("ref") != tag:
+              raise SystemExit("Marketplace ref does not match tag")
+
+          for readme_name in ("README.md", "README.zh-CN.md", "README.ja.md", "README.ko.md"):
+              text = Path(readme_name).read_text(encoding="utf-8")
+              required = (
+                  f"--ref {tag}",
+                  f"/tree/{tag}/skills/visual-first-ppt",
+                  f"--branch {tag}",
+                  f"/releases/tag/{tag}",
+              )
+              if any(item not in text for item in required):
+                  raise SystemExit(f"{readme_name} does not consistently reference {tag}")
+
+          changelog = Path("CHANGELOG.md").read_text(encoding="utf-8")
+          if not re.search(rf"^## \[{re.escape(version)}\] - \d{{4}}-\d{{2}}-\d{{2}}$", changelog, re.MULTILINE):
+              raise SystemExit("CHANGELOG does not contain the tagged release heading")
+          PY
+      - name: Install development requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install -r requirements-dev.txt
+      - name: Test, audit, and compare tagged builds
+        shell: bash
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
+          VERIFIED_TAG_OBJECT: ${{ steps.tag-gate.outputs.tag_object }}
+          VERIFIED_TAG_COMMIT: ${{ steps.tag-gate.outputs.tag_commit }}
+          VERIFIED_MAIN_COMMIT: ${{ steps.tag-gate.outputs.main_commit }}
+        run: |
+          set -euo pipefail
+          TAG="$INPUT_TAG"
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          [[ "$VERIFIED_TAG_OBJECT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_TAG_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_MAIN_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          test "$(git rev-parse "refs/tags/$TAG")" = "$VERIFIED_TAG_OBJECT"
+          test "$(git rev-parse "refs/tags/$TAG^{commit}")" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse HEAD)" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$VERIFIED_MAIN_COMMIT"
+          git merge-base --is-ancestor "$VERIFIED_TAG_COMMIT" refs/remotes/origin/main
+          VERSION="${TAG#v}"
+          node --test tests/unit/*.test.mjs
+          PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests/unit -p 'test_*.py' -v
+          git diff --exit-code -- .
+          git diff --cached --exit-code -- .
+          WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"
+          test -z "$WORKTREE_STATUS" || { printf '%s\n' "$WORKTREE_STATUS" >&2; exit 1; }
+          python scripts/audit_public_candidate.py --root . --candidate tracked
+          python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-a" --version "$VERSION"
+          python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-b" --version "$VERSION"
+          diff -qr "$RUNNER_TEMP/dist-a" "$RUNNER_TEMP/dist-b"
+      - name: Publish or reconcile GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+          VERIFIED_TAG_OBJECT: ${{ steps.tag-gate.outputs.tag_object }}
+          VERIFIED_TAG_COMMIT: ${{ steps.tag-gate.outputs.tag_commit }}
+          VERIFIED_MAIN_COMMIT: ${{ steps.tag-gate.outputs.main_commit }}
+        run: |
+          set -euo pipefail
+          TAG="$INPUT_TAG"
+          [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          VERSION="${TAG#v}"
+          [[ "$VERIFIED_TAG_OBJECT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_TAG_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          [[ "$VERIFIED_MAIN_COMMIT" =~ ^[0-9a-f]{40}$ ]] || exit 1
+          test "$(git rev-parse "refs/tags/$TAG")" = "$VERIFIED_TAG_OBJECT"
+          test "$(git rev-parse "refs/tags/$TAG^{commit}")" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse HEAD)" = "$VERIFIED_TAG_COMMIT"
+          test "$(git rev-parse refs/remotes/origin/main)" = "$VERIFIED_MAIN_COMMIT"
+          git merge-base --is-ancestor "$VERIFIED_TAG_COMMIT" refs/remotes/origin/main
+          TAG_COMMIT="$VERIFIED_TAG_COMMIT"
+          git diff --exit-code -- .
+          git diff --cached --exit-code -- .
+          WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"
+          test -z "$WORKTREE_STATUS" || { printf '%s\n' "$WORKTREE_STATUS" >&2; exit 1; }
+          DIST_DIR="$RUNNER_TEMP/dist-a"
+          export DIST_DIR TAG TAG_COMMIT VERSION
+
+          python - <<'PY'
+          import hashlib
+          import os
+          import re
+          from pathlib import Path
+
+          root = Path(os.environ["DIST_DIR"])
+          tag = os.environ["TAG"]
+          archive_names = {
+              f"visual-first-ppt-skill-{tag}.zip",
+              f"visual-first-ppt-plugin-{tag}.zip",
+          }
+          expected = archive_names | {"SHA256SUMS"}
+          actual = {entry.name for entry in root.iterdir()}
+          if actual != expected:
+              raise SystemExit(f"unexpected local release asset set: {sorted(actual)}")
+          for entry in root.iterdir():
+              if entry.is_symlink() or not entry.is_file():
+                  raise SystemExit(f"local release asset is not a regular file: {entry.name}")
+
+          checksum_lines = (root / "SHA256SUMS").read_text(encoding="utf-8").splitlines()
+          parsed = {}
+          for line in checksum_lines:
+              match = re.fullmatch(r"([0-9a-f]{64})  ([A-Za-z0-9._-]+)", line)
+              if not match or match.group(2) in parsed:
+                  raise SystemExit("SHA256SUMS is malformed or contains duplicates")
+              parsed[match.group(2)] = match.group(1)
+          if set(parsed) != archive_names:
+              raise SystemExit("SHA256SUMS names do not match the two archives")
+          for name, expected_hash in parsed.items():
+              actual_hash = hashlib.sha256((root / name).read_bytes()).hexdigest()
+              if actual_hash != expected_hash:
+                  raise SystemExit(f"SHA256 mismatch for {name}")
+          PY
+
+          API_HEADERS="$RUNNER_TEMP/release-api-headers.txt"
+          API_ERROR="$RUNNER_TEMP/release-api-error.txt"
+          set +e
+          gh api --include --silent "repos/$GITHUB_REPOSITORY/releases/tags/$TAG" >"$API_HEADERS" 2>"$API_ERROR"
+          API_EXIT=$?
+          set -e
+          export API_HEADERS
+          HTTP_STATUS="$(python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          text = Path(os.environ["API_HEADERS"]).read_text(encoding="utf-8", errors="replace")
+          statuses = re.findall(r"^HTTP/\S+\s+([0-9]{3})\b", text, re.MULTILINE)
+          if not statuses:
+              raise SystemExit("release API did not return a parseable HTTP status")
+          print(statuses[-1])
+          PY
+          )"
+
+          if [[ "$API_EXIT" -eq 0 && "$HTTP_STATUS" == "200" ]]; then
+            RELEASE_JSON="$RUNNER_TEMP/existing-release.json"
+            EXISTING_LIST="$RUNNER_TEMP/existing-assets.txt"
+            MISSING_LIST="$RUNNER_TEMP/missing-assets.txt"
+            gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json tagName,targetCommitish,assets >"$RELEASE_JSON"
+            export EXISTING_LIST MISSING_LIST RELEASE_JSON
+            python - <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          release = json.loads(Path(os.environ["RELEASE_JSON"]).read_text(encoding="utf-8"))
+          tag = os.environ["TAG"]
+          tag_commit = os.environ["TAG_COMMIT"]
+          verified_main_commit = os.environ["VERIFIED_MAIN_COMMIT"]
+          if not re.fullmatch(r"[0-9a-f]{40}", tag_commit):
+              raise SystemExit("verified tag commit is invalid")
+          if not re.fullmatch(r"[0-9a-f]{40}", verified_main_commit):
+              raise SystemExit("verified main commit is invalid")
+          if release.get("tagName") != tag:
+              raise SystemExit("existing Release tagName differs from requested tag")
+
+          target = release.get("targetCommitish")
+          if isinstance(target, str) and re.fullmatch(r"[0-9a-fA-F]{40}", target):
+              resolved = target.lower()
+          elif target in {tag, f"refs/tags/{tag}"}:
+              resolved = tag_commit
+          elif target in {"main", "refs/heads/main"}:
+              resolved = verified_main_commit
+          else:
+              raise SystemExit("existing Release targetCommitish is not an allowed verified identity")
+          if resolved != tag_commit:
+              raise SystemExit("existing Release targetCommitish resolves to a different commit")
+
+          assets = release.get("assets")
+          if not isinstance(assets, list):
+              raise SystemExit("existing Release assets field is invalid")
+          names = [asset.get("name") for asset in assets if isinstance(asset, dict)]
+          if len(names) != len(assets) or any(not isinstance(name, str) for name in names):
+              raise SystemExit("existing Release contains an invalid asset name")
+          if len(names) != len(set(names)):
+              raise SystemExit("existing Release contains a duplicate asset name")
+
+          expected = {
+              f"visual-first-ppt-skill-{tag}.zip",
+              f"visual-first-ppt-plugin-{tag}.zip",
+              "SHA256SUMS",
+          }
+          unknown = set(names) - expected
+          if unknown:
+              raise SystemExit(f"existing Release contains unknown assets: {sorted(unknown)}")
+          existing = sorted(set(names) & expected)
+          missing = sorted(expected - set(names))
+          Path(os.environ["EXISTING_LIST"]).write_text("".join(f"{name}\n" for name in existing), encoding="utf-8")
+          Path(os.environ["MISSING_LIST"]).write_text("".join(f"{name}\n" for name in missing), encoding="utf-8")
+          PY
+
+            DOWNLOAD_DIR="$RUNNER_TEMP/existing-release-assets"
+            mkdir "$DOWNLOAD_DIR"
+            while IFS= read -r name; do
+              [[ -n "$name" ]] || continue
+              gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --pattern "$name" --dir "$DOWNLOAD_DIR"
+            done <"$EXISTING_LIST"
+            while IFS= read -r name; do
+              [[ -n "$name" ]] || continue
+              if ! cmp -s "$DIST_DIR/$name" "$DOWNLOAD_DIR/$name"; then
+                echo "existing Release asset differs: $name" >&2
+                exit 1
+              fi
+            done <"$EXISTING_LIST"
+
+            while IFS= read -r name; do
+              [[ -n "$name" ]] || continue
+              gh release upload "$TAG" "$DIST_DIR/$name" --repo "$GITHUB_REPOSITORY"
+            done <"$MISSING_LIST"
+
+            FINAL_RELEASE_JSON="$RUNNER_TEMP/final-release.json"
+            gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json tagName,assets >"$FINAL_RELEASE_JSON"
+            export FINAL_RELEASE_JSON
+            python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          release = json.loads(Path(os.environ["FINAL_RELEASE_JSON"]).read_text(encoding="utf-8"))
+          tag = os.environ["TAG"]
+          if release.get("tagName") != tag:
+              raise SystemExit("final Release tagName differs from requested tag")
+          assets = release.get("assets")
+          names = [asset.get("name") for asset in assets] if isinstance(assets, list) else []
+          expected = sorted({
+              f"visual-first-ppt-skill-{tag}.zip",
+              f"visual-first-ppt-plugin-{tag}.zip",
+              "SHA256SUMS",
+          })
+          if len(names) != len(set(names)) or sorted(names) != expected:
+              raise SystemExit("final Release asset set is incomplete, duplicated, or unknown")
+          PY
+          elif [[ "$API_EXIT" -ne 0 && "$HTTP_STATUS" == "404" ]]; then
+            gh release create "$TAG" --repo "$GITHUB_REPOSITORY" \
+              "$DIST_DIR/visual-first-ppt-skill-$TAG.zip" \
+              "$DIST_DIR/visual-first-ppt-plugin-$TAG.zip" \
+              "$DIST_DIR/SHA256SUMS" \
+              --verify-tag \
+              --target "$TAG_COMMIT" \
+              --title "Visual-First PPT $TAG" \
+              --generate-notes
+          else
+            echo "Release API query failed with status $HTTP_STATUS and exit $API_EXIT" >&2
+            sed -n '1,20p' "$API_ERROR" >&2
+            exit 1
+          fi

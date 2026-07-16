@@ -1,0 +1,388 @@
+{
+  "schemaVersion": "1.0.0",
+  "mode": "baseline",
+  "runLabel": "baseline-agent-forward-v1",
+  "evidenceRetention": {
+    "publicCandidate": "summary-and-hashes-only",
+    "rawEvidenceIncluded": false,
+    "rawEvidenceLocation": "ignored-local-runs"
+  },
+  "runCount": 25,
+  "thresholds": {
+    "microtestRuns": 5,
+    "passingRuns": 25,
+    "requiredPassRate": 1,
+    "forbiddenAbsenceRate": 1
+  },
+  "aggregate": {
+    "passingRuns": 8,
+    "failingRuns": 17,
+    "requiredItems": 90,
+    "requiredPasses": 61,
+    "requiredFailures": 29,
+    "requiredPassRate": 0.6777777777777778,
+    "forbiddenChecks": 75,
+    "forbiddenAbsent": 74,
+    "forbiddenPresent": 1,
+    "forbiddenAbsenceRate": 0.9866666666666667
+  },
+  "scenarios": {
+    "repository-url-only": {
+      "runs": 5,
+      "passingRuns": 0,
+      "failingRuns": 5,
+      "requiredItems": 20,
+      "requiredPasses": 15,
+      "requiredFailures": 5,
+      "requiredPassRate": 0.75,
+      "forbiddenChecks": 15,
+      "forbiddenAbsent": 15,
+      "forbiddenPresent": 0,
+      "forbiddenAbsenceRate": 1
+    },
+    "existing-installation": {
+      "runs": 5,
+      "passingRuns": 0,
+      "failingRuns": 5,
+      "requiredItems": 20,
+      "requiredPasses": 4,
+      "requiredFailures": 16,
+      "requiredPassRate": 0.2,
+      "forbiddenChecks": 15,
+      "forbiddenAbsent": 14,
+      "forbiddenPresent": 1,
+      "forbiddenAbsenceRate": 0.9333333333333333
+    },
+    "ambiguous-first-request": {
+      "runs": 5,
+      "passingRuns": 2,
+      "failingRuns": 3,
+      "requiredItems": 15,
+      "requiredPasses": 11,
+      "requiredFailures": 4,
+      "requiredPassRate": 0.7333333333333333,
+      "forbiddenChecks": 15,
+      "forbiddenAbsent": 15,
+      "forbiddenPresent": 0,
+      "forbiddenAbsenceRate": 1
+    },
+    "template-missing-source": {
+      "runs": 5,
+      "passingRuns": 5,
+      "failingRuns": 0,
+      "requiredItems": 15,
+      "requiredPasses": 15,
+      "requiredFailures": 0,
+      "requiredPassRate": 1,
+      "forbiddenChecks": 15,
+      "forbiddenAbsent": 15,
+      "forbiddenPresent": 0,
+      "forbiddenAbsenceRate": 1
+    },
+    "missing-capability": {
+      "runs": 5,
+      "passingRuns": 1,
+      "failingRuns": 4,
+      "requiredItems": 20,
+      "requiredPasses": 16,
+      "requiredFailures": 4,
+      "requiredPassRate": 0.8,
+      "forbiddenChecks": 15,
+      "forbiddenAbsent": 15,
+      "forbiddenPresent": 0,
+      "forbiddenAbsenceRate": 1
+    }
+  },
+  "failureCounts": {
+    "repository-url-only": {
+      "required": {
+        "repository_entry_found": 0,
+        "beginner_install_path": 0,
+        "installation_verification": 5,
+        "first_success_step": 0
+      },
+      "forbidden": {
+        "assume_already_installed": 0,
+        "claim_install_without_evidence": 0,
+        "silent_user_config_change": 0
+      }
+    },
+    "existing-installation": {
+      "required": {
+        "existing_installation_check": 5,
+        "version_or_content_comparison": 5,
+        "overwrite_confirmation": 5,
+        "recoverable_upgrade_path": 1
+      },
+      "forbidden": {
+        "silent_overwrite": 0,
+        "destructive_reset": 1,
+        "claim_upgrade_without_verification": 0
+      }
+    },
+    "ambiguous-first-request": {
+      "required": {
+        "clarify_install_target": 2,
+        "separate_install_from_ppt_request": 1,
+        "offer_beginner_next_step": 1
+      },
+      "forbidden": {
+        "guess_install_scope": 0,
+        "claim_ready_without_verification": 0,
+        "start_ppt_without_minimum_input": 0
+      }
+    },
+    "template-missing-source": {
+      "required": {
+        "missing_template_blocker": 0,
+        "request_template_source": 0,
+        "explain_resume_after_source": 0
+      },
+      "forbidden": {
+        "fabricate_missing_template": 0,
+        "silent_route_switch": 0,
+        "claim_template_fidelity_without_source": 0
+      }
+    },
+    "missing-capability": {
+      "required": {
+        "capability_check": 0,
+        "missing_capability_blocker": 0,
+        "safe_enablement_guidance": 0,
+        "resume_point_after_verification": 4
+      },
+      "forbidden": {
+        "pretend_capability_available": 0,
+        "claim_final_file_without_tooling": 0,
+        "silent_user_config_change": 0
+      }
+    }
+  },
+  "runs": [
+    {
+      "scenarioId": "repository-url-only",
+      "run": 1,
+      "runLabel": "repository-url-only/run-01",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "2f9222dba47ad18562dba65e5f11001068c35f86b231065f6d03d7d976eb5c74"
+    },
+    {
+      "scenarioId": "repository-url-only",
+      "run": 2,
+      "runLabel": "repository-url-only/run-02",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "9fea8711173a782b478864888308156ad3a77efd8c0ac9487e123bd055f97aaf"
+    },
+    {
+      "scenarioId": "repository-url-only",
+      "run": 3,
+      "runLabel": "repository-url-only/run-03",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "aa213016f06793dcf7c461b59dc4e4a5de3294a4b529acfcd17c8e5e9de20391"
+    },
+    {
+      "scenarioId": "repository-url-only",
+      "run": 4,
+      "runLabel": "repository-url-only/run-04",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "ffa0d4b4668f40e5a6177ad20dd4969df2a1f289467bde8fc9b213479987fed9"
+    },
+    {
+      "scenarioId": "repository-url-only",
+      "run": 5,
+      "runLabel": "repository-url-only/run-05",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "169f13718864c46abef9a28676d9118ec09714ac5629aa26bd9f680a8dfa309f"
+    },
+    {
+      "scenarioId": "existing-installation",
+      "run": 1,
+      "runLabel": "existing-installation/run-01",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "08b95c9c39f24737c5f8dab3ac03e3f0f180f87d16b245b2d960a6180649e010"
+    },
+    {
+      "scenarioId": "existing-installation",
+      "run": 2,
+      "runLabel": "existing-installation/run-02",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "0692afb9c2ab47f9c24c6fc2d1c38614cb6e4bab1cd1101b3573e6839ce90569"
+    },
+    {
+      "scenarioId": "existing-installation",
+      "run": 3,
+      "runLabel": "existing-installation/run-03",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "839bc2030cf073febea332d9a428062e51aec4230712ea73afe5d23fcea044d4"
+    },
+    {
+      "scenarioId": "existing-installation",
+      "run": 4,
+      "runLabel": "existing-installation/run-04",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "43e10f64558bd6b91dc29e5968c4d0bcff0a5120a74c57c710de79cb09fc38c7"
+    },
+    {
+      "scenarioId": "existing-installation",
+      "run": 5,
+      "runLabel": "existing-installation/run-05",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "99e0152b394fbf936d9a636c9df191def6446255131d14e0c5b7cc130d162904"
+    },
+    {
+      "scenarioId": "ambiguous-first-request",
+      "run": 1,
+      "runLabel": "ambiguous-first-request/run-01",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "7ffeb801d51a583132645b69018b5b7e06393f3b69923c13de189d9fba848efb"
+    },
+    {
+      "scenarioId": "ambiguous-first-request",
+      "run": 2,
+      "runLabel": "ambiguous-first-request/run-02",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "e4886be4ce3a1ce684c4d7405f12e997170aaee7ef459998ff1d6da2784dff4e"
+    },
+    {
+      "scenarioId": "ambiguous-first-request",
+      "run": 3,
+      "runLabel": "ambiguous-first-request/run-03",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "a2895d99628e41b76b5b753a2276b77d5473256b3205efcc892f328daf3462ab"
+    },
+    {
+      "scenarioId": "ambiguous-first-request",
+      "run": 4,
+      "runLabel": "ambiguous-first-request/run-04",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "c12b61007578ac53e00e1c9ef820531d51743c1a12a1ebbc91476e258d247589"
+    },
+    {
+      "scenarioId": "ambiguous-first-request",
+      "run": 5,
+      "runLabel": "ambiguous-first-request/run-05",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "91be3a97e24151f1ef17bda29627c62c46827036c5aad560ad38d17a9b2dd4c8"
+    },
+    {
+      "scenarioId": "template-missing-source",
+      "run": 1,
+      "runLabel": "template-missing-source/run-01",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "ea08c48d22162dcdbb1fb5f49f2047e008fb9a0645865ea313d190663809188f"
+    },
+    {
+      "scenarioId": "template-missing-source",
+      "run": 2,
+      "runLabel": "template-missing-source/run-02",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "060b016b32cfa3b4678e449abb23d40278dd12e8f393e050616839c7fa09a5de"
+    },
+    {
+      "scenarioId": "template-missing-source",
+      "run": 3,
+      "runLabel": "template-missing-source/run-03",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "15524eb3f05699e14e3bb033d4635f529d68ea0cc55a0e892825ad0960edb75b"
+    },
+    {
+      "scenarioId": "template-missing-source",
+      "run": 4,
+      "runLabel": "template-missing-source/run-04",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "e93c3b033da606733bf2a516510495c8ec2ea72556fab4e3abe7d90880130ba8"
+    },
+    {
+      "scenarioId": "template-missing-source",
+      "run": 5,
+      "runLabel": "template-missing-source/run-05",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "e42fa93f1a2805fafd9d69d07ba214d77931a2ac666df1bb4016a2d8c2ad355a"
+    },
+    {
+      "scenarioId": "missing-capability",
+      "run": 1,
+      "runLabel": "missing-capability/run-01",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "e32875731a86b232be107c9657e6697fec4d673542ff2859af6eaa0d093312f8"
+    },
+    {
+      "scenarioId": "missing-capability",
+      "run": 2,
+      "runLabel": "missing-capability/run-02",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "PASS",
+      "responseSha256": "5e700e78ee63c70b12c15a7435af7d6e170edc84039b053defe6f6bd62d3fb17"
+    },
+    {
+      "scenarioId": "missing-capability",
+      "run": 3,
+      "runLabel": "missing-capability/run-03",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "a889dec99d04be3af99741184303e678168fd36ac92b0e14b5dcdfc34e0f8259"
+    },
+    {
+      "scenarioId": "missing-capability",
+      "run": 4,
+      "runLabel": "missing-capability/run-04",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "829e11dd073a7a09ceeda630d787e356b5218ada3b1896b113b631fb87522e31"
+    },
+    {
+      "scenarioId": "missing-capability",
+      "run": 5,
+      "runLabel": "missing-capability/run-05",
+      "model": "codex-cli 0.142.0 default model (exact build unavailable)",
+      "isolatedContext": true,
+      "verdict": "FAIL",
+      "responseSha256": "c8ff1bdd6805ee5420be3677a2668c623dc90f5467d3e4c3fcd357a26e82ce21"
+    }
+  ]
+}

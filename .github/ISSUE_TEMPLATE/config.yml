@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Installation and usage support
+    url: https://github.com/banqiusheng/visual-first-ppt/blob/main/SUPPORT.md
+    about: Follow the redacted troubleshooting sequence before opening an issue.
+  - name: Security policy
+    url: https://github.com/banqiusheng/visual-first-ppt/blob/main/SECURITY.md
+    about: Read the security policy before reporting a suspected vulnerability.
+  - name: Private vulnerability report
+    url: https://github.com/banqiusheng/visual-first-ppt/security/advisories/new
+    about: Report suspected vulnerabilities only through GitHub Private Vulnerability Reporting.

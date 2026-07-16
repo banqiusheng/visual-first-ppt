@@ -4,6 +4,92 @@
 
 # Visual-First PPT
 
+<!-- BEGIN NEWBIE_QUICK_START -->
+## Quick Start
+
+![Four-stage beginner flow](docs/assets/newbie-quick-start.svg)
+
+### 1. Confirm the setup target
+
+Before anything is installed, resolve `SETUP_TARGET`: choose `Plugin` or `Skill-only`, and state whether the installation is new, existing, or unknown. If a request says only “set this up, then make a PPT,” Codex must treat setup and presentation production as two separate steps. It must not guess the install scope or choose a presentation route until setup reaches `SETUP_VERIFIED`.
+
+### 2. Install the pinned release
+
+For the simplest desktop experience, open the Plugin directory and install **Visual-First PPT**. The command line is a transparent fallback and performs two separate actions:
+
+Commands beginning with `codex` in this README are transparent manual fallback commands for the user. An active Codex Agent must not execute the `codex` executable, including `codex plugin ...`, as a tool action or through a shell or wrapper. It must use management controls exposed directly by the current host, or the bounded read-only Skill check at `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` below.
+
+```bash
+codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.2.0
+codex plugin add visual-first-ppt@visual-first-ppt-marketplace
+```
+
+The first command only registers the Marketplace at the pinned `v0.2.0` tag; it does not install the Plugin. The second command installs the Plugin. Start a new Codex task after Plugin installation.
+
+For a Skill-only setup, paste this prompt into Codex:
+
+```text
+Use $skill-installer to install visual-first-ppt from this pinned release:
+https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt
+Before installing, check for an existing Skill with the same name. If one exists, stop with EXISTING_INSTALLATION and do not overwrite it.
+After installation, tell me whether I need to start a new Codex task and how to begin with $visual-first-ppt.
+Whether you only explain the installation or perform it, end with the complete verification_plan block, including the installed-copy doctor command, expected and actual results, activation check, and setup status.
+```
+
+### 3. Verify before claiming success
+
+An installation command finishing is not proof that the product is ready. `node skills/visual-first-ppt/scripts/doctor.mjs --json` checks a repository checkout, not the installed copy. For a default Skill-only installation, run:
+
+```bash
+SKILL_ROOT="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"
+node "$SKILL_ROOT/scripts/doctor.mjs" --skill-root "$SKILL_ROOT" --json
+```
+
+For a Plugin installation, use only the Skill root and Plugin information exposed directly by the current host. If the host does not expose that root, stop and report the blocker; never guess or scan Plugin-managed storage. Run the same doctor command against the exposed root. Then start a new Codex task and explicitly invoke `$visual-first-ppt`. Record `SETUP_VERIFIED` only when the installed entrypoint, doctor result, and activation check all have evidence. Doctor exit code `2` confirms the required local files but leaves optional production capabilities unconfirmed; do not describe that as full PPT readiness. See `SUPPORT.md` for the complete diagnostic sequence.
+
+<!-- BEGIN INSTALL_VERIFICATION_RESPONSE -->
+Every install-related answer, including guidance-only answers where no installation was run, must end with these fields in this order. “Install and verify” by itself is not a verification method:
+
+- `verification_plan`: `REQUIRED`.
+- `installed_target`: the exact installed Skill root or host-exposed Plugin Skill root.
+- `doctor_command`: for Skill-only, set `SKILL_ROOT="${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt"`, then run `node "$SKILL_ROOT/scripts/doctor.mjs" --skill-root "$SKILL_ROOT" --json`; for Plugin, substitute only the exact Skill root exposed by the host.
+- `expected_doctor_result`: `exit 0` with JSON `PASS` confirms all required checks; `exit 2` with JSON `WARN` confirms local requirements but not unexposed production capabilities; `exit 1` with JSON `FAIL` is not usable.
+- `doctor_result`: the actual exit code and JSON status; use `NOT_RUN` for guidance-only answers and `NOT_AVAILABLE` when the installed root or check is unavailable.
+- `activation_check`: the result from a new Codex turn or task that explicitly invokes `$visual-first-ppt`.
+- `setup_status`: report `SETUP_NOT_VERIFIED` until the installed entrypoint, doctor result, and activation check all have evidence; only then report `SETUP_VERIFIED`.
+<!-- END INSTALL_VERIFICATION_RESPONSE -->
+
+### 4. Handle an existing installation safely
+
+If setup stops with `EXISTING_INSTALLATION`, do not overwrite it. Paste this prompt into Codex:
+
+```text
+An existing visual-first-ppt may be present. Inspect only. Confirm whether the exact target is Skill-only or Plugin; do not confuse it with a similarly named project-data directory. If no real installation is found, report EXISTING_INSTALLATION_NOT_FOUND, list the checked locations and candidate v0.2.0, and ask me for the exact path or a fresh install choice. Do not request upgrade approval.
+Skill-only recovery: Treat this as setup or upgrade, not PPT production; do not invoke the installed $visual-first-ppt workflow. Check ${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt first. Inspect a different absolute Skill path only when the user supplied it explicitly. Do not run the codex executable or an unbounded home-directory search. Do not read authentication files, and do not enumerate unrelated environment. Run a read-only version or content comparison against pinned v0.2.0, show the differences and exact Skill target, and stop for a path-specific UPGRADE_APPROVED decision. Only after approval, move the existing Skill target to a timestamped sibling backup, install into a fresh destination, run doctor and the explicit $visual-first-ppt activation check, and perform ROLLBACK by restoring the backup if installation or verification fails. Never merge or recursively delete the old copy.
+Plugin recovery: Use only Plugin controls exposed directly by the current host. Do not run codex plugin commands from inside the active task. Use only Codex-supported Plugin management, update, and rollback controls. Never guess, move, rename, or recursively delete Plugin-managed storage. If no supported recoverable update or rollback path can be identified, stop and explain the blocker; do not ask for or consume UPGRADE_APPROVED.
+```
+
+### 5. Start the first presentation
+
+If `Presentations` or `imagegen` is missing or unverified, do not pretend it is available and do not claim a final file. Report the exact recovery point first:
+
+<!-- BEGIN CAPABILITY_RECOVERY_RESPONSE -->
+- `capability_status`: `BLOCKED_CAPABILITY`.
+- `missing_capabilities`: list the exact missing or unverified items from `Presentations` and `imagegen`.
+- `resume_after_capabilities_ready`: after the current host exposes and verifies both capabilities, start a new Codex task and explicitly invoke `$visual-first-ppt`.
+- `resume_without_manifest`: `ROUTE_SELECTION_OR_BRIEF`; choose `create`, `template`, or `edit`, then continue from the Brief.
+- `resume_with_manifest`: validate `project-manifest.json` or the supplied project ID, then resume only from its `RECORDED_GATE`.
+<!-- END CAPABILITY_RECOVERY_RESPONSE -->
+
+On the next turn after a verified Skill install, invoke it explicitly. If it is not discovered, start a new Codex task. Then begin with:
+
+```text
+Use $visual-first-ppt. First ask me to choose exactly one route: create, template, or edit. Follow the required approval gates before full production.
+```
+
+The first reply normally stops at route selection and the approval contract. That is expected design, not a stalled task.
+<!-- END NEWBIE_QUICK_START -->
+
 `visual-first-ppt` is a Codex Skill for producing presentation decks through a gated, visual-first workflow. It can create a deck from zero, follow an existing template or framework, or make bounded changes to an existing PPTX.
 
 Generated imagery handles atmosphere, scenes, and visual support. Critical text, exact numbers, tables, charts, citations, and approval evidence remain native and editable. The result is not just a good-looking file: it is a reviewable delivery package with explicit approvals, QA evidence, and persistent handoff paths.
@@ -64,7 +150,7 @@ This repository does not bundle Codex, PowerPoint, WPS, LibreOffice, `Presentati
 For a reproducible install, clone the published release tag and copy only the distributable Skill directory:
 
 ```bash
-git clone --branch v0.1.0 --depth 1 \
+git clone --branch v0.2.0 --depth 1 \
   https://github.com/banqiusheng/visual-first-ppt.git
 cd visual-first-ppt
 
@@ -74,7 +160,7 @@ mkdir -p "$(dirname "$DEST")"
 cp -R skills/visual-first-ppt "$DEST"
 ```
 
-The `test ! -e` guard prevents accidental replacement of an existing Skill. Start a new Codex task after installation so it can be discovered cleanly.
+The `test ! -e` guard prevents accidental replacement of an existing Skill. On the next Codex turn, explicitly invoke `$visual-first-ppt`; if it is not discovered, start a new Codex task and invoke it again.
 
 ## Example requests
 
@@ -125,7 +211,7 @@ SKILL_CREATOR="${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator"
 
 ## Validation evidence
 
-- 59/59 unit tests pass: 38 Node and 21 Python, including localization, persistent-root, and public-evidence-boundary coverage.
+- The checked-in Node and Python test suites are executable release evidence. Release validation requires every test to pass; each run reports its exact current count, avoiding stale hard-coded totals.
 - 15/15 RED pressure samples missed at least one required contract item without the Skill.
 - 15/15 GREEN behavior runs passed; 75/75 required items passed and 30/30 forbidden behaviors were absent.
 - Synthetic `create`, strict `template`, and bounded `edit` routes reached `DELIVERED` with QA PASS. Compact results and hashes are in [`tests/artifacts/artifact-summary.json`](tests/artifacts/artifact-summary.json).
@@ -153,6 +239,6 @@ Compact behavior records are retained in [`tests/baseline/summary.json`](tests/b
 
 ## Release and license
 
-- Current release: [`v0.1.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.1.0)
+- Current release: [`v0.2.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.2.0)
 - Release history: [`CHANGELOG.md`](CHANGELOG.md)
 - License: MIT — see [`LICENSE`](LICENSE)
