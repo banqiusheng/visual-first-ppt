@@ -1,0 +1,77 @@
+name: Bug report
+description: Report a reproducible defect with synthetic or redacted evidence. Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: security_routing
+    attributes:
+      label: Security routing
+      options:
+        - label: "I confirm this is not a security vulnerability. Security issues must be reported only through GitHub Private Vulnerability Reporting: https://github.com/banqiusheng/visual-first-ppt/security/advisories/new"
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Visual-First PPT version
+      description: Provide the exact release tag or Plugin version.
+      placeholder: v0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: codex_surface
+    attributes:
+      label: Codex surface
+      options:
+        - Codex desktop app
+        - Codex CLI
+        - Another Codex surface
+    validations:
+      required: true
+  - type: input
+    id: operating_system
+    attributes:
+      label: Operating system
+      description: Provide the operating system name and version without a username or device name.
+      placeholder: macOS 15; Windows 11; Ubuntu 24.04
+    validations:
+      required: true
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Affected area
+      options:
+        - Route and approval workflow
+        - Theme or content planning
+        - Presentation generation
+        - Validation or packaging
+        - Doctor or repository tooling
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Reproduction steps
+      description: Use a minimal synthetic example and list the exact safe sequence.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_result
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual_result
+    attributes:
+      label: Actual result
+      description: Include only redacted error text or public-fixture evidence.
+    validations:
+      required: true
+  - type: checkboxes
+    id: disclosure_check
+    attributes:
+      label: Public disclosure check
+      options:
+        - label: Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+          required: true

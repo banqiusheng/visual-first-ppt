@@ -1,0 +1,83 @@
+name: Installation help
+description: Get help with a redacted Visual-First PPT installation or discovery problem. Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+title: "[Install]: "
+labels: ["support"]
+body:
+  - type: checkboxes
+    id: security_routing
+    attributes:
+      label: Security routing
+      options:
+        - label: "I confirm this is not a security vulnerability. Security issues must be reported only through GitHub Private Vulnerability Reporting: https://github.com/banqiusheng/visual-first-ppt/security/advisories/new"
+          required: true
+  - type: input
+    id: version
+    attributes:
+      label: Visual-First PPT version
+      description: Provide the exact release tag or Plugin version, not "latest."
+      placeholder: v0.2.0
+    validations:
+      required: true
+  - type: dropdown
+    id: codex_surface
+    attributes:
+      label: Codex surface
+      description: Select where Codex is running.
+      options:
+        - Codex desktop app
+        - Codex CLI
+        - Another Codex surface
+    validations:
+      required: true
+  - type: input
+    id: operating_system
+    attributes:
+      label: Operating system
+      description: Provide the operating system name and version without a username or device name.
+      placeholder: macOS 15; Windows 11; Ubuntu 24.04
+    validations:
+      required: true
+  - type: dropdown
+    id: install_method
+    attributes:
+      label: Installation method
+      options:
+        - Plugin from the pinned Marketplace
+        - Skill installer from the pinned release
+        - Local safe-install helper
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction_steps
+    attributes:
+      label: Reproduction steps
+      description: List the smallest safe sequence that reproduces the problem.
+      placeholder: "1. Started a new Codex task\n2. Invoked $visual-first-ppt\n3. Observed ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected_result
+    attributes:
+      label: Expected result
+      description: Describe what you expected Codex or the installer to do.
+    validations:
+      required: true
+  - type: textarea
+    id: doctor_output
+    attributes:
+      label: Redacted doctor output
+      description: >-
+        Paste doctor --json after replacing machine-specific paths with placeholders such as <HOME>.
+        If installation stopped before doctor became available, enter exactly
+        {"status":"NOT_AVAILABLE","reason":"installation stopped before doctor became available"}.
+        Do not invent doctor output.
+      render: json
+    validations:
+      required: true
+  - type: checkboxes
+    id: disclosure_check
+    attributes:
+      label: Public disclosure check
+      options:
+        - label: Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+          required: true

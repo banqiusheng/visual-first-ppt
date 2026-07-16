@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.2.0] - 2026-07-16
+
+### Added
+
+- Plugin and repository Marketplace scaffolding around the single distributable Skill source.
+- Four-language beginner setup guidance for Plugin and Skill-only paths, explicit activation, installed-root diagnostics, and safe handling of ambiguous setup-plus-PPT requests.
+- Read-only `doctor.mjs`, a no-overwrite local Skill installer, deterministic distribution builds, public-candidate auditing, repository governance templates, and least-privilege release workflows.
+- A frozen 25-run agent-forward release gate with independent read-only reviewers and compact public evidence.
+
+### Changed
+
+- Existing installations now require an exact target, a version or content comparison, path-specific approval, and a recoverable upgrade plan. Similarly named project-data directories are not treated as installations.
+- Setup verification now distinguishes copied files, installed-root diagnostics, Codex activation, and full PPT production capability.
+- The standalone Skill copy-install path in all four READMEs now runs doctor against the installed copy and points beginners back to Quick Start step 3 before activation.
+- Release and installation guidance is pinned to `v0.2.0`; unresolved tags fail closed instead of falling back to `main` or an unpinned archive.
+
+### Fixed
+
+- Copied doctor scripts now execute correctly across the macOS `/var` and `/private/var` path alias.
+- Installer verification no longer treats a copied `SKILL.md` alone as proof of a usable installation.
+- Public-candidate safeguards now ignore local `.superpowers/` records and fail closed on local execution records, raw `tests/agent-forward/runs/` evidence, and `.jsonl`/`.log` logs even if they enter the Git candidate.
+
 ## [0.1.0] - 2026-07-14
 
 ### Added

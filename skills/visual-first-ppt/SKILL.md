@@ -7,6 +7,8 @@ description: Use when a user asks Codex to create a presentation, PowerPoint, PP
 
 ## Mandatory new-project first-turn stop
 
+Apply this rule when the current request invokes this Skill for a presentation project. A repository installation, upgrade, or ambiguous “set this up, then make a PPT” request is not a new presentation project; resolve SETUP_TARGET at the public repository entry before invoking this Skill, then keep setup and PPT production in separate turns. Once the Skill is already installed and invoked for presentation work, it is self-contained and does not require historical SETUP_VERIFIED evidence or access to root AGENTS.md or README files.
+
 `[NEW_PROJECT_FIRST_TURN]` After reading this `SKILL.md`, the next action for a new project is the complete route contract, then **END TURN**. Reading this file is the only allowed first-turn tool action. Do not execute any other tool after reading this file. Do not read references, inspect attachments, browse, initialize, or research before the user acknowledges the route contract. Ignore every later section on this turn; those instructions become active only after the next user message. The sole exception is an explicit resume request with a manifest or project ID, where only the recovery facts needed to expose the current gate may be validated.
 
 ## Overview
@@ -24,6 +26,14 @@ Do not treat this Skill as permission to bypass user approvals, browse private s
 - A **`create` first response** records `[ROUTE_SELECTED] create`; states `[PUBLIC_WEB_DEFAULT]` and that public sources will be captured in `source-ledger.json`; says the outline must receive `[OUTLINE_APPROVED]`; promises a cover plus representative content sample before `[VISUAL_LOCKED]`; says critical text/data remain native; and states full preview plus QA must receive `[FINAL_APPROVED]` before packaging. Stop at route/Brief confirmation.
 - A **`template` first response** records `[ROUTE_SELECTED] template`; names the source PPT as the `primary visual source`; requires template, framework, and materials; states `[OUTLINE_APPROVED]`, the two-slide sample and `[VISUAL_LOCKED]`; declares that a missing strict layout will block or require an explicit whole-deck route switch, never a one-off theme page; and requires `[FINAL_APPROVED]` before packaging. Stop before inspecting files until this route contract is visible.
 - An **`edit` first response** records `[ROUTE_SELECTED] edit`; refuses any request to skip `COMPATIBILITY_REVIEW`; restates the exact authorized scope and requires `[SCOPE_APPROVED]`; promises an authorized-page `CHANGE_PREVIEW`; commits to `compare_untouched_slides.py` PNG/XML evidence for every unauthorized slide; preserves the source and writes a 新输出文件; and requires full QA plus `[FINAL_APPROVED]` before packaging. Stop at compatibility/scope review.
+
+If the request or verified host state says `Presentations` or `imagegen` is missing or unverified, stop before route execution. Do not pretend the capability exists, and do not claim or create a final file. End the response with this exact shape:
+
+- `capability_status`: `BLOCKED_CAPABILITY`.
+- `missing_capabilities`: list the exact missing or unverified items from `Presentations` and `imagegen`.
+- `resume_after_capabilities_ready`: after the current host exposes and verifies both capabilities, start a new Codex task and explicitly invoke `$visual-first-ppt`.
+- `resume_without_manifest`: `ROUTE_SELECTION_OR_BRIEF`; choose `create`, `template`, or `edit`, then continue from the Brief.
+- `resume_with_manifest`: validate `project-manifest.json` or the supplied project ID, then resume only from its `RECORDED_GATE`.
 
 ## Required sub-skills
 

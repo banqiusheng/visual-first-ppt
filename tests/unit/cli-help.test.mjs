@@ -10,6 +10,7 @@ const ROOT = path.resolve(HERE, "../..");
 for (const relativePath of [
   "skills/visual-first-ppt/scripts/project-state.mjs",
   "skills/visual-first-ppt/scripts/build-qa-report.mjs",
+  "skills/visual-first-ppt/scripts/doctor.mjs",
 ]) {
   test(`${path.basename(relativePath)} exposes a successful --help contract`, () => {
     const result = spawnSync(process.execPath, [path.join(ROOT, relativePath), "--help"], {

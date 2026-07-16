@@ -1,4 +1,4 @@
 interface:
   display_name: "Visual-First PPT"
-  short_description: "用图片生成与原生对象制作、修改、验收并交付高质量 PPT"
-  default_prompt: "Use $visual-first-ppt to create or revise an editable visual-first PowerPoint deck."
+  short_description: "Create and safely edit editable PowerPoint decks"
+  default_prompt: "Use $visual-first-ppt to create, template, or safely edit an editable PowerPoint deck."

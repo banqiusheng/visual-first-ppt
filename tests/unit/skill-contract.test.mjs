@@ -225,3 +225,55 @@ test("SKILL first response exposes the complete route contract before tools", as
   assert.match(skill, /\[EDIT_FIRST_TURN_CHECKLIST\].*Every edit first response MUST show.*authorized pages `CHANGE_PREVIEW`.*do not shorten at the current gate/s);
   assert.match(skill, /first response.*stop before research, inspection, or editing/is);
 });
+
+test("SKILL separates current setup requests without depending on repository state at runtime", async () => {
+  const skill = await fs.readFile(path.join(skillRoot, "SKILL.md"), "utf8");
+
+  assert.match(
+    skill,
+    /Mandatory new-project first-turn stop[\s\S]*current request[\s\S]*presentation project/,
+  );
+  assert.match(
+    skill,
+    /installation.*upgrade.*set this up.*make a PPT.*not.*new presentation project/is,
+  );
+  assert.match(skill, /resolve SETUP_TARGET.*before invoking this Skill/is);
+  assert.match(
+    skill,
+    /already installed.*self-contained.*does not require.*historical SETUP_VERIFIED.*root AGENTS\.md.*README/is,
+  );
+});
+
+test("SKILL blocks missing capabilities and names the exact verified resume point", async () => {
+  const skill = await fs.readFile(path.join(skillRoot, "SKILL.md"), "utf8");
+  assert.doesNotMatch(
+    skill,
+    /\b(?:installation_verification|resume_point_after_verification)\b/,
+    "SKILL.md must not expose frozen evaluation field names",
+  );
+  const responseStart = skill.indexOf("### First user-visible response contract");
+  const requiredSkillsStart = skill.indexOf("## Required sub-skills", responseStart);
+
+  assert.ok(responseStart >= 0, "SKILL must define the first-response contract");
+  assert.ok(requiredSkillsStart > responseStart, "capability recovery must be visible before sub-skill execution");
+  const responseContract = skill.slice(responseStart, requiredSkillsStart);
+
+  for (const field of [
+    "capability_status",
+    "missing_capabilities",
+    "resume_after_capabilities_ready",
+    "resume_without_manifest",
+    "resume_with_manifest",
+  ]) {
+    assert.ok(responseContract.includes(field), `missing capability field ${field}`);
+  }
+  assert.match(responseContract, /capability_status[\s\S]*BLOCKED_CAPABILITY/);
+  assert.match(responseContract, /missing_capabilities[\s\S]*Presentations[\s\S]*imagegen/);
+  assert.match(
+    responseContract,
+    /resume_after_capabilities_ready[\s\S]*both capabilities[\s\S]*new Codex task[\s\S]*\$visual-first-ppt/is,
+  );
+  assert.match(responseContract, /resume_without_manifest[\s\S]*ROUTE_SELECTION_OR_BRIEF[\s\S]*create[\s\S]*template[\s\S]*edit/is);
+  assert.match(responseContract, /resume_with_manifest[\s\S]*project-manifest\.json[\s\S]*project ID[\s\S]*RECORDED_GATE/is);
+  assert.match(responseContract, /do not claim.*final.*file/is);
+});

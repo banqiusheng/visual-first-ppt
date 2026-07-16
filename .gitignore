@@ -13,6 +13,9 @@ tests/baseline/*
 !tests/baseline/summary.json
 tests/green/*
 !tests/green/summary.json
+tests/agent-forward/runs/
+dist/
 
 # Local design and execution records are not part of the distributable Skill.
+.superpowers/
 docs/superpowers/

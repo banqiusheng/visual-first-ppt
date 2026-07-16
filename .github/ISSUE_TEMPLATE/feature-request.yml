@@ -1,0 +1,53 @@
+name: Feature request
+description: Propose a broadly useful improvement without private examples. Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    id: security_routing
+    attributes:
+      label: Security routing
+      options:
+        - label: "I confirm this is not a security vulnerability. Security issues must be reported only through GitHub Private Vulnerability Reporting: https://github.com/banqiusheng/visual-first-ppt/security/advisories/new"
+          required: true
+  - type: dropdown
+    id: affected_area
+    attributes:
+      label: Product area
+      options:
+        - Beginner setup
+        - Create route
+        - Template route
+        - Edit route
+        - Validation and handoff
+        - Repository tooling
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Explain the general user problem using synthetic or public context.
+    validations:
+      required: true
+  - type: textarea
+    id: desired_outcome
+    attributes:
+      label: Desired outcome
+      description: Describe observable success without prescribing an implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Note safe workarounds or related approaches you evaluated.
+    validations:
+      required: false
+  - type: checkboxes
+    id: disclosure_check
+    attributes:
+      label: Public disclosure check
+      options:
+        - label: Do not include tokens, passwords, account identifiers, personal absolute paths, or customer decks.
+          required: true

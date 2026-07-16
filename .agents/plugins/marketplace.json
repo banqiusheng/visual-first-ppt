@@ -1,0 +1,21 @@
+{
+  "name": "visual-first-ppt-marketplace",
+  "interface": {
+    "displayName": "Visual-First PPT"
+  },
+  "plugins": [
+    {
+      "name": "visual-first-ppt",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/banqiusheng/visual-first-ppt.git",
+        "ref": "v0.2.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

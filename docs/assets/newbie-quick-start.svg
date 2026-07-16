@@ -1,0 +1,20 @@
+<svg xmlns="http&#58;//www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="newbie-title newbie-desc">
+  <title id="newbie-title">Visual-First PPT setup flow</title>
+  <desc id="newbie-desc">Four stages from the pinned Plugin to an editable presentation delivery package.</desc>
+  <rect width="1200" height="360" rx="28" fill="#F4F7FB"/>
+  <rect x="42" y="82" width="250" height="196" rx="24" fill="#E8EEFF" stroke="#2457D6" stroke-width="2"/>
+  <circle cx="82" cy="122" r="10" fill="#2457D6"/>
+  <rect x="324" y="82" width="250" height="196" rx="24" fill="#EAF8F4" stroke="#158467" stroke-width="2"/>
+  <circle cx="364" cy="122" r="10" fill="#158467"/>
+  <rect x="606" y="82" width="250" height="196" rx="24" fill="#FFF5E7" stroke="#B76A00" stroke-width="2"/>
+  <circle cx="646" cy="122" r="10" fill="#B76A00"/>
+  <rect x="888" y="82" width="270" height="196" rx="24" fill="#F5EDFF" stroke="#7C3DB5" stroke-width="2"/>
+  <circle cx="928" cy="122" r="10" fill="#7C3DB5"/>
+  <path d="M299 169 L317 180 L299 191 Z" fill="#7B8794"/>
+  <path d="M581 169 L599 180 L581 191 Z" fill="#7B8794"/>
+  <path d="M863 169 L881 180 L863 191 Z" fill="#7B8794"/>
+  <text x="72" y="192" xml:space="preserve" fill="#17305E" font-family="Arial, sans-serif" font-size="24" font-weight="700">1  Plugin v0.2.0</text>
+  <text x="354" y="192" xml:space="preserve" fill="#0D5543" font-family="Arial, sans-serif" font-size="22" font-weight="700">2  $visual-first-ppt</text>
+  <text x="636" y="192" xml:space="preserve" fill="#704000" font-family="Arial, sans-serif" font-size="19" font-weight="700">3  create | template | edit</text>
+  <text x="918" y="192" xml:space="preserve" fill="#51267A" font-family="Arial, sans-serif" font-size="21" font-weight="700">4  PPTX + PDF + ZIP</text>
+</svg>

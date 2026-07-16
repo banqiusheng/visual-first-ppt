@@ -49,3 +49,11 @@ test("public candidate keeps reusable artifact support scripts without claiming 
   assert.match(gitignore, /!tests\/artifacts\/support\//);
   assert.doesNotMatch(gitignore, /summaries remain publishable and reproducible/i);
 });
+
+test("public candidate ignores local planning and raw agent-forward evidence", async () => {
+  const gitignore = await fs.readFile(path.join(ROOT, ".gitignore"), "utf8");
+  const lines = new Set(gitignore.split(/\r?\n/));
+
+  assert.ok(lines.has(".superpowers/"));
+  assert.ok(lines.has("tests/agent-forward/runs/"));
+});
