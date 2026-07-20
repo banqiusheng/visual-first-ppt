@@ -13,7 +13,7 @@ test("Plugin manifest points at the single Skill source with approved metadata",
   const plugin = await readJson(".codex-plugin/plugin.json");
 
   assert.equal(plugin.name, "visual-first-ppt");
-  assert.equal(plugin.version, "0.2.0");
+  assert.equal(plugin.version, "0.3.0");
   assert.equal(plugin.skills, "./skills/");
   assert.equal(plugin.license, "MIT");
   assert.equal(plugin.repository, "https://github.com/banqiusheng/visual-first-ppt");
@@ -51,7 +51,7 @@ test("Plugin manifest omits unused integrations and unsupported entrypoints", as
   );
 });
 
-test("repository Marketplace uses the pinned Git-backed v0.2.0 Plugin source", async () => {
+test("repository Marketplace uses the pinned Git-backed v0.3.0 Plugin source", async () => {
   const marketplace = await readJson(".agents/plugins/marketplace.json");
 
   assert.equal(marketplace.name, "visual-first-ppt-marketplace");
@@ -62,7 +62,7 @@ test("repository Marketplace uses the pinned Git-backed v0.2.0 Plugin source", a
   assert.equal(entry.name, "visual-first-ppt");
   assert.equal(entry.source.source, "url");
   assert.equal(entry.source.url, "https://github.com/banqiusheng/visual-first-ppt.git");
-  assert.equal(entry.source.ref, "v0.2.0");
+  assert.equal(entry.source.ref, "v0.3.0");
   assert.equal(entry.policy.installation, "AVAILABLE");
   assert.equal(entry.policy.authentication, "ON_INSTALL");
   assert.equal(entry.category, "Productivity");

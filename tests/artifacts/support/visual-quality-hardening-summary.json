@@ -1,0 +1,23 @@
+{
+  "artifactType": "visualQualityHardeningSummary",
+  "schemaVersion": "1.0.0",
+  "evidenceRetention": "summary-and-hashes-only",
+  "frozenAgentForwardTreeHash": "git-tree:e75004dfa46c9ecbd733af6fb7b6ff24bce3237d",
+  "scenarios": [
+    {
+      "id": "create-long-poem-quality",
+      "verdict": "PASS",
+      "manifestSha256": "sha256:5d1834ba06f3368dc65e66efb399f91f5bc20f719b54d8175b7901e32f05e2da"
+    },
+    {
+      "id": "template-dense-data-quality",
+      "verdict": "PASS",
+      "manifestSha256": "sha256:9e87fd1aefc2fe23d35541f16ec4299ec652e728cf96d057417cb2b20a77464a"
+    },
+    {
+      "id": "edit-authorized-page-quality",
+      "verdict": "PASS",
+      "manifestSha256": "sha256:930336c5321424cd6d487af6a7fac83fe35c07dabbe287bb124651651b988966"
+    }
+  ]
+}

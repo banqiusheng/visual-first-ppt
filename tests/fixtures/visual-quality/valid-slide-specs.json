@@ -1,0 +1,78 @@
+{
+  "artifactType": "slideSpecs",
+  "schemaVersion": "1.0.0",
+  "qualityContractVersion": "1.0.0",
+  "projectId": "ppt-quality-test",
+  "route": "create",
+  "slides": [
+    {
+      "slide": 1,
+      "pageRole": "cover",
+      "qualityMode": "enforced",
+      "layoutArchetype": "cover-hero-left",
+      "contentBlocks": [
+        {
+          "contentId": "title",
+          "text": "质量契约测试",
+          "estimatedLines": 1,
+          "maxLines": 2
+        },
+        {
+          "contentId": "subtitle",
+          "text": "中央质量契约",
+          "estimatedLines": 1,
+          "maxLines": 2
+        },
+        {
+          "contentId": "context",
+          "text": "版式与字体策略共用",
+          "estimatedLines": 1,
+          "maxLines": 2
+        },
+        {
+          "contentId": "note",
+          "text": "构建前验证",
+          "estimatedLines": 1,
+          "maxLines": 2
+        }
+      ],
+      "typographyBudget": {
+        "title": { "minimumPt": 28 },
+        "body": { "minimumPt": 18, "targetPt": 20 },
+        "caption": { "minimumPt": 14 },
+        "source": { "minimumPt": 10 },
+        "pageNumber": { "minimumPt": 10 }
+      },
+      "safeZone": {
+        "unit": "in",
+        "top": 0.35,
+        "right": 0.35,
+        "bottom": 0.35,
+        "left": 0.35,
+        "pageNumberEdge": 0.3
+      },
+      "visualIntent": {
+        "supports": ["主题"],
+        "requiredSubjects": ["抽象几何图形"],
+        "prohibitedElements": ["可读文本"],
+        "textFreeZones": ["左侧"],
+        "cropFocus": ["右侧"],
+        "semanticEvidence": "视觉元素强调质量与秩序。"
+      },
+      "nativeCriticalContent": [
+        {
+          "contentId": "title",
+          "text": "质量契约测试",
+          "objectId": "slide-1:shape-2",
+          "typographyRole": "title"
+        }
+      ],
+      "contentHash": "sha256:7bb0470b991c4f73bae7237f54245e4360fd9b0e9947cc1cc543acd86900d440",
+      "overflowPolicy": [
+        "split-semantic-unit",
+        "compress-without-fact-change",
+        "switch-verified-layout"
+      ]
+    }
+  ]
+}

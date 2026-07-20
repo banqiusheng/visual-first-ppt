@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -37,6 +38,14 @@ REQUIRED = [
     "pptxPdfPreviewParity",
 ]
 EDIT_REQUIRED = ["sourceHashPreserved", "authorizedScope", "unauthorizedSlideComparison"]
+QUALITY_AUDIT_CHECKS = [
+    "textFramePolicy",
+    "safeMargin",
+    "fontResolution",
+    "contentPresence",
+    "hiddenVisualResidue",
+]
+REVIEW_CHECKS = ["contentVisibility", "generatedImageTextReview", "visualSemanticMatch"]
 
 
 def sha256(path: Path) -> str:
@@ -213,6 +222,170 @@ def require_nonempty(path: Path, label: str) -> None:
         raise ValueError(f"{label} must be a nonempty file: {path}")
 
 
+def canonical_generated_at() -> str:
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
+
+
+def require_current_quality_args(args: argparse.Namespace) -> bool:
+    names = ["slide_specs", "theme_lock", "object_inventory", "quality_audit", "review_checks"]
+    supplied = [getattr(args, name) is not None for name in names]
+    if any(supplied) and not all(supplied):
+        missing = [f"--{name.replace('_', '-')}" for name in names if getattr(args, name) is None]
+        raise ValueError(f"current quality evidence mode requires all quality inputs; missing: {', '.join(missing)}")
+    return all(supplied)
+
+
+def load_user_open_confirmation(
+    args: argparse.Namespace, pptx: Path, current_quality: dict[str, Any] | None,
+) -> tuple[Path, dict[str, Any]]:
+    if args.user_open_confirmation_evidence is None:
+        raise ValueError(
+            "--user-open-confirmation-evidence is required; this helper cannot mint user confirmation"
+        )
+    evidence_path = args.user_open_confirmation_evidence.resolve()
+    require_nonempty(evidence_path, "user-open confirmation evidence")
+    payload = json.loads(evidence_path.read_text(encoding="utf-8"))
+    required = {
+        "artifactType", "schemaVersion", "targetClient", "openedArtifactHash",
+        "userMessage", "confirmedAt",
+    }
+    if not isinstance(payload, dict) or set(payload) != required:
+        raise ValueError("--user-open-confirmation-evidence has an invalid structured schema")
+    if payload.get("artifactType") != "userOpenConfirmationEvidence" or payload.get("schemaVersion") != "1.0.0":
+        raise ValueError("--user-open-confirmation-evidence has an invalid artifact identity")
+    if payload.get("openedArtifactHash") != f"sha256:{sha256(pptx)}":
+        raise ValueError("--user-open-confirmation-evidence is not bound to the current PPTX hash")
+    if payload.get("targetClient") not in {"Microsoft PowerPoint", "WPS Presentation"}:
+        raise ValueError("--user-open-confirmation-evidence targetClient is unsupported")
+    if not isinstance(payload.get("userMessage"), str) or not payload["userMessage"].strip():
+        raise ValueError("--user-open-confirmation-evidence userMessage is required")
+    if current_quality is not None:
+        theme_lock = json.loads(current_quality["themeLock"].read_text(encoding="utf-8"))
+        if payload["targetClient"] != theme_lock.get("targetClient"):
+            raise ValueError("--user-open-confirmation-evidence targetClient must match theme-lock")
+    return evidence_path, payload
+
+
+def load_current_quality_inputs(args: argparse.Namespace, pptx: Path) -> dict[str, Any] | None:
+    if not require_current_quality_args(args):
+        return None
+    slide_specs = args.slide_specs.resolve()
+    theme_lock = args.theme_lock.resolve()
+    object_inventory = args.object_inventory.resolve()
+    quality_audit = args.quality_audit.resolve()
+    review_checks = args.review_checks.resolve()
+    for value, label in [
+        (slide_specs, "slide specs"),
+        (theme_lock, "theme lock"),
+        (object_inventory, "object inventory"),
+        (quality_audit, "quality audit"),
+        (review_checks, "review checks"),
+    ]:
+        require_nonempty(value, label)
+    expected_hashes = {
+        "deck": f"sha256:{sha256(pptx)}",
+        "slideSpecs": f"sha256:{sha256(slide_specs)}",
+        "themeLock": f"sha256:{sha256(theme_lock)}",
+        "objectInventory": f"sha256:{sha256(object_inventory)}",
+    }
+    audit = json.loads(quality_audit.read_text(encoding="utf-8"))
+    if audit.get("artifactType") != "automatedEvidenceBundle" or audit.get("finalVerdict") != "PASS":
+        raise ValueError("--quality-audit must be a PASS automatedEvidenceBundle")
+    if audit.get("inputHashes") != expected_hashes:
+        raise ValueError("--quality-audit input hashes do not match current deck/spec/theme/inventory bytes")
+    audit_checks = audit.get("checks")
+    if not isinstance(audit_checks, dict) or set(audit_checks) != set(QUALITY_AUDIT_CHECKS):
+        raise ValueError("--quality-audit does not contain the exact current OOXML quality checks")
+    for check_id in QUALITY_AUDIT_CHECKS:
+        check = audit_checks[check_id]
+        if check.get("status") != "PASS" or check.get("value") != 0 or check.get("violations") != []:
+            raise ValueError(f"--quality-audit check must be hard-zero PASS: {check_id}")
+    reviews = json.loads(review_checks.read_text(encoding="utf-8"))
+    if not isinstance(reviews, list) or not reviews:
+        raise ValueError("--review-checks must contain one or more slide review records")
+    return {
+        "slideSpecs": slide_specs,
+        "themeLock": theme_lock,
+        "objectInventory": object_inventory,
+        "qualityAudit": quality_audit,
+        "reviewChecks": review_checks,
+        "reviews": reviews,
+        "inputHashes": {key: expected_hashes[key] for key in ["deck", "slideSpecs", "themeLock"]},
+    }
+
+
+def normalize_review_checks(current: dict[str, Any], slide_count: int) -> list[dict[str, Any]]:
+    source = current["reviewChecks"]
+    normalized = []
+    for entry in current["reviews"]:
+        if not isinstance(entry, dict):
+            raise ValueError("--review-checks entries must be objects")
+        slide = entry.get("slide")
+        if not isinstance(slide, int) or slide < 1:
+            raise ValueError("--review-checks slide must be a positive integer")
+        declared_path = entry.get("evidencePath")
+        if not isinstance(declared_path, str) or not declared_path:
+            raise ValueError(f"--review-checks slide {slide} requires evidencePath")
+        evidence_path = Path(declared_path)
+        if not evidence_path.is_absolute():
+            evidence_path = source.parent / evidence_path
+        evidence_path = evidence_path.resolve()
+        require_nonempty(evidence_path, f"review evidence for slide {slide}")
+        checks = entry.get("checks")
+        if not isinstance(checks, dict) or set(checks) != set(REVIEW_CHECKS):
+            raise ValueError(f"--review-checks slide {slide} must contain the exact review checks")
+        normalized_checks = {}
+        for check_id in REVIEW_CHECKS:
+            check = checks[check_id]
+            if not isinstance(check, dict) or check.get("status") != "PASS" or not str(check.get("notes", "")).strip():
+                raise ValueError(f"--review-checks slide {slide} {check_id} must PASS with notes")
+            normalized_checks[check_id] = {"status": "PASS", "notes": str(check["notes"]).strip()}
+        reviewer = str(entry.get("reviewer", "")).strip()
+        if not reviewer:
+            raise ValueError(f"--review-checks slide {slide} requires reviewer")
+        normalized.append({
+            "slide": slide,
+            "reviewer": reviewer,
+            "evidencePath": str(evidence_path),
+            "checks": normalized_checks,
+        })
+    normalized.sort(key=lambda item: item["slide"])
+    if [item["slide"] for item in normalized] != list(range(1, slide_count + 1)):
+        raise ValueError(f"--review-checks must cover every consecutive slide 1-{slide_count}")
+    return normalized
+
+
+def write_structured_per_check(
+    path: Path,
+    check_id: str,
+    check: dict[str, Any],
+    input_hashes: dict[str, str],
+    generated_at: str,
+    slide_count: int,
+) -> None:
+    passed = check.get("status") == "PASS"
+    raw_value = check.get("value")
+    value = raw_value if isinstance(raw_value, int) and raw_value >= 0 else (0 if passed else 1)
+    structured_check = {
+        "status": "PASS" if passed else "FAIL",
+        "value": value,
+        "violations": [] if passed else [{"message": f"{check_id} failed in route evidence producer"}],
+    }
+    if check_id == "pageCountAndCanvas":
+        structured_check["value"] = slide_count
+    write_json(path, {
+        "artifactType": "perCheckEvidence",
+        "schemaVersion": "1.0.0",
+        "qualityContractVersion": "1.0.0",
+        "checker": {"id": check_id, "version": "1.0.0"},
+        "checkId": check_id,
+        "inputHashes": input_hashes,
+        "check": structured_check,
+        "finalVerdict": "PASS" if passed else "FAIL",
+        "generatedAt": generated_at,
+    })
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workspace", type=Path, required=True)
@@ -230,6 +403,12 @@ def main() -> None:
     parser.add_argument("--scope", type=Path)
     parser.add_argument("--comparison", type=Path)
     parser.add_argument("--patch-report", type=Path)
+    parser.add_argument("--slide-specs", type=Path)
+    parser.add_argument("--theme-lock", type=Path)
+    parser.add_argument("--object-inventory", type=Path)
+    parser.add_argument("--quality-audit", type=Path)
+    parser.add_argument("--review-checks", type=Path)
+    parser.add_argument("--user-open-confirmation-evidence", type=Path)
     args = parser.parse_args()
 
     workspace = args.workspace.resolve()
@@ -246,6 +425,8 @@ def main() -> None:
 
     require_nonempty(pptx, "PPTX")
     require_nonempty(pdf, "PDF")
+    current_quality = load_current_quality_inputs(args, pptx)
+    user_open_path, user_open = load_user_open_confirmation(args, pptx, current_quality)
     with ZipFile(pptx) as archive:
         bad_member = archive.testzip()
         parts = slide_parts(archive)
@@ -318,6 +499,14 @@ def main() -> None:
     parity_ok = len(parity) == slide_count and max(item["mae"] for item in parity) < 12 and max(item["p95"] for item in parity) < 50
     checks["pptxPdfPreviewParity"] = evidence(evidence_dir / "pptxPdfPreviewParity.json", "pptxPdfPreviewParity", parity_ok, pageCount=slide_count, resizeMethod="PDF render resized to installed PPTX renderer dimensions with Lanczos", thresholds={"maxMaeExclusive": 12, "maxP95Exclusive": 50}, perSlide=parity)
 
+    if current_quality:
+        for check_id in QUALITY_AUDIT_CHECKS:
+            checks[check_id] = {
+                "check": check_id,
+                "status": "PASS",
+                "value": 0,
+            }
+
     if args.route == "edit":
         for value, label in [(args.source, "source"), (args.scope, "scope"), (args.comparison, "comparison"), (args.patch_report, "patch report")]:
             if value is None:
@@ -333,19 +522,42 @@ def main() -> None:
         comparison_ok = comparison.get("finalVerdict") == "PASS" and comparison.get("authorizedSlides") == [4, 7] and not comparison.get("changedUnauthorizedSlides")
         checks["unauthorizedSlideComparison"] = evidence(evidence_dir / "unauthorizedSlideComparison.json", "unauthorizedSlideComparison", comparison_ok, comparisonPath=str(args.comparison.resolve()), finalVerdict=comparison.get("finalVerdict"), authorizedSlides=comparison.get("authorizedSlides"), changedUnauthorizedSlides=comparison.get("changedUnauthorizedSlides"))
 
-    required_ids = REQUIRED + (EDIT_REQUIRED if args.route == "edit" else [])
+    required_ids = REQUIRED + (QUALITY_AUDIT_CHECKS if current_quality else []) + (EDIT_REQUIRED if args.route == "edit" else [])
     failures = [check_id for check_id in required_ids if checks[check_id]["status"] != "PASS"]
     if failures:
         raise ValueError(f"QA evidence failed: {', '.join(failures)}")
 
     automated = []
-    for check_id in required_ids:
-        entry: dict[str, Any] = {"id": check_id, "result": "passed", "evidencePath": str((evidence_dir / f"{check_id}.json").resolve())}
-        if check_id in HARD_ZERO:
-            entry["value"] = int(checks[check_id]["value"])
-        elif check_id == "pageCountAndCanvas":
-            entry["value"] = slide_count
-        automated.append(entry)
+    if current_quality:
+        generated_at = canonical_generated_at()
+        for check_id in required_ids:
+            if check_id in QUALITY_AUDIT_CHECKS:
+                evidence_path = current_quality["qualityAudit"]
+            else:
+                evidence_path = (evidence_dir / f"{check_id}.json").resolve()
+                write_structured_per_check(
+                    evidence_path,
+                    check_id,
+                    checks[check_id],
+                    current_quality["inputHashes"],
+                    generated_at,
+                    slide_count,
+                )
+            automated.append({"id": check_id, "evidencePath": str(evidence_path)})
+        write_json(qa_dir / "input-artifacts.json", {
+            "deck": {"path": str(pptx)},
+            "slideSpecs": {"path": str(current_quality["slideSpecs"])},
+            "themeLock": {"path": str(current_quality["themeLock"])},
+        })
+        write_json(qa_dir / "review-checks.json", normalize_review_checks(current_quality, slide_count))
+    else:
+        for check_id in required_ids:
+            entry: dict[str, Any] = {"id": check_id, "result": "passed", "evidencePath": str((evidence_dir / f"{check_id}.json").resolve())}
+            if check_id in HARD_ZERO:
+                entry["value"] = int(checks[check_id]["value"])
+            elif check_id == "pageCountAndCanvas":
+                entry["value"] = slide_count
+            automated.append(entry)
     write_json(qa_dir / "automated-checks.json", automated)
 
     default_scores = manual_config["defaultScores"]
@@ -364,10 +576,12 @@ def main() -> None:
     producer = str((reader.metadata or {}).get("/Producer", ""))
     creator = str((reader.metadata or {}).get("/Creator", ""))
     write_json(qa_dir / "tool-versions.json", {"python": sys.version.split()[0], "node": subprocess.run(["node", "--version"], text=True, capture_output=True).stdout.strip(), "presentationsBundle": args.presentations_version, "pptxRenderer": "Presentations render_slides.py via bundled LibreOffice", "pdfProducer": producer, "pdfCreator": creator})
-    smoke_path = evidence_dir / "client-smoke.txt"
-    smoke_path.write_text(f"PASS\nClient: LibreOffice Impress headless import/export\nProducer: {producer}\nCreator: {creator}\nPages: {pdf_pages}\nSource: {pptx}\nOutput: {pdf}\n", encoding="utf-8")
-    write_json(qa_dir / "client-smoke.json", {"status": "passed", "evidencePath": str(smoke_path.resolve()), "client": "LibreOffice Impress headless import/export", "scope": "file-open and PDF-export smoke; not Microsoft PowerPoint GUI"})
-    print(json.dumps({"route": args.route, "slideCount": slide_count, "automatedChecks": len(automated), "manualSlides": len(manual_scores), "status": "PASS"}, ensure_ascii=False))
+    write_json(qa_dir / "client-smoke.json", {
+        "status": "not_available",
+        "evidencePath": str(user_open_path),
+        "targetClient": user_open["targetClient"],
+    })
+    print(json.dumps({"route": args.route, "slideCount": slide_count, "automatedChecks": len(automated), "manualSlides": len(manual_scores), "qualityEvidenceMode": "current" if current_quality else "legacy", "status": "PASS"}, ensure_ascii=False))
 
 
 if __name__ == "__main__":

@@ -153,8 +153,8 @@ test("ordinary CI uses the fixed runtime matrix and performs the full determinis
     "node --test tests/unit/*.test.mjs",
     "PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests/unit -p 'test_*.py' -v",
     "python scripts/audit_public_candidate.py --root . --candidate tracked",
-    'python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-a" --version 0.2.0',
-    'python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-b" --version 0.2.0',
+    'python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-a" --version 0.3.0',
+    'python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-b" --version 0.3.0',
     'diff -qr "$RUNNER_TEMP/dist-a" "$RUNNER_TEMP/dist-b"',
   ]) {
     assert.ok(shell.includes(command), `CI missing: ${command}`);

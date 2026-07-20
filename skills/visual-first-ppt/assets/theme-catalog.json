@@ -11,7 +11,8 @@
         "light": {"background":"#F7F8FA","surface":"#FFFFFF","primary":"#17324D","secondary":"#496A82","accent":"#2E7D8A","text":"#17212B","muted":"#6D7883"},
         "dark": {"background":"#111820","surface":"#1B2631","primary":"#D9E7F2","secondary":"#8FA9BC","accent":"#57C3C8","text":"#F4F7FA","muted":"#A4B0BA"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":30,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":30,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 restrained corporate editorial composition, quiet geometry, generous negative space, one clear focal subject, realistic materials, clean lighting",
       "negativePrompt": "no embedded critical text or precise data, no fake logos, no decorative clutter, no distorted people, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"muted"},"chart":{"series":["accent","secondary"],"grid":"subtle"}},
@@ -28,7 +29,8 @@
         "light": {"background":"#F4F6F8","surface":"#FFFFFF","primary":"#12355B","secondary":"#4C6380","accent":"#D66B2C","text":"#17202A","muted":"#75808C"},
         "dark": {"background":"#101923","surface":"#192737","primary":"#E1EBF5","secondary":"#93A9BF","accent":"#F08A4B","text":"#F8FAFC","muted":"#AAB6C2"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Arial","numberFont":"Arial","titleSize":28,"bodySize":15,"captionSize":9},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":28,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 analytical consulting report visual, precise modular grid, restrained documentary image, clear hierarchy, high information discipline",
       "negativePrompt": "no embedded critical text or precise data, no ornamental infographics, no vague icons, no fake documents, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"light"},"chart":{"series":["primary","accent","secondary"],"labels":"direct"}},
@@ -45,7 +47,8 @@
         "light": {"background":"#F2F7FF","surface":"#FFFFFF","primary":"#143E78","secondary":"#315E9A","accent":"#00A6C8","text":"#10233F","muted":"#687B95"},
         "dark": {"background":"#07111F","surface":"#0E2038","primary":"#78AFFF","secondary":"#4D78B8","accent":"#22D3EE","text":"#EAF4FF","muted":"#8EA7C2"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":31,"bodySize":15,"captionSize":9},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":31,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 cinematic future technology scene, layered depth, luminous cyan accents, clean interfaces without readable text, believable materials, strong safe zone",
       "negativePrompt": "no embedded critical text or precise data, no illegible interface glyphs, no neon overload, no science-fiction weapon, no watermark",
       "nativeTextStyles": {"title":{"weight":"semibold","color":"text"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"surface","accentRule":"accent"},"chart":{"series":["accent","primary","secondary"],"glow":"none"}},
@@ -62,7 +65,8 @@
         "light": {"background":"#F7F7F5","surface":"#FFFFFF","primary":"#202124","secondary":"#5F6368","accent":"#6A5CFF","text":"#17181A","muted":"#777A80"},
         "dark": {"background":"#090A0D","surface":"#17181D","primary":"#F5F6F8","secondary":"#B5B7BF","accent":"#9A8CFF","text":"#FFFFFF","muted":"#989BA4"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":34,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":34,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 premium product launch key visual, one hero object, dramatic controlled lighting, tactile materials, generous negative space, clean stage composition",
       "negativePrompt": "no embedded critical text or precise data, no fake product labels, no cluttered collage, no distorted hardware, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"text"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"accent","grid":"none"},"chart":{"series":["accent","secondary"],"labels":"minimal"}},
@@ -79,7 +83,8 @@
         "light": {"background":"#F6F1E8","surface":"#FFFDF8","primary":"#3A3028","secondary":"#786A5D","accent":"#B64E3C","text":"#28221D","muted":"#887E74"},
         "dark": {"background":"#1B1714","surface":"#2A2420","primary":"#F2E8DB","secondary":"#B9A99A","accent":"#E2725B","text":"#FFF8EE","muted":"#B3A79D"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Georgia","numberFont":"Arial","titleSize":32,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"SimSun","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":32,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["SimSun","Songti SC","Noto Serif CJK SC","Source Han Serif SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 contemporary editorial photography layout, human-scale detail, tactile natural light, strong cropping, considered negative space, magazine pacing",
       "negativePrompt": "no embedded critical text or precise data, no fake newspaper copy, no sensational collage, no distorted faces or hands, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"hairline"},"chart":{"series":["accent","secondary"],"labels":"editorial"}},
@@ -96,7 +101,8 @@
         "light": {"background":"#F4F9F7","surface":"#FFFFFF","primary":"#205B52","secondary":"#4F7E76","accent":"#F2A33A","text":"#17332F","muted":"#6D827E"},
         "dark": {"background":"#10211F","surface":"#19332F","primary":"#D8F1EB","secondary":"#8EB6AD","accent":"#FFC15A","text":"#F4FBF9","muted":"#A0B9B3"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":30,"bodySize":17,"captionSize":10},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":30,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 warm contemporary education scene, authentic diverse learners and teachers, clear learning activity, natural daylight, optimistic but credible, spacious text safe zone",
       "negativePrompt": "no embedded critical text or precise data, no staged stock-photo smiles, no distorted students or hands, no school logo, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"soft"},"chart":{"series":["primary","accent","secondary"],"labels":"clear"}},
@@ -113,7 +119,8 @@
         "light": {"background":"#F7F9FB","surface":"#FFFFFF","primary":"#243B64","secondary":"#5E7192","accent":"#2A8C82","text":"#19243A","muted":"#748096"},
         "dark": {"background":"#111827","surface":"#1F2937","primary":"#DCE7F7","secondary":"#98A9C3","accent":"#4FD1C5","text":"#F7FAFC","muted":"#AAB4C4"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Calibri","numberFont":"Arial","titleSize":27,"bodySize":15,"captionSize":9},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":28,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 rigorous academic presentation visual, clear scientific subject, neutral laboratory or field context, precise composition, restrained depth, ample annotation-safe space",
       "negativePrompt": "no embedded critical text or precise data, no invented scientific labels, no speculative result imagery, no distorted equipment, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"thin"},"chart":{"series":["primary","accent","secondary"],"labels":"complete"}},
@@ -130,7 +137,8 @@
         "light": {"background":"#F8F6F1","surface":"#FFFFFF","primary":"#8E1F2D","secondary":"#7B5B3E","accent":"#C99732","text":"#2B2521","muted":"#80766D"},
         "dark": {"background":"#241819","surface":"#382325","primary":"#F4D9D6","secondary":"#C5A98E","accent":"#E4B85A","text":"#FFF8F4","muted":"#C2B3AA"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"SimSun","numberFont":"Arial","titleSize":28,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":28,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 dignified public-service visual, orderly civic or education context, natural documentary light, balanced symmetry, restrained red and gold accents, ample formal title space",
       "negativePrompt": "no embedded critical text or precise data, no unauthorized emblem, no ceremonial exaggeration, no fake official document, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"thin"},"chart":{"series":["primary","accent","secondary"],"labels":"formal"}},
@@ -147,7 +155,8 @@
         "light": {"background":"#F3EFE6","surface":"#FBF8F1","primary":"#344A3F","secondary":"#7A6651","accent":"#B44A3C","text":"#292720","muted":"#817B70"},
         "dark": {"background":"#17201C","surface":"#243029","primary":"#E6E0D2","secondary":"#B5A58E","accent":"#D46A58","text":"#FAF6ED","muted":"#B1AA9D"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"SimSun","numberFont":"Arial","titleSize":31,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"SimSun","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":31,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["SimSun","Songti SC","Noto Serif CJK SC","Source Han Serif SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC","Arial Unicode MS"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 modern Chinese visual language, restrained ink-like atmosphere, natural mineral colors, contemporary architecture or craft detail, asymmetrical void, elegant texture",
       "negativePrompt": "no embedded critical text or precise data, no costume cliché, no imitation calligraphy, no excessive dragons or lanterns, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","grid":"hairline"},"chart":{"series":["primary","accent","secondary"],"labels":"restrained"}},
@@ -164,7 +173,8 @@
         "light": {"background":"#FFF8F1","surface":"#FFFFFF","primary":"#4B2E83","secondary":"#256E8A","accent":"#F05A47","text":"#261D34","muted":"#746A7E"},
         "dark": {"background":"#191326","surface":"#2A2040","primary":"#E5D8FF","secondary":"#76D1EA","accent":"#FF745F","text":"#FFF8FF","muted":"#B8ABC8"}
       },
-      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Aptos","numberFont":"Arial","titleSize":33,"bodySize":16,"captionSize":10},
+      "typography": {"titleFont":"Microsoft YaHei","bodyFont":"Microsoft YaHei","numberFont":"Arial","titleSize":33,"bodySize":20,"captionSize":14,"sourceSize":10,"pageNumberSize":10,"cjkTitleCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"cjkBodyCandidates":["Microsoft YaHei","PingFang SC","Noto Sans CJK SC","Source Han Sans SC"],"latinCandidates":["Aptos","Arial","Calibri"],"numberCandidates":["Arial","Aptos","Calibri"]},
+      "fontPolicy": {"requireBuildResolution":true,"forbidSilentFallback":true,"invalidateVisualLockOnChange":true},
       "imagePromptBase": "16:9 energetic contemporary creative composition, bold geometric movement, tactile collage-like depth without text fragments, expressive color blocks, clear focal hierarchy",
       "negativePrompt": "no embedded critical text or precise data, no random typography fragments, no chaotic sticker overload, no distorted people, no watermark",
       "nativeTextStyles": {"title":{"weight":"bold","color":"primary"},"body":{"weight":"regular","color":"text"},"table":{"headerFill":"primary","banding":"accent-soft"},"chart":{"series":["accent","secondary","primary"],"labels":"direct"}},

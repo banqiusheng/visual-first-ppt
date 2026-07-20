@@ -20,6 +20,24 @@ const DOCTOR = path.join(ROOT, "skills/visual-first-ppt/scripts/doctor.mjs");
 const REAL_SKILL_ROOT = path.join(ROOT, "skills/visual-first-ppt");
 const TEMP_ROOTS = [];
 
+const NEW_QUALITY_RUNTIME_FILES = [
+  "schemas/project-artifacts.schema.json",
+  "assets/quality-contract.json",
+  "assets/layout-archetypes.json",
+  "schemas/quality-evidence.schema.json",
+  "scripts/validate-slide-specs.mjs",
+  "scripts/audit_pptx_quality.py",
+  "scripts/lib/atomic-json.mjs",
+  "scripts/lib/quality-contract.mjs",
+  "scripts/lib/content-quality.mjs",
+  "scripts/lib/quality-evidence.mjs",
+  "scripts/lib/schema-validator.mjs",
+  "scripts/lib/current-qa.mjs",
+  "scripts/lib/visual-contract.mjs",
+  "scripts/lib/prebuild-approval.mjs",
+  "scripts/lib/zip_safety.py",
+];
+
 const REQUIRED_SKILL_FILES = [
   "SKILL.md",
   "agents/openai.yaml",
@@ -29,11 +47,13 @@ const REQUIRED_SKILL_FILES = [
   "references/themes.md",
   "references/workflow.md",
   "scripts/build-qa-report.mjs",
+  "scripts/validate-current-qa.mjs",
   "scripts/compare_untouched_slides.py",
   "scripts/package_delivery.py",
   "scripts/project-state.mjs",
   "scripts/verify_handoff_paths.py",
   "assets/theme-catalog.json",
+  ...NEW_QUALITY_RUNTIME_FILES,
 ];
 
 after(() => {
@@ -205,6 +225,23 @@ test("a missing SKILL.md returns FAIL and exit 1", () => {
   assert.equal(checkById(report, "skill-files").status, "FAIL");
   assert.match(checkById(report, "skill-files").detail, /SKILL\.md/);
 });
+
+for (const relativePath of NEW_QUALITY_RUNTIME_FILES) {
+  test(`a missing visual-quality runtime file returns FAIL: ${relativePath}`, () => {
+    const codexHome = path.join(makeTempRoot(), "codex-home");
+    exposeCapabilities(codexHome, ["presentations", "imagegen"]);
+    const result = runDoctor({
+      skillRoot: makeSkillRoot({ omit: [relativePath] }),
+      env: doctorEnv({ codexHome }),
+    });
+    const report = parseDoctorJson(result);
+
+    assert.equal(result.status, 1, result.stderr);
+    assert.equal(report.status, "FAIL");
+    assert.equal(checkById(report, "skill-files").status, "FAIL");
+    assert.match(checkById(report, "skill-files").detail, new RegExp(relativePath.replaceAll(".", "\\.")));
+  });
+}
 
 test("a substituted Node.js version below 20 returns FAIL", () => {
   const codexHome = path.join(makeTempRoot(), "codex-home");

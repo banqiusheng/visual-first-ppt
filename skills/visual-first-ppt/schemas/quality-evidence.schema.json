@@ -1,0 +1,301 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openai.local/visual-first-ppt/quality-evidence.schema.json",
+  "title": "Visual-First PPT quality evidence",
+  "$defs": {
+    "targetClient": {
+      "enum": ["Microsoft PowerPoint", "WPS Presentation"]
+    },
+    "prebuildEvidence": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "qualityContractVersion",
+        "checker",
+        "projectId",
+        "inputHashes",
+        "approvalHashes",
+        "violationCounts",
+        "finalVerdict",
+        "generatedAt"
+      ],
+      "properties": {
+        "artifactType": { "const": "prebuildEvidence" },
+        "schemaVersion": { "const": "1.0.0" },
+        "qualityContractVersion": { "const": "1.0.0" },
+        "checker": {
+          "type": "object",
+          "required": ["id", "version"],
+          "properties": {
+            "id": { "const": "validate-slide-specs" },
+            "version": { "const": "1.0.0" }
+          },
+          "additionalProperties": false
+        },
+        "projectId": { "type": "string", "pattern": ".+" },
+        "inputHashes": {
+          "type": "object",
+          "required": ["slideSpecs", "themeLock", "fontEvidence"],
+          "properties": {
+            "slideSpecs": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "themeLock": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "fontEvidence": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "approvalHashes": {
+          "type": "object",
+          "properties": {
+            "outline": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "visual": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "scope": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "diffPreview": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "final": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "violationCounts": {
+          "type": "object",
+          "required": ["schema", "contentBlocks", "typography", "safeZone", "visualIntent", "contentHash"],
+          "properties": {
+            "schema": { "const": 0 },
+            "contentBlocks": { "const": 0 },
+            "typography": { "const": 0 },
+            "safeZone": { "const": 0 },
+            "visualIntent": { "const": 0 },
+            "contentHash": { "const": 0 }
+          },
+          "additionalProperties": false
+        },
+        "finalVerdict": { "const": "PASS" },
+        "generatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+      },
+      "additionalProperties": false
+    },
+    "automatedEvidenceBundle": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "qualityContractVersion",
+        "checker",
+        "inputHashes",
+        "checks",
+        "finalVerdict",
+        "generatedAt"
+      ],
+      "properties": {
+        "artifactType": { "const": "automatedEvidenceBundle" },
+        "schemaVersion": { "const": "1.0.0" },
+        "qualityContractVersion": { "const": "1.0.0" },
+        "checker": {
+          "type": "object",
+          "required": ["id", "version"],
+          "properties": {
+            "id": { "const": "audit-pptx-quality" },
+            "version": { "const": "1.0.0" }
+          },
+          "additionalProperties": false
+        },
+        "inputHashes": {
+          "type": "object",
+          "required": ["deck", "slideSpecs", "themeLock", "objectInventory"],
+          "properties": {
+            "deck": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "slideSpecs": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "themeLock": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "objectInventory": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "checks": {
+          "type": "object",
+          "required": ["textFramePolicy", "safeMargin", "fontResolution", "contentPresence", "hiddenVisualResidue"],
+          "properties": {
+            "textFramePolicy": { "$ref": "#/$defs/automatedCheck" },
+            "safeMargin": { "$ref": "#/$defs/automatedCheck" },
+            "fontResolution": { "$ref": "#/$defs/automatedCheck" },
+            "contentPresence": { "$ref": "#/$defs/automatedCheck" },
+            "hiddenVisualResidue": { "$ref": "#/$defs/automatedCheck" }
+          },
+          "additionalProperties": false
+        },
+        "finalVerdict": { "enum": ["PASS", "FAIL"] },
+        "generatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+      },
+      "additionalProperties": false
+    },
+    "perCheckEvidence": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "qualityContractVersion",
+        "checker",
+        "checkId",
+        "inputHashes",
+        "check",
+        "finalVerdict",
+        "generatedAt"
+      ],
+      "properties": {
+        "artifactType": { "const": "perCheckEvidence" },
+        "schemaVersion": { "const": "1.0.0" },
+        "qualityContractVersion": { "const": "1.0.0" },
+        "checker": {
+          "type": "object",
+          "required": ["id", "version"],
+          "properties": {
+            "id": { "type": "string", "pattern": ".+" },
+            "version": { "type": "string", "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" }
+          },
+          "additionalProperties": false
+        },
+        "checkId": { "type": "string", "pattern": ".+" },
+        "inputHashes": {
+          "type": "object",
+          "required": ["deck", "slideSpecs", "themeLock"],
+          "properties": {
+            "deck": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "slideSpecs": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "themeLock": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "check": { "$ref": "#/$defs/automatedCheck" },
+        "finalVerdict": { "enum": ["PASS", "FAIL"] },
+        "generatedAt": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$" }
+      },
+      "additionalProperties": false
+    },
+    "fullSlidePngEvidence": {
+      "type": "object",
+      "required": ["evidencePath", "evidenceSha256", "width", "height"],
+      "properties": {
+        "evidencePath": { "type": "string", "pattern": ".+" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "clientSmokeEvidence": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "targetClient",
+        "observationMode",
+        "openedArtifactHash",
+        "observations",
+        "observedAt"
+      ],
+      "properties": {
+        "artifactType": { "const": "clientSmokeEvidence" },
+        "schemaVersion": { "const": "1.0.0" },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "observationMode": { "const": "gui-open" },
+        "openedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "observations": {
+          "type": "object",
+          "required": ["applicationWindowVisible", "deckOpened", "slideCanvasVisible"],
+          "properties": {
+            "applicationWindowVisible": { "const": true },
+            "deckOpened": { "const": true },
+            "slideCanvasVisible": { "const": true }
+          },
+          "additionalProperties": false
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "userOpenConfirmationEvidence": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "targetClient",
+        "openedArtifactHash",
+        "userMessage",
+        "confirmedAt"
+      ],
+      "properties": {
+        "artifactType": { "const": "userOpenConfirmationEvidence" },
+        "schemaVersion": { "const": "1.0.0" },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "openedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "userMessage": { "type": "string", "pattern": "\\S" },
+        "confirmedAt": {
+          "type": "string",
+          "format": "date-time",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "perSlideReviewCheck": {
+      "type": "object",
+      "required": ["status", "notes"],
+      "properties": {
+        "status": { "const": "PASS" },
+        "notes": { "type": "string", "pattern": ".+" }
+      },
+      "additionalProperties": false
+    },
+    "perSlideReview": {
+      "type": "object",
+      "required": [
+        "slide",
+        "reviewer",
+        "evidencePath",
+        "evidenceSha256",
+        "width",
+        "height",
+        "checks"
+      ],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "reviewer": { "type": "string", "pattern": ".+" },
+        "evidencePath": { "type": "string", "pattern": ".+" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "checks": {
+          "type": "object",
+          "required": ["contentVisibility", "generatedImageTextReview", "visualSemanticMatch"],
+          "properties": {
+            "contentVisibility": { "$ref": "#/$defs/perSlideReviewCheck" },
+            "generatedImageTextReview": { "$ref": "#/$defs/perSlideReviewCheck" },
+            "visualSemanticMatch": { "$ref": "#/$defs/perSlideReviewCheck" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "automatedCheck": {
+      "type": "object",
+      "required": ["status", "value", "violations"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL"] },
+        "value": { "type": "integer", "minimum": 0 },
+        "violations": { "type": "array", "items": { "type": "object" } }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    { "$ref": "#/$defs/prebuildEvidence" },
+    { "$ref": "#/$defs/automatedEvidenceBundle" },
+    { "$ref": "#/$defs/perCheckEvidence" },
+    { "$ref": "#/$defs/perSlideReview" },
+    { "$ref": "#/$defs/clientSmokeEvidence" },
+    { "$ref": "#/$defs/userOpenConfirmationEvidence" }
+  ]
+}

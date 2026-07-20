@@ -20,17 +20,17 @@
 この README の `codex` で始まるコマンドは、ユーザーが手動で実行する透明な代替手順です。実行中の Codex Agent は、ツール操作として直接、Shell、またはラッパー経由で `codex` 実行ファイル（`codex plugin ...` を含む）を起動してはいけません。現在のホストが直接提供する管理機能、または以下の `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` に限定した読み取り専用確認だけを使用します。
 
 ```bash
-codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.2.0
+codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.3.0
 codex plugin add visual-first-ppt@visual-first-ppt-marketplace
 ```
 
-最初のコマンドは `v0.2.0` タグに固定された Marketplace を登録するだけで、Plugin のインストールは行いません。二つ目のコマンドで Plugin をインストールします。Plugin のインストール後は、新しい Codex タスクを開始してください。
+最初のコマンドは `v0.3.0` タグに固定された Marketplace を登録するだけで、Plugin のインストールは行いません。二つ目のコマンドで Plugin をインストールします。Plugin のインストール後は、新しい Codex タスクを開始してください。
 
 Skill のみをインストールする場合は、次のプロンプトを Codex に貼り付けてください。
 
 ```text
 $skill-installer を使って、次の固定バージョンから visual-first-ppt をインストールしてください：
-https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt
+https://github.com/banqiusheng/visual-first-ppt/tree/v0.3.0/skills/visual-first-ppt
 インストール前に同名の Skill がないか確認し、存在する場合は EXISTING_INSTALLATION で停止して上書きしないでください。
 インストール後、新しい Codex タスクが必要かどうかと、$visual-first-ppt で始める方法を説明してください。
 インストール方法の説明だけの場合も、実際にインストールする場合も、インストール済みコピー用 doctor コマンド、期待結果と実結果、起動確認、setup 状態を含む完全な verification_plan ブロックで回答を終えてください。
@@ -64,8 +64,8 @@ Plugin をインストールした場合は、現在のホストが直接公開�
 セットアップが `EXISTING_INSTALLATION` で停止した場合は、上書きしないでください。次のプロンプトを Codex に貼り付けます。
 
 ```text
-既存の visual-first-ppt がある可能性があります。読み取り専用で確認し、正確な対象が Skill-only と Plugin のどちらかを特定してください。似た名前のプロジェクトデータ用ディレクトリと混同してはいけません。実際のインストールが見つからない場合は EXISTING_INSTALLATION_NOT_FOUND を報告し、確認した場所と候補バージョン v0.2.0 を示して、正確なパスの提示または新規インストールの選択を求めてください。この場合はアップグレード承認を求めないでください。
-Skill-only リカバリー：これはセットアップまたはアップグレードの作業であり、PPT 制作ではありません。インストール済みの $visual-first-ppt ワークフローを呼び出してはいけません。${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt を最初に確認し、ユーザーが明示的に指定した場合にだけ別の絶対 Skill パスを確認してください。codex 実行ファイルを起動したり、ホームディレクトリを無制限に検索したりしてはいけません。認証ファイルを読み取ってはいけません。無関係な環境を列挙してはいけません。正確な Skill 対象と固定された v0.2.0 を読み取り専用でバージョンまたは内容比較し、差分と正確なパスを提示して、パスを特定した UPGRADE_APPROVED の判断まで停止してください。承認後のみ、既存 Skill をタイムスタンプ付き同階層バックアップへ移動し、新しい対象へインストールして doctor と明示的な $visual-first-ppt 起動確認を行います。インストールまたは検証に失敗した場合は ROLLBACK を実行してバックアップを復元してください。既存コピーをマージまたは再帰削除してはいけません。
+既存の visual-first-ppt がある可能性があります。読み取り専用で確認し、正確な対象が Skill-only と Plugin のどちらかを特定してください。似た名前のプロジェクトデータ用ディレクトリと混同してはいけません。実際のインストールが見つからない場合は EXISTING_INSTALLATION_NOT_FOUND を報告し、確認した場所と候補バージョン v0.3.0 を示して、正確なパスの提示または新規インストールの選択を求めてください。この場合はアップグレード承認を求めないでください。
+Skill-only リカバリー：これはセットアップまたはアップグレードの作業であり、PPT 制作ではありません。インストール済みの $visual-first-ppt ワークフローを呼び出してはいけません。${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt を最初に確認し、ユーザーが明示的に指定した場合にだけ別の絶対 Skill パスを確認してください。codex 実行ファイルを起動したり、ホームディレクトリを無制限に検索したりしてはいけません。認証ファイルを読み取ってはいけません。無関係な環境を列挙してはいけません。正確な Skill 対象と固定された v0.3.0 を読み取り専用でバージョンまたは内容比較し、差分と正確なパスを提示して、パスを特定した UPGRADE_APPROVED の判断まで停止してください。承認後のみ、既存 Skill をタイムスタンプ付き同階層バックアップへ移動し、新しい対象へインストールして doctor と明示的な $visual-first-ppt 起動確認を行います。インストールまたは検証に失敗した場合は ROLLBACK を実行してバックアップを復元してください。既存コピーをマージまたは再帰削除してはいけません。
 Plugin リカバリー：現在のホストが直接提供する Plugin 管理機能だけを使用してください。実行中のタスク内から codex plugin コマンドを実行してはいけません。Codex がサポートする Plugin の管理、更新、ロールバック機能だけを使用してください。Plugin 管理下のストレージを推測、移動、名前変更、再帰削除してはいけません。サポート対象で復元可能な更新またはロールバック経路を特定できない場合は、停止してブロッカーを説明し、`UPGRADE_APPROVED` を要求または使用してはいけません。
 ```
 
@@ -136,6 +136,14 @@ $visual-first-ppt を使ってください。最初に create、template、edit 
 - 最終ファイルが指定された出力先ルートの外部、または OS やツールが管理する一時、キャッシュ、スクラッチのパスにある場合は受け付けません。
 - 編集可能な PPTX 1 ファイル、PDF 1 ファイル、プレビュー、制作記録、再現性のある ZIP のみをパッケージ化します。
 
+### ビジュアル品質ゲート
+
+- ネイティブテキストは編集可能なまま維持し、生成画像は雰囲気や場面表現に使い、事実テキストや正確なデータを埋め込みません。
+- 情報量の多いページは分割される場合があり、承認済み内容を小さくしたり切り落としたりせず、意味のまとまりごとに分けます。
+- フォントフォールバックは納品をブロックします。検証済みの代替フォントを選び、ビジュアルサンプルを再承認する必要があります。
+- `template` と `edit` の保持対象ページは、新規ページの規則に合わせて再整形せず、互換性と未変更の証跡で確認します。
+- legacy プロジェクトは読み取り可能ですが、移行が完了するまで再ビルド、新しい QA 証跡の生成、再パッケージ化、再納品はできません。
+
 ## 必要条件
 
 - 現行の `Presentations` と `imagegen` の Skill または機能を利用できる Codex 環境。
@@ -150,7 +158,7 @@ $visual-first-ppt を使ってください。最初に create、template、edit 
 再現可能な方法でインストールするには、公開済みのリリースタグをクローンし、配布対象の Skill ディレクトリだけをコピーします。
 
 ```bash
-git clone --branch v0.2.0 --depth 1 \
+git clone --branch v0.3.0 --depth 1 \
   https://github.com/banqiusheng/visual-first-ppt.git
 cd visual-first-ppt
 
@@ -240,6 +248,6 @@ SKILL_CREATOR="${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator"
 
 ## リリースとライセンス
 
-- 現在のリリース：[`v0.2.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.2.0)
+- 現在のリリース：[`v0.3.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.3.0)
 - リリース履歴：[`CHANGELOG.md`](CHANGELOG.md)
 - ライセンス：MIT — [`LICENSE`](LICENSE) を参照してください

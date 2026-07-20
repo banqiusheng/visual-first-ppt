@@ -272,7 +272,7 @@ test("support runbook stops without approval when no real installation is found"
 
   assert.match(
     support,
-    /EXISTING_INSTALLATION_NOT_FOUND.*project-data directory.*checked locations.*v0\.2\.0/is,
+    /EXISTING_INSTALLATION_NOT_FOUND.*project-data directory.*checked locations.*v0\.3\.0/is,
   );
   assert.match(support, /exact path.*fresh install/is);
   assert.match(support, /Do not request `UPGRADE_APPROVED`/is);

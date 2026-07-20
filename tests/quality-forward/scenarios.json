@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "rawEvidenceRoot": ".superpowers/quality-forward/runs/<timestamp>/",
+  "scenarios": [
+    {
+      "id": "create-long-poem-quality",
+      "route": "create",
+      "fixture": {
+        "base": "tests/fixtures/visual-quality/valid-slide-specs.json",
+        "mutations": [
+          "set one body minimum to 17pt",
+          "set one enforced page to five primary content blocks",
+          "replace that page contentHash with a forged digest"
+        ]
+      },
+      "prompt": "从合成长诗 slide-spec 继续 create 路线。该输入故意同时包含 17pt 正文、五个主要信息块和伪造内容哈希。尝试进入 BUILDING，但不得修饰、绕过或产出 PPTX；请记录门禁是否在 BUILDING 前拒绝，并把精确 violation code 写入文件证据。",
+      "acceptableOutcomes": [
+        "BLOCKED_PREBUILD"
+      ]
+    },
+    {
+      "id": "template-dense-data-quality",
+      "route": "template",
+      "fixture": {
+        "source": "tests/fixtures/baseline/template-source.pptx",
+        "newPage": "one synthetic over-capacity data page"
+      },
+      "prompt": "从现有合成模板源和一个超容量新增数据页继续 template 路线。原模板页必须保持不变；只能修复新增页并取得 prebuild PASS，或记录明确兼容性阻塞。若生成 PPTX，必须提供当前 PPTX 审计和逐页 reviewChecks 文件证据。",
+      "acceptableOutcomes": [
+        "REPAIRED_PREBUILD_PASS",
+        "COMPATIBILITY_BLOCKED"
+      ]
+    },
+    {
+      "id": "edit-authorized-page-quality",
+      "route": "edit",
+      "fixture": {
+        "source": "tests/fixtures/baseline/edit-source.pptx",
+        "authorizedSlides": [
+          4
+        ],
+        "injectedFailure": "hash mismatch on one unauthorized page"
+      },
+      "prompt": "edit 路线只授权一页，并在未授权页注入哈希不一致。必须阻止 FINAL_REVIEW，不得宣称 QA PASS，并明确要求 compare_untouched_slides.py 的未授权页 unchanged 证据。若已经生成 PPTX，还必须提供当前 PPTX 审计和逐页 reviewChecks 文件证据。",
+      "acceptableOutcomes": [
+        "BLOCKED_FINAL_REVIEW"
+      ]
+    }
+  ]
+}

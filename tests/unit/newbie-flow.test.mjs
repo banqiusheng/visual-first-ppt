@@ -6,7 +6,7 @@ import path from "node:path";
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const SVG_PATH = path.join(ROOT, "docs/assets/newbie-quick-start.svg");
 const STAGE_LABELS = [
-  "1  Plugin v0.2.0",
+  "1  Plugin v0.3.0",
   "2  $visual-first-ppt",
   "3  create | template | edit",
   "4  PPTX + PDF + ZIP",
@@ -21,7 +21,7 @@ test("newbie flow SVG is accessible, language-neutral, and privacy-safe", async 
   assert.match(svg, /\baria-labelledby="newbie-title newbie-desc"/);
 
   for (const token of [
-    "v0.2.0",
+    "v0.3.0",
     "$visual-first-ppt",
     "create | template | edit",
     "PPTX + PDF + ZIP",

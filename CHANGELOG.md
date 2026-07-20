@@ -1,5 +1,29 @@
 # Changelog
 
+## [Unreleased]
+
+## [0.3.0] - 2026-07-20
+
+### Added
+
+- Executable layout, typography, safe-margin, content-visibility, generated-image, and semantic-image quality gates with structured prebuild, OOXML, and full-size review evidence.
+- Doctor completeness checks for every visual-quality runtime asset, schema, validator, auditor, and shared helper.
+- A read-only current-QA validator shared by report building, project-state validation, and deterministic packaging.
+
+### Changed
+
+- The state workflow now requires current prebuild evidence before `BUILDING` and current QA evidence before `FINAL_REVIEW`; any bound input change invalidates stale evidence.
+- QA contracts are split into strict `qaReportCurrent` release evidence and read-only `qaReportLegacy` migration diagnostics; state transitions and packaging accept only the current contract.
+- Packaging now requires matching current `project-manifest.json` and `state.json` quality gates and recomputes the exact QA report hash before creating a ZIP.
+- Native text remains editable, while overloaded pages split at complete semantic boundaries and unresolved font fallback blocks delivery.
+- Existing source pages in `template` and unauthorized preserved pages in `edit` retain compatibility and unchanged-page exceptions instead of being reformatted to new-page defaults.
+- Legacy projects remain readable but require explicit quality migration before rebuilding, regenerating QA, repackaging, or redelivery.
+
+### Compatibility
+
+- No new runtime dependency is introduced; the new JavaScript and Python checks use the existing Node.js and Python requirements.
+- Existing `v0.2.0` project records remain readable; rebuilding, regenerating QA, repackaging, or redelivery requires explicit migration to the current quality contract.
+
 ## [0.2.0] - 2026-07-16
 
 ### Added

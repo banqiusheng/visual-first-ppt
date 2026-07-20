@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { validateVisualQualityPublicSummary } from "../quality-forward/summarize.mjs";
+
 const ROOT = path.resolve(import.meta.dirname, "../..");
 
 async function readJson(relativePath) {
@@ -56,4 +58,40 @@ test("public candidate ignores local planning and raw agent-forward evidence", a
 
   assert.ok(lines.has(".superpowers/"));
   assert.ok(lines.has("tests/agent-forward/runs/"));
+});
+
+test("visual-quality public summary accepts hashes only and rejects raw PPTX or PNG paths", async () => {
+  const valid = {
+    artifactType: "visualQualityHardeningSummary",
+    schemaVersion: "1.0.0",
+    evidenceRetention: "summary-and-hashes-only",
+    frozenAgentForwardTreeHash: `git-tree:${"1".repeat(40)}`,
+    scenarios: [
+      "create-long-poem-quality",
+      "template-dense-data-quality",
+      "edit-authorized-page-quality",
+    ].map((id, index) => ({
+      id,
+      verdict: "PASS",
+      manifestSha256: `sha256:${String(index + 1).repeat(64)}`,
+    })),
+  };
+  assert.doesNotThrow(() => validateVisualQualityPublicSummary(valid));
+
+  for (const leakedValue of [
+    ".superpowers/quality-forward/runs/20260717T000000Z",
+    "raw/output.pptx",
+    "raw/slide-01.png",
+  ]) {
+    const invalid = structuredClone(valid);
+    invalid.scenarios[0].rawEvidencePath = leakedValue;
+    assert.throws(() => validateVisualQualityPublicSummary(invalid), /public summary|raw|path|fields/i);
+  }
+
+  const publicPath = path.join(ROOT, "tests/artifacts/support/visual-quality-hardening-summary.json");
+  try {
+    validateVisualQualityPublicSummary(await readJson(path.relative(ROOT, publicPath)));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
 });

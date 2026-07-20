@@ -20,7 +20,7 @@ const CAPABILITY_RECOVERY_END = "<!-- END CAPABILITY_RECOVERY_RESPONSE -->";
 const QUICK_START_TOKENS = [
   QUICK_START_BEGIN,
   QUICK_START_END,
-  "codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.2.0",
+  "codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.3.0",
   "codex plugin add visual-first-ppt@visual-first-ppt-marketplace",
   "$skill-installer",
   "$visual-first-ppt",
@@ -41,7 +41,7 @@ const QUICK_START_TOKENS = [
 ];
 const QUICK_START_PROMPT_TOKENS = [
   "$skill-installer",
-  "https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt",
+  "https://github.com/banqiusheng/visual-first-ppt/tree/v0.3.0/skills/visual-first-ppt",
   "EXISTING_INSTALLATION",
   "$visual-first-ppt",
   "create",
@@ -193,6 +193,42 @@ const CURRENT_VALIDATION_EVIDENCE_PATTERNS = {
   "README.zh-CN.md": /全部测试通过.*每次运行.*当次准确数量.*容易过期的固定总数/s,
   "README.ja.md": /すべてのテスト.*合格.*各実行.*正確な現在数.*固定総数/s,
   "README.ko.md": /모든 테스트.*통과.*각 실행.*정확한 현재 개수.*고정 총계/s,
+};
+const VISUAL_QUALITY_GATE_HEADINGS = {
+  "README.md": "### Visual quality gates",
+  "README.zh-CN.md": "### 视觉质量门禁",
+  "README.ja.md": "### ビジュアル品質ゲート",
+  "README.ko.md": "### 시각 품질 게이트",
+};
+const VISUAL_QUALITY_GATE_PATTERNS = {
+  "README.md": [
+    /native text remains editable/i,
+    /dense pages may be split/i,
+    /font fallback blocks delivery/i,
+    /template.*edit.*preserv/is,
+    /legacy.*migrat.*rebuild/is,
+  ],
+  "README.zh-CN.md": [
+    /原生文字保持可编辑/,
+    /密集页面可能会拆分/,
+    /字体回退会阻止交付/,
+    /template.*edit.*保留/s,
+    /legacy.*迁移.*重新构建/s,
+  ],
+  "README.ja.md": [
+    /ネイティブテキストは編集可能なまま/,
+    /情報量の多いページは分割される場合/,
+    /フォントフォールバックは納品をブロック/,
+    /template.*edit.*保持/s,
+    /legacy.*移行.*再ビルド/s,
+  ],
+  "README.ko.md": [
+    /네이티브 텍스트는 편집 가능한 상태/,
+    /내용이 빽빽한 페이지는 분할될 수/,
+    /글꼴 대체가 발생하면 전달을 차단/,
+    /template.*edit.*보존/s,
+    /legacy.*마이그레이션.*다시 빌드/s,
+  ],
 };
 
 function extractBashBlocks(markdown) {
@@ -452,6 +488,18 @@ test("all localized READMEs expose the same release and workflow contract", asyn
       CURRENT_VALIDATION_EVIDENCE_PATTERNS[readmeFile],
       `${readmeFile} must explain count-independent release evidence`,
     );
+    assert.ok(
+      readme.includes(VISUAL_QUALITY_GATE_HEADINGS[readmeFile]),
+      `${readmeFile} is missing its visual quality gates subsection`,
+    );
+    for (const pattern of VISUAL_QUALITY_GATE_PATTERNS[readmeFile]) {
+      assert.match(readme, pattern, `${readmeFile} has an incomplete visual quality gate explanation`);
+    }
+    assert.doesNotMatch(
+      readme,
+      /\b(?:contentVisibility|generatedImageTextReview|visualSemanticMatch|qualityContractVersion)\b|\/Users\/[^/]+\//,
+      `${readmeFile} exposes internal quality fields or a personal path`,
+    );
     assert.doesNotMatch(
       pluginRecovery,
       /timestamped sibling backup|带时间戳的同级备份|タイムスタンプ付き同階層バックアップ|타임스탬프가 있는 동일 계층 백업/i,
@@ -482,7 +530,7 @@ test("all localized READMEs expose the same release and workflow contract", asyn
       "visual-first-ppt",
       "verify_handoff_paths.py",
       "project-state.mjs",
-      "https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.2.0",
+      "https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.3.0",
       "CHANGELOG.md",
       "LICENSE",
     ]) {

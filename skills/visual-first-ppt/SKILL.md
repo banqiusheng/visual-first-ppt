@@ -65,9 +65,9 @@ At `INTAKE`, create the Brief and inventory inputs. Follow [Intake and research]
 
 At source/compatibility states, hash inputs and write `source-ledger.json`. In strict template work, map source layouts before authoring. In edit work, inventory compatibility risks and never overwrite the source.
 
-At outline and visual states, create only the artifact required for the next user gate. Use [Themes](references/themes.md) to select one `primary_visual_source`, recommend three built-in directions only when needed, and generate a cover plus one typical content slide before whole-deck work.
+At outline and visual states, create only the artifact required for the next user gate. Use [Themes](references/themes.md) to select one `primary_visual_source`, recommend three built-in directions only when needed, and generate a cover plus one typical content slide before whole-deck work. After the exact visual sample is locked—or after an edit `CHANGE_PREVIEW` is resolved by an approved artifact hash or an explicit `notApplicableReason` / N/A reason—compile `slide-specs.json` plus `theme-lock.json` and run `scripts/validate-slide-specs.mjs`; only a current prebuild PASS may enter `BUILDING`.
 
-At `BUILDING`, compile `slide-specs.json` and follow [Generation contract](references/generation-contract.md). Use one visual route for the deck, preserve safe zones, inventory objects, keep critical content native, and render after every build or edit loop. Long decks above 20 slides use verified 5–8-slide batches.
+At `BUILDING`, follow [Generation contract](references/generation-contract.md). Use one visual route for the deck, preserve safe zones, inventory objects, keep critical content native, and render after every build or edit loop. Audit the current PPTX before QA; only a current QA PASS may enter `FINAL_REVIEW`. Long decks above 20 slides use verified 5–8-slide batches.
 
 `[BASELINE_COUNTER: act-before-gates]` In the no-Skill control, 15/15 runs began acting before exposing the route and approval gates. Therefore, do not start research, template authoring, or editing merely because the user says “直接做” or “不要问”; expose the route and current mandatory gate first.
 
@@ -79,17 +79,19 @@ For `create` and `template`, require and persist this order:
 
 For `edit`, require and persist this order:
 
-`COMPATIBILITY_REVIEW → SCOPE_REVIEW → [SCOPE_APPROVED] → CHANGE_PREVIEW (approved hash or recorded not-applicable reason) → BUILDING → QA → FINAL_REVIEW → [FINAL_APPROVED] → DELIVERED`
+`COMPATIBILITY_REVIEW → SCOPE_REVIEW → [SCOPE_APPROVED] → CHANGE_PREVIEW (approved artifact hash, or an explicit notApplicableReason / N/A reason) → BUILDING → QA → FINAL_REVIEW → [FINAL_APPROVED] → DELIVERED`
 
 Every approval records `approvedArtifactHash`, `approvedAt`, and `userMessage`. Silence is not approval. Rejection stays at or returns to the relevant review state. Narrative, visual, or scope changes invalidate affected approvals through `invalidateApproval`; local copy repair that does not change an approved conclusion uses the normal `BUILDING → QA` loop.
 
+For current-quality projects, enforce `VISUAL_LOCKED -> BUILDING prebuild PASS` (or the edit equivalent after `CHANGE_PREVIEW`) and `QA -> FINAL_REVIEW QA PASS`. Both evidence artifacts must match the current `qualityContractVersion`, input hashes, and approval hashes; stale evidence fails closed.
+
 ## Validate and deliver
 
-At QA, follow [QA and delivery](references/qa-and-delivery.md). Require all automated checks and evidence paths, hard-zero issue counts, per-slide four-dimension scores of at least 4/5, and target-client smoke or recorded final-open confirmation.
+At QA, follow [QA and delivery](references/qa-and-delivery.md). Require all automated checks and evidence paths, hard-zero issue counts, and per-slide scores for `readability`, `layoutIntegrity`, `contentCompleteness`, `visualConsistency`, `imageIntegrity`, `visualSemanticMatch`, and `visualContractFidelity`, with every dimension at least 4/5. Also require target-client smoke or recorded final-open confirmation.
 
 For `edit`, run `scripts/compare_untouched_slides.py`; unauthorized slides require byte-identical rendered PNG plus matching canonical slide and relationship XML. `[BASELINE_COUNTER: unchanged-without-diff]` Three no-Skill edit runs claimed the source was unchanged without recorded diff evidence. Never use “源文件未改动” or “尚未实际编辑” as unchanged-page proof.
 
-Build `qa-report.json` with `scripts/build-qa-report.mjs`. Only a schema-valid QA `PASS` plus `[FINAL_APPROVED]` may attempt `DELIVERED`. First copy the approved PPTX to a persistent destination, declare that existing user-accessible directory as `finalOutputRoot`, and pass the copied file as `finalOutputPath`; `project-state.mjs` rejects a missing, empty, non-file, out-of-root, operating-system temporary, or tool-scratch final output. Then create the clean delivery directory and run `scripts/package_delivery.py`.
+Build `qa-report.json` with `scripts/build-qa-report.mjs`. The builder, state validation, and packaging share `scripts/lib/current-qa.mjs`; use `scripts/validate-current-qa.mjs` for a read-only manual preflight. Only a schema-valid `qaReportCurrent` PASS plus `[FINAL_APPROVED]` may enter `FINAL_REVIEW`, attempt `DELIVERED`, or be packaged; `qaReportLegacy` is read-only migration evidence and never release authority. Packaging requires current, matching `project-manifest.json` and `state.json` `qualityGates`, including a recomputed `qaReportHash`. First copy the approved PPTX to a persistent destination, declare that existing user-accessible directory as `finalOutputRoot`, and pass the copied file as `finalOutputPath`; `project-state.mjs` rejects a missing, empty, non-file, out-of-root, operating-system temporary, or tool-scratch final output. Then create the clean delivery directory and run `scripts/package_delivery.py`.
 
 Deliver exactly one editable PPTX, one PDF, nonempty previews, `production-record.txt`, and the deterministic ZIP. The production record includes sources, image provenance, approved hashes, visual route, object inventory, compatibility/degradation decisions, change log, tool versions, QA evidence, and flattened-page disclosures.
 
