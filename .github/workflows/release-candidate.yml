@@ -4,6 +4,12 @@ name: Release candidate
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing annotated semantic-version tag to revalidate
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -13,10 +19,17 @@ jobs:
     name: Validate tagged release candidate
     runs-on: ubuntu-latest
     steps:
+      - name: Validate requested tag input
+        shell: bash
+        env:
+          INPUT_TAG: ${{ inputs.tag || github.ref_name }}
+        run: |
+          set -euo pipefail
+          [[ "$INPUT_TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "tag must be strict semver" >&2; exit 1; }
       - name: Check out tagged repository
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
-          ref: ${{ github.ref }}
+          ref: "refs/tags/${{ inputs.tag || github.ref_name }}"
           fetch-depth: 0
           persist-credentials: false
       - name: Set up Node.js
@@ -31,11 +44,13 @@ jobs:
         id: tag-gate
         shell: bash
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
           set -euo pipefail
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "tag must be strict semver" >&2; exit 1; }
-          test "$GITHUB_REF_TYPE" = "tag"
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            test "$GITHUB_REF_TYPE" = "tag"
+          fi
           test "$(git cat-file -t "refs/tags/$TAG")" = "tag"
           TAG_OBJECT="$(git rev-parse "refs/tags/$TAG")"
           TAG_COMMIT="$(git rev-parse "refs/tags/$TAG^{commit}")"
@@ -91,7 +106,8 @@ jobs:
       - name: Test, audit, and compare tagged builds
         shell: bash
         env:
-          TAG: ${{ github.ref_name }}
+          TAG: ${{ inputs.tag || github.ref_name }}
+          INPUT_TAG: ${{ inputs.tag || github.ref_name }}
           VERIFIED_TAG_OBJECT: ${{ steps.tag-gate.outputs.tag_object }}
           VERIFIED_TAG_COMMIT: ${{ steps.tag-gate.outputs.tag_commit }}
           VERIFIED_MAIN_COMMIT: ${{ steps.tag-gate.outputs.main_commit }}
@@ -107,11 +123,13 @@ jobs:
           test "$(git rev-parse refs/remotes/origin/main)" = "$VERIFIED_MAIN_COMMIT"
           git merge-base --is-ancestor "$VERIFIED_TAG_COMMIT" refs/remotes/origin/main
           VERSION="${TAG#v}"
+          INITIAL_WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"
+          test -z "$INITIAL_WORKTREE_STATUS" || { printf '%s\n' "$INITIAL_WORKTREE_STATUS" >&2; exit 1; }
           node --test tests/unit/*.test.mjs
           PYTHONDONTWRITEBYTECODE=1 python -m unittest discover -s tests/unit -p 'test_*.py' -v
           git diff --exit-code -- .
           git diff --cached --exit-code -- .
-          WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"
+          WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all)"
           test -z "$WORKTREE_STATUS" || { printf '%s\n' "$WORKTREE_STATUS" >&2; exit 1; }
           python scripts/audit_public_candidate.py --root . --candidate tracked
           python scripts/build_distribution.py --root . --output-dir "$RUNNER_TEMP/dist-a" --version "$VERSION"
@@ -120,10 +138,10 @@ jobs:
       - name: Upload validated release candidate
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: visual-first-ppt-release-candidate-${{ github.ref_name }}
+          name: visual-first-ppt-release-candidate-${{ inputs.tag || github.ref_name }}
           path: |
-            ${{ runner.temp }}/dist-a/visual-first-ppt-skill-${{ github.ref_name }}.zip
-            ${{ runner.temp }}/dist-a/visual-first-ppt-plugin-${{ github.ref_name }}.zip
+            ${{ runner.temp }}/dist-a/visual-first-ppt-skill-${{ inputs.tag || github.ref_name }}.zip
+            ${{ runner.temp }}/dist-a/visual-first-ppt-plugin-${{ inputs.tag || github.ref_name }}.zip
             ${{ runner.temp }}/dist-a/SHA256SUMS
           if-no-files-found: error
           compression-level: 0

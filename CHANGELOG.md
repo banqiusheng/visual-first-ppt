@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Keep release validation rerunnable for an existing annotated tag while separating a clean checkout gate from ignored test byproducts.
+
 ## [0.3.0] - 2026-07-20
 
 - Make the current/legacy QA gate tests self-contained in clean checkouts and bind detached GitHub CI refs to the verified checkout commit.
