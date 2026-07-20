@@ -4,6 +4,8 @@
 
 ## [0.3.0] - 2026-07-20
 
+- Make the current/legacy QA gate tests self-contained in clean checkouts and bind detached GitHub CI refs to the verified checkout commit.
+
 ### Added
 
 - Executable layout, typography, safe-margin, content-visibility, generated-image, and semantic-image quality gates with structured prebuild, OOXML, and full-size review evidence.

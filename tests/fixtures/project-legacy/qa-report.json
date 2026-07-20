@@ -1,0 +1,36 @@
+{
+  "artifactType": "qaReport",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-fixture-legacy",
+  "route": "create",
+  "inputHashes": {},
+  "toolVersions": {
+    "node": "fixture"
+  },
+  "automatedChecks": [
+    {
+      "id": "legacy-pptx-parse",
+      "status": "PASS",
+      "evidencePath": "legacy/evidence/pptx-parse.json"
+    }
+  ],
+  "perSlideManualScores": [
+    {
+      "slide": 1,
+      "score": 5,
+      "evidencePath": "legacy/previews/slide-1.png"
+    }
+  ],
+  "clientSmokeStatus": "NOT_RUN",
+  "clientSmoke": {
+    "status": "not_available",
+    "evidencePath": "legacy/evidence/client-smoke.txt",
+    "userFinalOpenConfirmation": false
+  },
+  "evidencePaths": [
+    "legacy/evidence/pptx-parse.json",
+    "legacy/previews/slide-1.png"
+  ],
+  "finalVerdict": "PASS",
+  "generatedAt": "2026-07-13T00:00:00.000Z"
+}

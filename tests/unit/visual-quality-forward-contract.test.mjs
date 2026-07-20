@@ -7,6 +7,11 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
+import {
+  collectVisualQualityImplementationBinding,
+  resolveImplementationRef,
+} from "../quality-forward/summarize.mjs";
+
 const execFileAsync = promisify(execFile);
 const ROOT = path.resolve(import.meta.dirname, "../..");
 const HARNESS = path.join(ROOT, "tests/quality-forward");
@@ -46,50 +51,6 @@ function sha256(bytes) {
 async function trackedAgentForwardHash() {
   const { stdout } = await execFileAsync("git", ["rev-parse", "HEAD:tests/agent-forward"], { cwd: ROOT });
   return `git-tree:${stdout.trim()}`;
-}
-
-async function currentDiffSha256() {
-  const [{ stdout: diffBytes }, { stdout: untrackedBytes }] = await Promise.all([
-    execFileAsync("git", ["diff", "--binary", "--no-ext-diff", "HEAD", "--", "."], {
-      cwd: ROOT,
-      encoding: "buffer",
-      maxBuffer: 64 * 1024 * 1024,
-    }),
-    execFileAsync("git", ["ls-files", "--others", "--exclude-standard", "-z"], {
-      cwd: ROOT,
-      encoding: "buffer",
-      maxBuffer: 16 * 1024 * 1024,
-    }),
-  ]);
-  const hash = crypto.createHash("sha256");
-  hash.update("tracked-diff\0");
-  hash.update(diffBytes);
-  const untracked = untrackedBytes.toString("utf8").split("\0").filter(Boolean).sort();
-  for (const relativePath of untracked) {
-    const absolutePath = path.join(ROOT, relativePath);
-    const stat = await fs.lstat(absolutePath);
-    hash.update("\0untracked\0");
-    hash.update(relativePath);
-    hash.update("\0");
-    hash.update(stat.isSymbolicLink() ? await fs.readlink(absolutePath) : await fs.readFile(absolutePath));
-  }
-  return `sha256:${hash.digest("hex")}`;
-}
-
-async function currentImplementationBinding() {
-  const inputHashes = {};
-  for (const relativePath of IMPLEMENTATION_INPUTS) {
-    inputHashes[relativePath] = sha256(await fs.readFile(path.join(ROOT, relativePath)));
-  }
-  const [{ stdout: branch }, diffSha256] = await Promise.all([
-    execFileAsync("git", ["branch", "--show-current"], { cwd: ROOT }),
-    currentDiffSha256(),
-  ]);
-  return {
-    branch: branch.trim(),
-    diffSha256,
-    implementationInputHashes: inputHashes,
-  };
 }
 
 async function makeRunRoot(t) {
@@ -185,7 +146,7 @@ async function makeCompleteRun(t) {
     },
   ));
   const treeHash = await trackedAgentForwardHash();
-  const implementationBinding = await currentImplementationBinding();
+  const implementationBinding = await collectVisualQualityImplementationBinding(ROOT);
   await fs.writeFile(path.join(runRoot, "run-manifest.json"), `${JSON.stringify({
     artifactType: "visualQualityForwardRunManifest",
     schemaVersion: "1.0.0",
@@ -215,6 +176,76 @@ test("quality-forward contract fixes exactly three route-specific scenarios", as
   assert.match(rubricText, /contentVisibility/);
   assert.match(rubricText, /generatedImageTextReview/);
   assert.match(rubricText, /unauthorized.*unchanged/is);
+});
+
+test("implementation ref resolver verifies detached PR and tag checkouts", async (t) => {
+  const repo = await fs.mkdtemp(path.join(os.tmpdir(), "quality-forward-detached-ref-"));
+  t.after(() => fs.rm(repo, { recursive: true, force: true }));
+  const git = (...args) => execFileAsync("git", args, { cwd: repo });
+  await git("init");
+  await git("config", "user.name", "Visual Quality Test");
+  await git("config", "user.email", "visual-quality@example.invalid");
+  await fs.writeFile(path.join(repo, "marker.txt"), "detached ref fixture\n");
+  await git("add", "marker.txt");
+  await git("commit", "-m", "fixture");
+  await git("branch", "-M", "codex/detached-fixture");
+  const { stdout: headOutput } = await git("rev-parse", "HEAD");
+  const headSha = headOutput.trim();
+
+  assert.equal(await resolveImplementationRef(repo, {
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: repo,
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_SHA: "f".repeat(40),
+    GITHUB_REF: "refs/pull/7/merge",
+    GITHUB_REF_NAME: "7/merge",
+    GITHUB_REF_TYPE: "branch",
+    GITHUB_HEAD_REF: "forged/ignored-on-named-branch",
+  }), "codex/detached-fixture");
+
+  await git("tag", "-a", "v0.3.0", "-m", "fixture tag");
+  const { stdout: tagObjectOutput } = await git("rev-parse", "refs/tags/v0.3.0");
+  const tagObject = tagObjectOutput.trim();
+  await git("update-ref", "refs/remotes/pull/7/merge", headSha);
+  await git("checkout", "--detach", headSha);
+  const prEnvironment = {
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: repo,
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_SHA: headSha,
+    GITHUB_REF: "refs/pull/7/merge",
+    GITHUB_REF_NAME: "7/merge",
+    GITHUB_REF_TYPE: "branch",
+    GITHUB_HEAD_REF: "codex/detached-fixture",
+  };
+  assert.equal(await resolveImplementationRef(repo, prEnvironment), "codex/detached-fixture");
+  await assert.rejects(
+    resolveImplementationRef(repo, { ...prEnvironment, GITHUB_SHA: "e".repeat(40) }),
+    /named Git branch|verified GitHub ref/i,
+  );
+
+  assert.equal(await resolveImplementationRef(repo, {
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: repo,
+    GITHUB_EVENT_NAME: "push",
+    GITHUB_SHA: headSha,
+    GITHUB_REF: "refs/tags/v0.3.0",
+    GITHUB_REF_NAME: "v0.3.0",
+    GITHUB_REF_TYPE: "tag",
+  }), "v0.3.0");
+
+  assert.equal(await resolveImplementationRef(repo, {
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: repo,
+    GITHUB_EVENT_NAME: "workflow_dispatch",
+    GITHUB_SHA: "d".repeat(40),
+    GITHUB_REF: "refs/heads/main",
+    GITHUB_REF_NAME: "main",
+    GITHUB_REF_TYPE: "branch",
+    INPUT_TAG: "v0.3.0",
+    VERIFIED_TAG_OBJECT: tagObject,
+    VERIFIED_TAG_COMMIT: headSha,
+  }), "v0.3.0");
 });
 
 test("renderer writes portable prompts only inside the ignored raw-evidence shape", async (t) => {
@@ -375,7 +406,7 @@ test("summarizer binds Task 9 implementation state and refuses linked manifest o
   const manifestPath = path.join(implementationRun.runRoot, "run-manifest.json");
   const manifest = await readJson(manifestPath);
   assert.deepEqual(Object.keys(manifest.implementationInputHashes).sort(), IMPLEMENTATION_INPUTS.toSorted());
-  assert.match(manifest.branch, /^codex\//);
+  assert.equal(manifest.branch, (await collectVisualQualityImplementationBinding(ROOT)).branch);
   assert.match(manifest.diffSha256, /^sha256:[0-9a-f]{64}$/);
 
   manifest.diffSha256 = `sha256:${"0".repeat(64)}`;

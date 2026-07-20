@@ -11,6 +11,7 @@ const execFileAsync = promisify(execFile);
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const SHA256 = /^sha256:[0-9a-f]{64}$/;
 const GIT_TREE = /^git-tree:[0-9a-f]{40}$/;
+const GIT_COMMIT = /^[0-9a-f]{40}$/;
 const EXPECTED_IDS = Object.freeze([
   "create-long-poem-quality",
   "template-dense-data-quality",
@@ -183,6 +184,122 @@ async function currentDiffSha256(repoRoot) {
   return `sha256:${hash.digest("hex")}`;
 }
 
+function plausibleShortRefName(value) {
+  return typeof value === "string"
+    && value === value.trim()
+    && value.length > 0
+    && value.length <= 255
+    && value !== "HEAD"
+    && !value.startsWith("-")
+    && !value.startsWith("refs/")
+    && !value.startsWith("@{")
+    && !/[\u0000-\u0020\u007f]/.test(value);
+}
+
+export function resolveGithubActionsRef(environment, headSha) {
+  if (environment?.GITHUB_ACTIONS !== "true"
+    || typeof environment.GITHUB_WORKSPACE !== "string"
+    || !environment.GITHUB_WORKSPACE.trim()
+    || !GIT_COMMIT.test(headSha)) {
+    return null;
+  }
+  if (environment.GITHUB_EVENT_NAME === "workflow_dispatch"
+    && typeof environment.INPUT_TAG === "string") {
+    const tag = environment.INPUT_TAG;
+    if (!/^v[0-9]+\.[0-9]+\.[0-9]+$/.test(tag)
+      || environment.VERIFIED_TAG_COMMIT !== headSha
+      || !GIT_COMMIT.test(environment.VERIFIED_TAG_OBJECT || "")) {
+      return null;
+    }
+    return { name: tag, fullRef: `refs/tags/${tag}` };
+  }
+  if (environment.GITHUB_SHA !== headSha) return null;
+  if (environment.GITHUB_EVENT_NAME === "pull_request") {
+    const match = /^refs\/pull\/([1-9][0-9]*)\/merge$/.exec(environment.GITHUB_REF || "");
+    const headRef = environment.GITHUB_HEAD_REF;
+    if (!match
+      || environment.GITHUB_REF_TYPE !== "branch"
+      || environment.GITHUB_REF_NAME !== `${match[1]}/merge`
+      || !plausibleShortRefName(headRef)) {
+      return null;
+    }
+    return { name: headRef, fullRef: `refs/heads/${headRef}` };
+  }
+  if (!["push", "workflow_dispatch"].includes(environment.GITHUB_EVENT_NAME)) return null;
+  const refType = environment.GITHUB_REF_TYPE;
+  const name = environment.GITHUB_REF_NAME;
+  if (!plausibleShortRefName(name) || !["branch", "tag"].includes(refType)) return null;
+  const fullRef = `refs/${refType === "branch" ? "heads" : "tags"}/${name}`;
+  if (environment.GITHUB_REF !== fullRef) return null;
+  return { name, fullRef };
+}
+
+export async function resolveImplementationRef(repoRoot, environment = process.env) {
+  const repo = await fs.realpath(path.resolve(repoRoot));
+  const [{ stdout: branch }, { stdout: head }] = await Promise.all([
+    execFileAsync("git", ["branch", "--show-current"], { cwd: repo }),
+    execFileAsync("git", ["rev-parse", "HEAD"], { cwd: repo }),
+  ]);
+  const branchName = branch.trim();
+  const headSha = head.trim();
+  if (branchName) return branchName;
+
+  const githubRef = resolveGithubActionsRef(environment, headSha);
+  if (!githubRef) {
+    throw new Error("quality-forward verification requires a named Git branch or verified GitHub ref");
+  }
+  let githubWorkspace;
+  try {
+    githubWorkspace = await fs.realpath(environment.GITHUB_WORKSPACE);
+  } catch {
+    throw new Error("quality-forward GitHub workspace is unavailable");
+  }
+  if (githubWorkspace !== repo) {
+    throw new Error("quality-forward GitHub workspace does not match the repository");
+  }
+  try {
+    await execFileAsync("git", ["check-ref-format", githubRef.fullRef], { cwd: repo });
+  } catch {
+    throw new Error("quality-forward GitHub ref name is invalid");
+  }
+
+  let checkoutRef;
+  if (environment.GITHUB_EVENT_NAME === "pull_request") {
+    checkoutRef = `refs/remotes/pull/${environment.GITHUB_REF_NAME}^{commit}`;
+  } else if (githubRef.fullRef.startsWith("refs/heads/")) {
+    checkoutRef = `refs/remotes/origin/${githubRef.name}^{commit}`;
+  } else {
+    checkoutRef = `${githubRef.fullRef}^{commit}`;
+  }
+  let checkoutSha;
+  try {
+    ({ stdout: checkoutSha } = await execFileAsync(
+      "git",
+      ["rev-parse", "--verify", checkoutRef],
+      { cwd: repo },
+    ));
+  } catch {
+    throw new Error("quality-forward GitHub ref is not present in the checkout");
+  }
+  if (checkoutSha.trim() !== headSha) {
+    throw new Error("quality-forward GitHub ref does not match HEAD");
+  }
+  if (githubRef.fullRef.startsWith("refs/tags/")) {
+    const [{ stdout: objectType }, { stdout: objectSha }] = await Promise.all([
+      execFileAsync("git", ["cat-file", "-t", githubRef.fullRef], { cwd: repo }),
+      execFileAsync("git", ["rev-parse", githubRef.fullRef], { cwd: repo }),
+    ]);
+    if (objectType.trim() !== "tag") {
+      throw new Error("quality-forward GitHub tag must be annotated");
+    }
+    if (environment.VERIFIED_TAG_OBJECT
+      && objectSha.trim() !== environment.VERIFIED_TAG_OBJECT) {
+      throw new Error("quality-forward GitHub tag object does not match the verified tag");
+    }
+  }
+  return githubRef.name;
+}
+
 export async function collectVisualQualityImplementationBinding(repoRoot) {
   const repo = await fs.realpath(path.resolve(repoRoot));
   const implementationInputHashes = {};
@@ -194,12 +311,10 @@ export async function collectVisualQualityImplementationBinding(repoRoot) {
     }
     implementationInputHashes[relativePath] = digest(await fs.readFile(fileReal));
   }
-  const [{ stdout: branch }, diffSha256] = await Promise.all([
-    execFileAsync("git", ["branch", "--show-current"], { cwd: repo }),
+  const [branchName, diffSha256] = await Promise.all([
+    resolveImplementationRef(repo),
     currentDiffSha256(repo),
   ]);
-  const branchName = branch.trim();
-  if (!branchName) throw new Error("quality-forward verification requires a named Git branch");
   return { branch: branchName, diffSha256, implementationInputHashes };
 }
 

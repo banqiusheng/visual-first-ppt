@@ -534,7 +534,7 @@ test("project schema separates strict current QA from legacy read-only QA", asyn
   assert.equal(current.valid, true, current.errors.join("\n"));
 
   const legacyReport = JSON.parse(await fs.readFile(
-    path.resolve("tests/artifacts/create-route/workspace/qa-report.json"),
+    path.resolve("tests/fixtures/project-legacy/qa-report.json"),
     "utf8",
   ));
   const legacy = validateProjectArtifactDefinition(schema, "qaReportLegacy", legacyReport);

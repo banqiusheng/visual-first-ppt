@@ -552,21 +552,28 @@ async function mutatePptxAfterAudit(projectWorkspace) {
 
 async function copyLegacyFixture(name) {
   const target = await workspace(name);
-  const source = path.resolve("tests/artifacts/create-route/workspace");
+  const source = path.resolve("tests/fixtures/project-legacy");
   await fs.mkdir(target, { recursive: true });
   for (const relativePath of [
     "project-manifest.json",
     "state.json",
     "qa-report.json",
-    "slide-specs.json",
-    "theme-lock.json",
   ]) {
     await fs.copyFile(path.join(source, relativePath), path.join(target, relativePath));
   }
+  const projectId = `ppt-${crypto.randomUUID()}`;
+  const manifest = await loadManifest(target);
   const state = await loadState(target);
+  const qaReport = await readJson(path.join(target, "qa-report.json"));
+  manifest.projectId = projectId;
+  manifest.workspace = target;
+  state.projectId = projectId;
+  qaReport.projectId = projectId;
   state.status = "FINAL_REVIEW";
   delete state.approvals.final;
+  await saveManifest(target, manifest);
   await saveState(target, state);
+  await writeJsonAtomic(path.join(target, "qa-report.json"), qaReport);
   return target;
 }
 
@@ -1966,7 +1973,7 @@ test("approval invalidation returns eligible routes to their review gates", asyn
 test("validateProject accepts a readable fixture but rejects legacy QA as delivered authority", async () => {
   const validFixture = path.resolve("tests/fixtures/project-valid");
   const invalidFixture = path.resolve("tests/fixtures/project-invalid");
-  const legacyDeliveredFixture = path.resolve("tests/artifacts/create-route/workspace");
+  const legacyDeliveredFixture = await copyLegacyFixture("validate-legacy-final-review");
   assert.equal((await validateProject(validFixture)).valid, true);
   await assert.rejects(
     validateProject(legacyDeliveredFixture),
