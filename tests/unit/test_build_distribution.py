@@ -293,7 +293,7 @@ class BuildDistributionTests(unittest.TestCase):
             plugin["source"]["url"],
             "https://github.com/banqiusheng/visual-first-ppt.git",
         )
-        self.assertEqual(plugin["source"]["ref"], "v0.2.0")
+        self.assertEqual(plugin["source"]["ref"], "v0.3.0")
 
     def test_version_mismatch_fails_before_publishing_any_output(self) -> None:
         output = Path(self.temp_dir.name) / "not-created"

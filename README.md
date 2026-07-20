@@ -20,17 +20,17 @@ For the simplest desktop experience, open the Plugin directory and install **Vis
 Commands beginning with `codex` in this README are transparent manual fallback commands for the user. An active Codex Agent must not execute the `codex` executable, including `codex plugin ...`, as a tool action or through a shell or wrapper. It must use management controls exposed directly by the current host, or the bounded read-only Skill check at `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` below.
 
 ```bash
-codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.2.0
+codex plugin marketplace add banqiusheng/visual-first-ppt --ref v0.3.0
 codex plugin add visual-first-ppt@visual-first-ppt-marketplace
 ```
 
-The first command only registers the Marketplace at the pinned `v0.2.0` tag; it does not install the Plugin. The second command installs the Plugin. Start a new Codex task after Plugin installation.
+The first command only registers the Marketplace at the pinned `v0.3.0` tag; it does not install the Plugin. The second command installs the Plugin. Start a new Codex task after Plugin installation.
 
 For a Skill-only setup, paste this prompt into Codex:
 
 ```text
 Use $skill-installer to install visual-first-ppt from this pinned release:
-https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt
+https://github.com/banqiusheng/visual-first-ppt/tree/v0.3.0/skills/visual-first-ppt
 Before installing, check for an existing Skill with the same name. If one exists, stop with EXISTING_INSTALLATION and do not overwrite it.
 After installation, tell me whether I need to start a new Codex task and how to begin with $visual-first-ppt.
 Whether you only explain the installation or perform it, end with the complete verification_plan block, including the installed-copy doctor command, expected and actual results, activation check, and setup status.
@@ -64,8 +64,8 @@ Every install-related answer, including guidance-only answers where no installat
 If setup stops with `EXISTING_INSTALLATION`, do not overwrite it. Paste this prompt into Codex:
 
 ```text
-An existing visual-first-ppt may be present. Inspect only. Confirm whether the exact target is Skill-only or Plugin; do not confuse it with a similarly named project-data directory. If no real installation is found, report EXISTING_INSTALLATION_NOT_FOUND, list the checked locations and candidate v0.2.0, and ask me for the exact path or a fresh install choice. Do not request upgrade approval.
-Skill-only recovery: Treat this as setup or upgrade, not PPT production; do not invoke the installed $visual-first-ppt workflow. Check ${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt first. Inspect a different absolute Skill path only when the user supplied it explicitly. Do not run the codex executable or an unbounded home-directory search. Do not read authentication files, and do not enumerate unrelated environment. Run a read-only version or content comparison against pinned v0.2.0, show the differences and exact Skill target, and stop for a path-specific UPGRADE_APPROVED decision. Only after approval, move the existing Skill target to a timestamped sibling backup, install into a fresh destination, run doctor and the explicit $visual-first-ppt activation check, and perform ROLLBACK by restoring the backup if installation or verification fails. Never merge or recursively delete the old copy.
+An existing visual-first-ppt may be present. Inspect only. Confirm whether the exact target is Skill-only or Plugin; do not confuse it with a similarly named project-data directory. If no real installation is found, report EXISTING_INSTALLATION_NOT_FOUND, list the checked locations and candidate v0.3.0, and ask me for the exact path or a fresh install choice. Do not request upgrade approval.
+Skill-only recovery: Treat this as setup or upgrade, not PPT production; do not invoke the installed $visual-first-ppt workflow. Check ${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt first. Inspect a different absolute Skill path only when the user supplied it explicitly. Do not run the codex executable or an unbounded home-directory search. Do not read authentication files, and do not enumerate unrelated environment. Run a read-only version or content comparison against pinned v0.3.0, show the differences and exact Skill target, and stop for a path-specific UPGRADE_APPROVED decision. Only after approval, move the existing Skill target to a timestamped sibling backup, install into a fresh destination, run doctor and the explicit $visual-first-ppt activation check, and perform ROLLBACK by restoring the backup if installation or verification fails. Never merge or recursively delete the old copy.
 Plugin recovery: Use only Plugin controls exposed directly by the current host. Do not run codex plugin commands from inside the active task. Use only Codex-supported Plugin management, update, and rollback controls. Never guess, move, rename, or recursively delete Plugin-managed storage. If no supported recoverable update or rollback path can be identified, stop and explain the blocker; do not ask for or consume UPGRADE_APPROVED.
 ```
 
@@ -136,6 +136,14 @@ The Skill does not interpret “just do it,” silence, or an uploaded file as p
 - Rejects final files located outside the declared destination root or inside operating-system and tool-managed temp, cache, or scratch paths.
 - Packages exactly one editable PPTX, one PDF, previews, a production record, and a deterministic ZIP.
 
+### Visual quality gates
+
+- Native text remains editable; generated images provide atmosphere and supporting scenes, not factual copy or exact data.
+- Dense pages may be split at complete meaning boundaries instead of silently shrinking text or clipping approved content.
+- Font fallback blocks delivery until a verified replacement is selected and the visual sample is approved again.
+- In `template` and `edit` routes, preserved source pages use compatibility and unchanged-page evidence instead of being reformatted to satisfy new-page rules.
+- Legacy projects remain readable, but they require migration before they can rebuild, create new QA evidence, repackage, or redeliver.
+
 ## Requirements
 
 - A Codex environment with the current `Presentations` and `imagegen` skills or capabilities.
@@ -150,7 +158,7 @@ This repository does not bundle Codex, PowerPoint, WPS, LibreOffice, `Presentati
 For a reproducible install, clone the published release tag and copy only the distributable Skill directory:
 
 ```bash
-git clone --branch v0.2.0 --depth 1 \
+git clone --branch v0.3.0 --depth 1 \
   https://github.com/banqiusheng/visual-first-ppt.git
 cd visual-first-ppt
 
@@ -240,6 +248,6 @@ Compact behavior records are retained in [`tests/baseline/summary.json`](tests/b
 
 ## Release and license
 
-- Current release: [`v0.2.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.2.0)
+- Current release: [`v0.3.0`](https://github.com/banqiusheng/visual-first-ppt/releases/tag/v0.3.0)
 - Release history: [`CHANGELOG.md`](CHANGELOG.md)
 - License: MIT — see [`LICENSE`](LICENSE)

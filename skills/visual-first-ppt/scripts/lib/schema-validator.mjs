@@ -65,6 +65,19 @@ export function validateSchema(schema, value) {
       return;
     }
 
+    if (Array.isArray(currentSchema.oneOf)) {
+      let matches = 0;
+      for (const candidate of currentSchema.oneOf) {
+        const errorStart = errors.length;
+        visit(candidate, currentValue, instancePath, activeRefs);
+        if (errors.length === errorStart) matches += 1;
+        else errors.splice(errorStart);
+      }
+      if (matches !== 1) {
+        errors.push(`${instancePath}: expected exactly one oneOf schema match, received ${matches}`);
+      }
+    }
+
     if (Object.hasOwn(currentSchema, "type")) {
       const expectedTypes = Array.isArray(currentSchema.type) ? currentSchema.type : [currentSchema.type];
       if (!expectedTypes.some((expected) => matchesType(currentValue, expected))) {
@@ -94,10 +107,20 @@ export function validateSchema(schema, value) {
       && currentValue < currentSchema.minimum) {
       errors.push(`${instancePath}: value is below minimum ${currentSchema.minimum}`);
     }
+    if (typeof currentSchema.maximum === "number"
+      && typeof currentValue === "number"
+      && currentValue > currentSchema.maximum) {
+      errors.push(`${instancePath}: value is above maximum ${currentSchema.maximum}`);
+    }
     if (typeof currentSchema.minItems === "number"
       && Array.isArray(currentValue)
       && currentValue.length < currentSchema.minItems) {
       errors.push(`${instancePath}: array has fewer than ${currentSchema.minItems} items`);
+    }
+    if (typeof currentSchema.maxItems === "number"
+      && Array.isArray(currentValue)
+      && currentValue.length > currentSchema.maxItems) {
+      errors.push(`${instancePath}: array has more than ${currentSchema.maxItems} items`);
     }
 
     if (currentValue !== null && typeof currentValue === "object" && !Array.isArray(currentValue)) {

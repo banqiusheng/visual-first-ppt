@@ -24,11 +24,11 @@ Read the requested repository files and report evidence. Inspection never requir
 
 ### install
 
-Pin every install to `v0.2.0`. For a Skill request, use `$skill-installer` with `https://github.com/banqiusheng/visual-first-ppt/tree/v0.2.0/skills/visual-first-ppt`. For a Plugin request, use the repository Marketplace source pinned to the same tag.
+Pin every install to `v0.3.0`. For a Skill request, use `$skill-installer` with `https://github.com/banqiusheng/visual-first-ppt/tree/v0.3.0/skills/visual-first-ppt`. For a Plugin request, use the repository Marketplace source pinned to the same tag.
 
 Check the target before writing. If the same Skill or Plugin already exists, stop with `EXISTING_INSTALLATION`. Do not overwrite, merge, delete, or silently upgrade it.
 
-If bounded inspection finds no real Skill or Plugin target, report `EXISTING_INSTALLATION_NOT_FOUND`. A similarly named project-data directory is not an installed target. State the checked locations, the candidate version `v0.2.0`, and that no content comparison or upgrade can occur yet. Ask the user for the exact path or whether they want a fresh install instead. Do not request UPGRADE_APPROVED until an actual target has been identified and compared.
+If bounded inspection finds no real Skill or Plugin target, report `EXISTING_INSTALLATION_NOT_FOUND`. A similarly named project-data directory is not an installed target. State the checked locations, the candidate version `v0.3.0`, and that no content comparison or upgrade can occur yet. Ask the user for the exact path or whether they want a fresh install instead. Do not request UPGRADE_APPROVED until an actual target has been identified and compared.
 
 #### Required installation response
 
@@ -44,7 +44,7 @@ End every install-related answer—including guidance-only answers when no insta
 
 #### Skill-only recovery
 
-Treat this as a setup or upgrade request, not a presentation request; do not invoke the installed `$visual-first-ppt` workflow. Check `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` first. Inspect a different absolute Skill path only when the user supplied it explicitly. Compare that exact target with the repository candidate pinned to `v0.2.0`; do not run `codex`, an installer, or an unbounded home-directory search during inspection. Do not read auth or authentication files, and do not enumerate unrelated environment variables or settings.
+Treat this as a setup or upgrade request, not a presentation request; do not invoke the installed `$visual-first-ppt` workflow. Check `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` first. Inspect a different absolute Skill path only when the user supplied it explicitly. Compare that exact target with the repository candidate pinned to `v0.3.0`; do not run `codex`, an installer, or an unbounded home-directory search during inspection. Do not read auth or authentication files, and do not enumerate unrelated environment variables or settings.
 
 For an existing Skill-only installation, locate the exact Skill target and run a read-only version or content comparison against the pinned candidate. Prefer declared version metadata; when it is unavailable, compare the installed entrypoint and distributable tree by hashes or an equivalent read-only diff. Show the comparison, exact target, and proposed backup path to the user, then stop for a separate, path-specific `UPGRADE_APPROVED` decision; an earlier request to “overwrite” is not sufficient.
 
@@ -56,7 +56,7 @@ For an existing Plugin, use only Codex-supported Plugin management, update, and 
 
 Use only host-provided Plugin management controls exposed directly by the current Codex host. Do not run `codex plugin ...` from inside the active task to discover or update a Plugin. If the host does not expose a supported recoverable control, stop and ask the user to use the Codex interface or provide host-confirmed Plugin information.
 
-If `v0.2.0` or its Release cannot be resolved, stop with `RELEASE_NOT_FOUND`; do not fall back to `main`, another tag, or an unpinned archive.
+If `v0.3.0` or its Release cannot be resolved, stop with `RELEASE_NOT_FOUND`; do not fall back to `main`, another tag, or an unpinned archive.
 
 Record `SETUP_VERIFIED` only when there is evidence for the installed entrypoint, doctor result, and activation check. For the default Skill-only root, run:
 

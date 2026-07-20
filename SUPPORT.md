@@ -4,7 +4,7 @@ Use this sequence for installation and discovery problems. It keeps troubleshoot
 
 ## 1. Confirm the version
 
-Record the Visual-First PPT release tag or Plugin version you intended to use. This repository's beginner setup pins `v0.2.0`; do not report only “latest.” If you downloaded an archive, keep its filename and compare its checksum with the release checksum before continuing.
+Record the Visual-First PPT release tag or Plugin version you intended to use. This repository's beginner setup pins `v0.3.0`; do not report only “latest.” If you downloaded an archive, keep its filename and compare its checksum with the release checksum before continuing.
 
 ## 2. Confirm the Codex surface
 
@@ -58,13 +58,13 @@ Exit code `0` means required checks passed. Exit code `2` means required local c
 
 Do not overwrite an existing `visual-first-ppt` Skill or Plugin. If setup stops with `EXISTING_INSTALLATION`, first locate the exact target and confirm whether it is Skill-only, Plugin, or only a project-data directory with a similar name.
 
-If no real installation is found, report `EXISTING_INSTALLATION_NOT_FOUND`: a project-data directory is not an installed target. List the checked locations and candidate `v0.2.0`, then ask for the exact path or a fresh install choice and stop. Do not request `UPGRADE_APPROVED`; there is no target to compare or upgrade.
+If no real installation is found, report `EXISTING_INSTALLATION_NOT_FOUND`: a project-data directory is not an installed target. List the checked locations and candidate `v0.3.0`, then ask for the exact path or a fresh install choice and stop. Do not request `UPGRADE_APPROVED`; there is no target to compare or upgrade.
 
 ### Skill-only recovery
 
 For the default Skill root, inspect `${CODEX_HOME:-$HOME/.codex}/skills/visual-first-ppt` first. Inspect a different absolute Skill path only when the user supplied it explicitly. Treat this as setup or upgrade, not PPT production; do not invoke the installed `$visual-first-ppt` workflow. Do not read authentication files, and do not enumerate unrelated environment. Do not run Codex during this setup comparison.
 
-1. Perform a read-only version or content comparison between the exact Skill target and pinned `v0.2.0`. Prefer declared version metadata; otherwise compare `SKILL.md` and the distributable tree by hashes or an equivalent read-only diff.
+1. Perform a read-only version or content comparison between the exact Skill target and pinned `v0.3.0`. Prefer declared version metadata; otherwise compare `SKILL.md` and the distributable tree by hashes or an equivalent read-only diff.
 2. Show the comparison, the target path, and the proposed recovery path. An installation-help request or request to “overwrite” is not replacement authority.
 3. Continue only after a separate, path-specific `UPGRADE_APPROVED` response.
 4. Move the existing Skill target to a timestamped sibling backup and keep that backup intact.

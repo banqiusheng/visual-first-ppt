@@ -1,0 +1,68 @@
+{
+  "artifactType": "qualityContract",
+  "schemaVersion": "1.0.0",
+  "qualityContractVersion": "1.0.0",
+  "maxContentBlocks": 4,
+  "typography": {
+    "titleMinimumPt": 28,
+    "bodyTargetPt": 20,
+    "bodyMinimumPt": 18,
+    "captionMinimumPt": 14,
+    "sourceMinimumPt": 10,
+    "pageNumberMinimumPt": 10
+  },
+  "safeMarginsInches": {
+    "contentMinimum": 0.35,
+    "pageNumberMinimum": 0.3
+  },
+  "requiredAutomatedChecks": [
+    "pptxParse",
+    "pdfParse",
+    "pageCountAndCanvas",
+    "overflow",
+    "unexpectedOverlap",
+    "unresolvedPlaceholder",
+    "brokenRelationship",
+    "fontAvailability",
+    "nativeObjectTypes",
+    "dataMismatch",
+    "pptxPdfPreviewParity",
+    "textFramePolicy",
+    "safeMargin",
+    "fontResolution",
+    "contentPresence",
+    "hiddenVisualResidue"
+  ],
+  "editRequiredChecks": [
+    "sourceHashPreserved",
+    "authorizedScope",
+    "unauthorizedSlideComparison"
+  ],
+  "hardZeroChecks": [
+    "overflow",
+    "unexpectedOverlap",
+    "unresolvedPlaceholder",
+    "brokenRelationship",
+    "dataMismatch",
+    "textFramePolicy",
+    "safeMargin",
+    "fontResolution",
+    "contentPresence",
+    "hiddenVisualResidue"
+  ],
+  "requiredReviewChecks": [
+    "contentVisibility",
+    "generatedImageTextReview",
+    "visualSemanticMatch"
+  ],
+  "requiredManualDimensions": [
+    "readability",
+    "layoutIntegrity",
+    "contentCompleteness",
+    "visualConsistency",
+    "imageIntegrity",
+    "visualSemanticMatch",
+    "visualContractFidelity"
+  ],
+  "minimumManualScore": 4
+}

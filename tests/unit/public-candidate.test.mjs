@@ -3,6 +3,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import * as qualityForward from "../quality-forward/summarize.mjs";
+
+const { validateVisualQualityPublicSummary } = qualityForward;
+
 const ROOT = path.resolve(import.meta.dirname, "../..");
 
 async function readJson(relativePath) {
@@ -56,4 +60,132 @@ test("public candidate ignores local planning and raw agent-forward evidence", a
 
   assert.ok(lines.has(".superpowers/"));
   assert.ok(lines.has("tests/agent-forward/runs/"));
+});
+
+test("unit tests never depend on ignored local delivery artifacts", async () => {
+  const ignoredFixture = ["tests", "artifacts", "create-route", "workspace"].join("/");
+  for (const relativePath of [
+    "tests/unit/project-state.test.mjs",
+    "tests/unit/qa-report.test.mjs",
+  ]) {
+    const source = await fs.readFile(path.join(ROOT, relativePath), "utf8");
+    assert.equal(
+      source.includes(ignoredFixture),
+      false,
+      `${relativePath} must build its own synthetic legacy fixture`,
+    );
+  }
+});
+
+test("detached GitHub checkouts use only a SHA-bound named ref", () => {
+  assert.equal(typeof qualityForward.resolveGithubActionsRef, "function");
+  const sha = "a".repeat(40);
+  assert.deepEqual(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_SHA: sha,
+    GITHUB_REF: "refs/pull/3/merge",
+    GITHUB_REF_NAME: "3/merge",
+    GITHUB_REF_TYPE: "branch",
+    GITHUB_HEAD_REF: "codex/ppt-visual-quality-hardening",
+  }, sha), {
+    name: "codex/ppt-visual-quality-hardening",
+    fullRef: "refs/heads/codex/ppt-visual-quality-hardening",
+  });
+  assert.deepEqual(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "push",
+    GITHUB_SHA: sha,
+    GITHUB_REF_TYPE: "tag",
+    GITHUB_REF: "refs/tags/v0.3.0",
+    GITHUB_REF_NAME: "v0.3.0",
+  }, sha), {
+    name: "v0.3.0",
+    fullRef: "refs/tags/v0.3.0",
+  });
+  assert.deepEqual(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "workflow_dispatch",
+    GITHUB_SHA: "b".repeat(40),
+    GITHUB_REF: "refs/heads/main",
+    GITHUB_REF_NAME: "main",
+    GITHUB_REF_TYPE: "branch",
+    INPUT_TAG: "v0.3.0",
+    VERIFIED_TAG_OBJECT: "c".repeat(40),
+    VERIFIED_TAG_COMMIT: sha,
+  }, sha), {
+    name: "v0.3.0",
+    fullRef: "refs/tags/v0.3.0",
+  });
+  assert.equal(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_SHA: "b".repeat(40),
+    GITHUB_REF: "refs/pull/3/merge",
+    GITHUB_REF_NAME: "3/merge",
+    GITHUB_REF_TYPE: "branch",
+    GITHUB_HEAD_REF: "codex/ppt-visual-quality-hardening",
+  }, sha), null);
+  assert.equal(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "false",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_SHA: sha,
+    GITHUB_REF: "refs/pull/3/merge",
+    GITHUB_REF_NAME: "3/merge",
+    GITHUB_REF_TYPE: "branch",
+    GITHUB_HEAD_REF: "codex/ppt-visual-quality-hardening",
+  }, sha), null);
+  assert.equal(qualityForward.resolveGithubActionsRef({
+    GITHUB_ACTIONS: "true",
+    GITHUB_WORKSPACE: "/repo",
+    GITHUB_EVENT_NAME: "workflow_dispatch",
+    GITHUB_SHA: "b".repeat(40),
+    GITHUB_REF: "refs/heads/main",
+    GITHUB_REF_NAME: "main",
+    GITHUB_REF_TYPE: "branch",
+    INPUT_TAG: "v0.3.0",
+    VERIFIED_TAG_OBJECT: "c".repeat(40),
+    VERIFIED_TAG_COMMIT: "d".repeat(40),
+  }, sha), null);
+});
+
+test("visual-quality public summary accepts hashes only and rejects raw PPTX or PNG paths", async () => {
+  const valid = {
+    artifactType: "visualQualityHardeningSummary",
+    schemaVersion: "1.0.0",
+    evidenceRetention: "summary-and-hashes-only",
+    frozenAgentForwardTreeHash: `git-tree:${"1".repeat(40)}`,
+    scenarios: [
+      "create-long-poem-quality",
+      "template-dense-data-quality",
+      "edit-authorized-page-quality",
+    ].map((id, index) => ({
+      id,
+      verdict: "PASS",
+      manifestSha256: `sha256:${String(index + 1).repeat(64)}`,
+    })),
+  };
+  assert.doesNotThrow(() => validateVisualQualityPublicSummary(valid));
+
+  for (const leakedValue of [
+    ".superpowers/quality-forward/runs/20260717T000000Z",
+    "raw/output.pptx",
+    "raw/slide-01.png",
+  ]) {
+    const invalid = structuredClone(valid);
+    invalid.scenarios[0].rawEvidencePath = leakedValue;
+    assert.throws(() => validateVisualQualityPublicSummary(invalid), /public summary|raw|path|fields/i);
+  }
+
+  const publicPath = path.join(ROOT, "tests/artifacts/support/visual-quality-hardening-summary.json");
+  try {
+    validateVisualQualityPublicSummary(await readJson(path.relative(ROOT, publicPath)));
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
 });

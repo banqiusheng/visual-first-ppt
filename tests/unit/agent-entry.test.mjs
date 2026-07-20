@@ -13,7 +13,7 @@ const requiredAgentText = [
   "use",
   "maintain",
   "release",
-  "v0.2.0",
+  "v0.3.0",
   "EXISTING_INSTALLATION",
   "EXISTING_INSTALLATION_NOT_FOUND",
   "RELEASE_NOT_FOUND",
@@ -223,7 +223,7 @@ test("a similarly named data directory is not treated as an installed target", a
     agentEntry,
     /EXISTING_INSTALLATION_NOT_FOUND.*project-data directory.*not.*installed target/is,
   );
-  assert.match(agentEntry, /checked locations.*candidate.*v0\.2\.0/is);
+  assert.match(agentEntry, /checked locations.*candidate.*v0\.3\.0/is);
   assert.match(agentEntry, /ask.*exact path.*fresh install/is);
   assert.match(agentEntry, /Do not request UPGRADE_APPROVED.*target/is);
 });
@@ -252,7 +252,7 @@ test("an active setup task never starts nested Codex and checks the bounded Skil
   );
   assert.match(skillOnly, /\$\{CODEX_HOME:-\$HOME\/\.codex\}\/skills\/visual-first-ppt/i);
   assert.match(skillOnly, /read-only/i);
-  assert.match(skillOnly, /v0\.2\.0/i);
+  assert.match(skillOnly, /v0\.3\.0/i);
   assert.match(skillOnly, /different absolute Skill path.*only when the user supplied it explicitly/is);
   assert.match(skillOnly, /do not read.*auth(?:entication)?.*files/is);
   assert.match(skillOnly, /do not enumerate.*unrelated environment/is);

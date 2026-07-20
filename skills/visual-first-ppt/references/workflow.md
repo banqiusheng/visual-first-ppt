@@ -26,6 +26,18 @@ The only normal-flow states are:
 
 `INTAKE → SOURCE_READY → OUTLINE_REVIEW → OUTLINE_APPROVED → VISUAL_REVIEW → VISUAL_LOCKED → BUILDING → QA → FINAL_REVIEW → DELIVERED`
 
+The executable build-entry sequence is:
+
+```text
+OUTLINE_APPROVED -> VISUAL_REVIEW -> VISUAL_LOCKED
+-> compile slide-specs/theme-lock
+-> validate-slide-specs PASS
+-> BUILDING -> audit PPTX -> QA
+-> QA PASS -> FINAL_REVIEW
+```
+
+The state transition rule is `VISUAL_LOCKED -> BUILDING prebuild PASS`: the PASS artifact must be current and bound to the exact slide specs, theme lock, font evidence, and outline/visual approval hashes. The final-review rule is `QA -> FINAL_REVIEW QA PASS`: the QA PASS must be current and bound to the exact built PPTX and its current inputs. A file save or an older PASS never advances either gate.
+
 - In `create`, complete the Brief and source ledger before `SOURCE_READY`.
 - In `template`, require the source PPTX, content framework, and available materials. Treat the template as the primary visual source and complete compatibility/mapping notes before the outline.
 - At the outline gate, show the narrative and page-level outline. Persist `[OUTLINE_APPROVED]` only after the user approves its exact hash.
@@ -37,6 +49,18 @@ The only normal-flow states are:
 The only normal-flow states are:
 
 `INTAKE → COMPATIBILITY_REVIEW → SCOPE_REVIEW → SCOPE_APPROVED → CHANGE_PREVIEW → BUILDING → QA → FINAL_REVIEW → DELIVERED`
+
+The executable edit build-entry sequence is:
+
+```text
+SCOPE_APPROVED -> CHANGE_PREVIEW
+-> compile slide-specs/theme-lock
+-> validate-slide-specs PASS
+-> BUILDING -> audit PPTX -> QA
+-> QA PASS -> FINAL_REVIEW
+```
+
+The edit transition uses the same current prebuild evidence, additionally bound to the scope and approved change-preview hash or the recorded not-applicable reason. It uses the same `QA -> FINAL_REVIEW QA PASS` rule after the authorized-page build.
 
 - Preserve the input PPTX and write a distinct output file.
 - Inventory compatibility risks before asking for scope approval.
@@ -69,6 +93,8 @@ An approval is valid only for the recorded artifact hash. A rejection never adva
 
 Every invalidation records `impact`, `changedArtifactHash`, `reason`, `invalidatedApprovals`, `affectedPages`, `previousState`, and time. Never preserve an upstream approval after its artifact changes.
 
+Any repair that changes slide specs, theme lock, resolved fonts, source hashes, object inventory, approvals, or the built PPTX invalidates the affected prebuild or QA evidence. Recompile and revalidate the changed input; do not relabel an old evidence file as current.
+
 ## Blockers
 
 - `[BLOCKED_SOURCE]`: use for missing, conflicting, or unverifiable evidence in `create` and `template`. Record `blockedFrom`, reason, source gaps, and input hashes.
@@ -81,3 +107,5 @@ Do not route a source blocker through the edit compatibility state or vice versa
 A deck `超过 20 页` is long-form. Build and QA it in `5–8 页` batches. Persist each batch ID, page range, input hashes, output paths, QA evidence, and completion time before beginning the next batch. If interrupted, continue from the most recent completed batch rather than regenerating accepted pages.
 
 Resume discovery accepts either a `project ID` from `${CODEX_HOME:-$HOME/.codex}/visual-first-ppt/projects.json` or an absolute `manifest path`. Validate the manifest, state, input hashes, schema version, project identity, and approvals before continuing. A missing workspace or mismatch fails closed; do not reconstruct project truth from chat memory.
+
+New and adopted projects record `qualityContractVersion: "1.0.0"`. A legacy project remains readable for diagnosis, but must complete `project-state.mjs adopt-quality` with current prebuild evidence before any rebuild, new QA run, repackaging, or redelivery.

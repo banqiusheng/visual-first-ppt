@@ -1,0 +1,20 @@
+{
+  "artifactType": "state",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-fixture-legacy",
+  "route": "create",
+  "status": "FINAL_REVIEW",
+  "approvals": {
+    "outline": {
+      "approvedArtifactHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    "visual": {
+      "approvedArtifactHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  },
+  "blockers": [],
+  "completedBatches": [],
+  "inputHashes": {},
+  "invalidations": [],
+  "updatedAt": "2026-07-13T00:00:00.000Z"
+}

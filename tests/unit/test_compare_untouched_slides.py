@@ -5,7 +5,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from zipfile import ZIP_DEFLATED, ZipFile
+from zipfile import ZIP_DEFLATED, ZIP_STORED, ZipFile
 
 
 SCRIPT = Path("skills/visual-first-ppt/scripts/compare_untouched_slides.py").resolve()
@@ -37,7 +37,10 @@ class CompareUntouchedSlidesTest(unittest.TestCase):
         self.source_render.mkdir()
         self.output_render.mkdir()
 
-    def write_deck(self, target, slides, relationships=None, package_parts=None):
+    def write_deck(
+        self, target, slides, relationships=None, package_parts=None,
+        package_compression=ZIP_DEFLATED,
+    ):
         relationships = relationships or {}
         package_parts = package_parts or {}
         with ZipFile(target, "w", ZIP_DEFLATED) as archive:
@@ -48,7 +51,7 @@ class CompareUntouchedSlidesTest(unittest.TestCase):
                     relationships.get(number, rel_xml(f"../media/image{number}.png")),
                 )
             for member, content in package_parts.items():
-                archive.writestr(member, content)
+                archive.writestr(member, content, compress_type=package_compression)
 
     def write_renders(self, source_bytes=None, output_bytes=None):
         source_bytes = source_bytes or {1: b"one", 2: b"two", 3: b"three"}
@@ -183,6 +186,25 @@ class CompareUntouchedSlidesTest(unittest.TestCase):
             "source": hashlib.sha256(self.source.read_bytes()).hexdigest(),
             "output": hashlib.sha256(self.output.read_bytes()).hexdigest(),
         })
+
+    def test_identical_large_opaque_media_is_stream_hashed_without_rejection(self):
+        slides = self.baseline_slides()
+        large_media = b"opaque-media-0123456789" * (17 * 1024 * 1024 // 23 + 1)
+        parts = {
+            **self.baseline_global_parts(),
+            "ppt/media/training-video.mp4": large_media,
+        }
+        self.write_deck(
+            self.source, slides, package_parts=parts, package_compression=ZIP_STORED,
+        )
+        self.write_deck(
+            self.output, slides, package_parts=parts, package_compression=ZIP_STORED,
+        )
+        self.write_renders()
+
+        result, report = self.run_compare()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(report["finalVerdict"], "PASS")
 
 
 if __name__ == "__main__":

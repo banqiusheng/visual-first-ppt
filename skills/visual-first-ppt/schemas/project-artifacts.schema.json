@@ -3,6 +3,73 @@
   "$id": "https://openai.local/visual-first-ppt/project-artifacts.schema.json",
   "title": "Visual-First PPT project artifacts",
   "$defs": {
+    "targetClient": {
+      "enum": ["Microsoft PowerPoint", "WPS Presentation"]
+    },
+    "qaClientSmokeDescriptor": {
+      "oneOf": [
+        { "$ref": "#/$defs/qaClientSmokeDescriptorCurrent" },
+        { "$ref": "#/$defs/qaClientSmokeDescriptorLegacy" }
+      ]
+    },
+    "qaClientSmokeDescriptorCurrent": {
+      "oneOf": [
+        { "$ref": "#/$defs/qaClientSmokeDescriptorPassed" },
+        { "$ref": "#/$defs/qaClientSmokeDescriptorUnavailable" }
+      ]
+    },
+    "qaClientSmokeDescriptorPassed": {
+      "type": "object",
+      "required": [
+        "status",
+        "evidencePath",
+        "evidenceSha256",
+        "userFinalOpenConfirmation",
+        "targetClient",
+        "observationMode",
+        "openedArtifactHash"
+      ],
+      "properties": {
+        "status": { "const": "passed" },
+        "evidencePath": { "type": "string", "pattern": "\\S" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "userFinalOpenConfirmation": { "const": false },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "observationMode": { "const": "gui-open" },
+        "openedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "qaClientSmokeDescriptorUnavailable": {
+      "type": "object",
+      "required": [
+        "status",
+        "evidencePath",
+        "evidenceSha256",
+        "userFinalOpenConfirmation",
+        "targetClient",
+        "openedArtifactHash"
+      ],
+      "properties": {
+        "status": { "const": "not_available" },
+        "evidencePath": { "type": "string", "pattern": "\\S" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "userFinalOpenConfirmation": { "const": true },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "openedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "qaClientSmokeDescriptorLegacy": {
+      "type": "object",
+      "required": ["status", "evidencePath", "userFinalOpenConfirmation"],
+      "properties": {
+        "status": { "enum": ["passed", "failed", "not_available"] },
+        "evidencePath": { "type": "string" },
+        "userFinalOpenConfirmation": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
     "projectManifest": {
       "type": "object",
       "required": ["artifactType", "schemaVersion", "projectId", "title", "route", "workspace", "inputHashes", "toolVersions", "createdAt", "updatedAt"],
@@ -13,6 +80,25 @@
         "title": { "type": "string", "pattern": ".+" },
         "route": { "enum": ["create", "template", "edit"] },
         "workspace": { "type": "string", "pattern": ".+" },
+        "qualityContractVersion": { "type": "string", "pattern": "^1\\.0\\.0$" },
+        "qualityGates": {
+          "type": "object",
+          "properties": {
+            "prebuildEvidenceHash": { "type": "string" },
+            "pptxAuditHash": { "type": "string" },
+            "qaReportHash": { "type": "string" },
+            "deckHash": { "type": "string" },
+            "invalidatedPptxAuditHashes": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "invalidatedQaReportHashes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        },
         "inputHashes": { "type": "object", "additionalProperties": { "type": "string" } },
         "toolVersions": { "type": "object", "additionalProperties": { "type": "string" } },
         "createdAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
@@ -21,6 +107,73 @@
         "finalOutputPath": { "type": "string", "pattern": ".+" }
       },
       "additionalProperties": false
+    },
+    "artifactApproval": {
+      "type": "object",
+      "required": ["approvedArtifactHash"],
+      "properties": {
+        "approvedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "approvedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+        "userMessage": { "type": "string", "pattern": "\\S" },
+        "artifactPath": { "type": "string", "pattern": "\\S" },
+        "approvalType": { "type": "string", "pattern": "\\S" },
+        "manualReview": { "type": "object", "additionalProperties": {} },
+        "compatibilityEvidenceHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "finalApproval": {
+      "type": "object",
+      "required": ["approvedArtifactHash"],
+      "properties": {
+        "approvedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "approvedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+        "userMessage": { "type": "string", "pattern": "\\S" },
+        "artifactPath": { "type": "string", "pattern": "\\S" },
+        "approvalType": { "type": "string", "pattern": "\\S" },
+        "qaReportHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "finalOutputRoot": { "type": "string", "pattern": "\\S" },
+        "finalOutputPath": { "type": "string", "pattern": "\\S" }
+      },
+      "additionalProperties": false
+    },
+    "diffPreviewApproval": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["approvedArtifactHash"],
+          "properties": {
+            "approvedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "approvedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+            "userMessage": { "type": "string", "pattern": "\\S" },
+            "artifactPath": { "type": "string", "pattern": "\\S" },
+            "approvalType": { "type": "string", "pattern": "\\S" },
+            "authorizedSlides": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 1 }
+            },
+            "unauthorizedComparison": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["notApplicableReason"],
+          "properties": {
+            "notApplicableReason": { "type": "string", "pattern": "\\S" },
+            "approvedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+            "userMessage": { "type": "string", "pattern": "\\S" },
+            "artifactPath": { "type": "string", "pattern": "\\S" },
+            "approvalType": { "type": "string", "pattern": "\\S" },
+            "authorizedSlides": {
+              "type": "array",
+              "items": { "type": "integer", "minimum": 1 }
+            },
+            "unauthorizedComparison": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        }
+      ]
     },
     "state": {
       "type": "object",
@@ -31,7 +184,36 @@
         "projectId": { "type": "string", "pattern": "^ppt-[A-Za-z0-9-]+$" },
         "route": { "enum": ["create", "template", "edit"] },
         "status": { "enum": ["INTAKE", "SOURCE_READY", "OUTLINE_REVIEW", "OUTLINE_APPROVED", "VISUAL_REVIEW", "VISUAL_LOCKED", "COMPATIBILITY_REVIEW", "SCOPE_REVIEW", "SCOPE_APPROVED", "CHANGE_PREVIEW", "BUILDING", "QA", "FINAL_REVIEW", "DELIVERED", "BLOCKED_SOURCE", "BLOCKED_COMPATIBILITY"] },
-        "approvals": { "type": "object", "additionalProperties": { "type": "object" } },
+        "qualityContractVersion": { "type": "string", "pattern": "^1\\.0\\.0$" },
+        "qualityGates": {
+          "type": "object",
+          "properties": {
+            "prebuildEvidenceHash": { "type": "string" },
+            "pptxAuditHash": { "type": "string" },
+            "qaReportHash": { "type": "string" },
+            "deckHash": { "type": "string" },
+            "invalidatedPptxAuditHashes": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "invalidatedQaReportHashes": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        },
+        "approvals": {
+          "type": "object",
+          "properties": {
+            "outline": { "$ref": "#/$defs/artifactApproval" },
+            "visual": { "$ref": "#/$defs/artifactApproval" },
+            "scope": { "$ref": "#/$defs/artifactApproval" },
+            "diffPreview": { "$ref": "#/$defs/diffPreviewApproval" },
+            "final": { "$ref": "#/$defs/finalApproval" }
+          },
+          "additionalProperties": false
+        },
         "blockers": {
           "type": "array",
           "items": {
@@ -142,30 +324,357 @@
         "schemaVersion": { "const": "1.0.0" },
         "projectId": { "type": "string" },
         "sourcePriority": { "type": "array", "items": { "type": "string" } },
+        "primary_visual_source": { "type": "string", "pattern": "\\S" },
         "themeId": { "type": "string" },
-        "visualSamplePath": { "type": "string" },
-        "sampleHash": { "type": "string" },
-        "approvalHash": { "type": "string" },
+        "visualSamplePath": {
+          "type": "string",
+          "description": "Legacy read-only alias retained for schemaVersion 1.0.0 compatibility."
+        },
+        "sampleHash": {
+          "type": "string",
+          "description": "Legacy read-only alias retained for schemaVersion 1.0.0 compatibility."
+        },
+        "approvalHash": {
+          "type": "string",
+          "description": "Legacy read-only alias excluded from visual contract hashing."
+        },
+        "sourcePptHash": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "paletteMode": { "enum": ["light", "dark"] },
+        "palette": { "type": "object" },
+        "typography": { "type": "object" },
+        "imageLanguage": { "type": "object" },
+        "composition": { "type": "object" },
+        "density": { "type": "object" },
+        "safeZone": { "type": "object" },
+        "nativeObjectStyles": { "type": "object" },
         "strictTemplate": { "type": "boolean" },
         "templateHash": { "type": "string" },
-        "compatibilityStatus": { "type": "string" }
+        "templatePath": { "type": "string", "pattern": "\\S" },
+        "sourcePptPath": { "type": "string", "pattern": "\\S" },
+        "compatibilityStatus": { "type": "string" },
+        "fontResolutionMode": {
+          "enum": ["theme-catalog", "source-template", "source-edit"]
+        },
+        "resolvedFonts": {
+          "type": "object",
+          "required": ["cjkTitle", "cjkBody", "latin", "number"],
+          "properties": {
+            "cjkTitle": { "type": "string", "pattern": "\\S" },
+            "cjkBody": { "type": "string", "pattern": "\\S" },
+            "latin": { "type": "string", "pattern": "\\S" },
+            "number": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        },
+        "fontEvidencePath": { "type": "string", "pattern": "\\S" },
+        "embeddingStatus": { "enum": ["embedded", "not-embedded"] },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "samplePaths": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "string", "pattern": "\\S" }
+        },
+        "sampleHashes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+        },
+        "approval": {
+          "type": "object",
+          "required": ["approvedArtifactHash", "approvedAt", "userMessage"],
+          "properties": {
+            "approvedArtifactHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "approvedAt": { "type": "string", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+            "userMessage": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "fontResolutionEvidence": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "resolvedFonts",
+        "targetClient",
+        "embeddingStatus",
+        "fontAvailability",
+        "glyphCoverage",
+        "finalVerdict"
+      ],
+      "properties": {
+        "artifactType": { "const": "fontResolutionEvidence" },
+        "schemaVersion": { "const": "1.0.0" },
+        "resolvedFonts": {
+          "type": "object",
+          "required": ["cjkTitle", "cjkBody", "latin", "number"],
+          "properties": {
+            "cjkTitle": { "type": "string", "pattern": "\\S" },
+            "cjkBody": { "type": "string", "pattern": "\\S" },
+            "latin": { "type": "string", "pattern": "\\S" },
+            "number": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        },
+        "targetClient": { "$ref": "#/$defs/targetClient" },
+        "embeddingStatus": { "enum": ["embedded", "not-embedded"] },
+        "fontAvailability": {
+          "type": "object",
+          "required": ["status", "unavailableFonts"],
+          "properties": {
+            "status": { "const": "PASS" },
+            "unavailableFonts": { "const": [] }
+          },
+          "additionalProperties": false
+        },
+        "glyphCoverage": {
+          "type": "object",
+          "required": ["status", "missingGlyphs"],
+          "properties": {
+            "status": { "const": "PASS" },
+            "missingGlyphs": { "const": [] }
+          },
+          "additionalProperties": false
+        },
+        "finalVerdict": { "const": "PASS" }
       },
       "additionalProperties": false
     },
     "slideSpecs": {
       "type": "object",
-      "required": ["artifactType", "schemaVersion"],
+      "required": ["artifactType", "schemaVersion", "qualityContractVersion", "projectId", "route", "slides"],
       "properties": {
         "artifactType": { "const": "slideSpecs" },
         "schemaVersion": { "const": "1.0.0" },
-        "projectId": { "type": "string" },
-        "slides": { "type": "array", "items": { "type": "object" }, "minItems": 1 }
+        "projectId": { "type": "string", "pattern": "\\S" },
+        "route": { "enum": ["create", "template", "edit"] },
+        "qualityContractVersion": { "const": "1.0.0" },
+        "slides": { "type": "array", "items": { "$ref": "#/$defs/slideSpec" }, "minItems": 1 }
+      },
+      "additionalProperties": false
+    },
+    "slideSpec": {
+      "type": "object",
+      "required": ["slide", "qualityMode"],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "pageRole": { "enum": ["cover", "chapter", "content", "data", "ending"] },
+        "qualityMode": { "enum": ["enforced", "compatibility-audit"] },
+        "layoutArchetype": { "type": "string", "pattern": "\\S" },
+        "authorization": {
+          "enum": ["source-template", "new-slide", "unauthorized-preserve", "authorized-modify"]
+        },
+        "sourceObjectHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "contentBlocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["contentId", "text", "estimatedLines", "maxLines"],
+            "properties": {
+              "contentId": { "type": "string", "pattern": "\\S" },
+              "text": { "type": "string" },
+              "estimatedLines": { "type": "integer", "minimum": 0 },
+              "maxLines": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          }
+        },
+        "typographyBudget": {
+          "type": "object",
+          "properties": {
+            "title": { "$ref": "#/$defs/minimumTypographyRole" },
+            "body": { "$ref": "#/$defs/bodyTypographyRole" },
+            "caption": { "$ref": "#/$defs/minimumTypographyRole" },
+            "source": { "$ref": "#/$defs/minimumTypographyRole" },
+            "pageNumber": { "$ref": "#/$defs/minimumTypographyRole" }
+          },
+          "additionalProperties": false
+        },
+        "safeZone": {
+          "type": "object",
+          "properties": {
+            "unit": { "const": "in" },
+            "top": { "type": "number", "minimum": 0 },
+            "right": { "type": "number", "minimum": 0 },
+            "bottom": { "type": "number", "minimum": 0 },
+            "left": { "type": "number", "minimum": 0 },
+            "pageNumberEdge": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "visualIntent": {
+          "type": "object",
+          "properties": {
+            "supports": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "\\S" } },
+            "requiredSubjects": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "\\S" } },
+            "prohibitedElements": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "\\S" } },
+            "textFreeZones": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "\\S" } },
+            "cropFocus": { "type": "array", "minItems": 1, "items": { "type": "string", "pattern": "\\S" } },
+            "semanticEvidence": { "type": "string", "pattern": "\\S" }
+          },
+          "additionalProperties": false
+        },
+        "nativeCriticalContent": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["contentId", "text"],
+            "properties": {
+              "contentId": { "type": "string", "pattern": "\\S" },
+              "text": { "type": "string", "pattern": "\\S" },
+              "objectId": { "type": "string", "pattern": "^slide-[1-9][0-9]*:shape-[1-9][0-9]*$" },
+              "typographyRole": {
+                "enum": ["title", "body", "caption", "source", "pageNumber"]
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "contentHash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "overflowPolicy": {
+          "const": [
+            "split-semantic-unit",
+            "compress-without-fact-change",
+            "switch-verified-layout"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "minimumTypographyRole": {
+      "type": "object",
+      "required": ["minimumPt"],
+      "properties": { "minimumPt": { "type": "number", "minimum": 1 } },
+      "additionalProperties": false
+    },
+    "bodyTypographyRole": {
+      "type": "object",
+      "required": ["minimumPt", "targetPt"],
+      "properties": {
+        "minimumPt": { "type": "number", "minimum": 1 },
+        "targetPt": { "type": "number", "minimum": 1 }
       },
       "additionalProperties": false
     },
     "qaReport": {
+      "oneOf": [
+        { "$ref": "#/$defs/qaReportCurrent" },
+        { "$ref": "#/$defs/qaReportLegacy" }
+      ]
+    },
+    "qaReportCurrent": {
       "type": "object",
-      "required": ["artifactType", "schemaVersion", "projectId", "inputHashes", "toolVersions", "automatedChecks", "perSlideManualScores", "clientSmokeStatus", "evidencePaths", "finalVerdict"],
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "qualityContractVersion",
+        "projectId",
+        "route",
+        "inputArtifacts",
+        "inputHashes",
+        "toolVersions",
+        "automatedChecks",
+        "reviewChecks",
+        "perSlideManualScores",
+        "clientSmokeStatus",
+        "clientSmoke",
+        "evidencePaths",
+        "finalVerdict",
+        "generatedAt"
+      ],
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["clientSmokeStatus", "clientSmoke"],
+          "properties": {
+            "clientSmokeStatus": { "const": "PASS" },
+            "clientSmoke": { "$ref": "#/$defs/qaClientSmokeDescriptorPassed" }
+          }
+        },
+        {
+          "type": "object",
+          "required": ["clientSmokeStatus", "clientSmoke"],
+          "properties": {
+            "clientSmokeStatus": { "const": "NOT_RUN" },
+            "clientSmoke": { "$ref": "#/$defs/qaClientSmokeDescriptorUnavailable" }
+          }
+        }
+      ],
+      "properties": {
+        "artifactType": { "const": "qaReport" },
+        "schemaVersion": { "const": "1.0.0" },
+        "qualityContractVersion": { "const": "1.0.0" },
+        "projectId": { "type": "string", "pattern": "\\S" },
+        "route": { "enum": ["create", "template", "edit"] },
+        "inputArtifacts": {
+          "type": "object",
+          "required": ["deck", "slideSpecs", "themeLock"],
+          "properties": {
+            "deck": { "$ref": "#/$defs/qaInputArtifact" },
+            "slideSpecs": { "$ref": "#/$defs/qaInputArtifact" },
+            "themeLock": { "$ref": "#/$defs/qaInputArtifact" }
+          },
+          "additionalProperties": false
+        },
+        "inputHashes": {
+          "type": "object",
+          "required": ["deck", "slideSpecs", "themeLock"],
+          "properties": {
+            "deck": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "slideSpecs": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+            "themeLock": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        "toolVersions": { "type": "object", "additionalProperties": { "type": "string" } },
+        "automatedChecks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/qaCurrentAutomatedCheck" }
+        },
+        "reviewChecks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/qaCurrentSlideReview" }
+        },
+        "perSlideManualScores": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/qaCurrentManualScore" }
+        },
+        "clientSmokeStatus": { "enum": ["PASS", "NOT_RUN"] },
+        "clientSmoke": { "$ref": "#/$defs/qaClientSmokeDescriptorCurrent" },
+        "evidencePaths": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "\\S" },
+          "minItems": 1
+        },
+        "finalVerdict": { "const": "PASS" },
+        "generatedAt": { "type": "string", "pattern": "\\S" }
+      },
+      "additionalProperties": false
+    },
+    "qaReportLegacy": {
+      "type": "object",
+      "required": [
+        "artifactType",
+        "schemaVersion",
+        "projectId",
+        "inputHashes",
+        "toolVersions",
+        "automatedChecks",
+        "perSlideManualScores",
+        "clientSmokeStatus",
+        "evidencePaths",
+        "finalVerdict"
+      ],
       "properties": {
         "artifactType": { "const": "qaReport" },
         "schemaVersion": { "const": "1.0.0" },
@@ -176,57 +685,147 @@
         "automatedChecks": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "type": "object",
-            "required": ["id", "status", "evidencePath"],
-            "properties": {
-              "id": { "type": "string" },
-              "status": { "enum": ["PASS", "FAIL"] },
-              "evidencePath": { "type": "string" },
-              "value": { "type": "number" },
-              "command": { "type": "string" }
-            },
-            "additionalProperties": false
-          }
+          "items": { "$ref": "#/$defs/qaLegacyAutomatedCheck" }
         },
         "perSlideManualScores": {
           "type": "array",
           "minItems": 1,
-          "items": {
-            "type": "object",
-            "required": ["slide", "score", "evidencePath"],
-            "properties": {
-              "slide": { "type": "integer", "minimum": 1 },
-              "score": { "type": "integer", "minimum": 1 },
-              "dimensions": {
-                "type": "object",
-                "properties": {
-                  "readability": { "type": "integer", "minimum": 1 },
-                  "visualConsistency": { "type": "integer", "minimum": 1 },
-                  "imageIntegrity": { "type": "integer", "minimum": 1 },
-                  "visualContractFidelity": { "type": "integer", "minimum": 1 }
-                },
-                "additionalProperties": false
-              },
-              "reviewer": { "type": "string" },
-              "evidencePath": { "type": "string" }
-            },
-            "additionalProperties": false
-          }
+          "items": { "$ref": "#/$defs/qaLegacyManualScore" }
         },
         "clientSmokeStatus": { "enum": ["PASS", "FAIL", "NOT_RUN"] },
-        "clientSmoke": {
-          "type": "object",
-          "properties": {
-            "status": { "enum": ["passed", "failed", "not_available"] },
-            "evidencePath": { "type": "string" },
-            "userFinalOpenConfirmation": { "type": "boolean" }
-          },
-          "additionalProperties": false
-        },
+        "clientSmoke": { "$ref": "#/$defs/qaClientSmokeDescriptorLegacy" },
         "evidencePaths": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
         "finalVerdict": { "enum": ["PASS", "FAIL"] },
         "generatedAt": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaCurrentAutomatedCheck": {
+      "type": "object",
+      "required": ["id", "status", "evidencePath", "evidenceSha256"],
+      "properties": {
+        "id": { "type": "string", "pattern": "\\S" },
+        "status": { "const": "PASS" },
+        "evidencePath": { "type": "string", "pattern": "\\S" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "value": { "type": "number" },
+        "command": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaCurrentSlideReview": {
+      "type": "object",
+      "required": ["slide", "reviewer", "evidencePath", "evidenceSha256", "width", "height", "checks"],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "reviewer": { "type": "string", "pattern": "\\S" },
+        "evidencePath": { "type": "string", "pattern": "\\S" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "checks": {
+          "type": "object",
+          "required": ["contentVisibility", "generatedImageTextReview", "visualSemanticMatch"],
+          "properties": {
+            "contentVisibility": { "$ref": "#/$defs/qaReviewCheckCurrent" },
+            "generatedImageTextReview": { "$ref": "#/$defs/qaReviewCheckCurrent" },
+            "visualSemanticMatch": { "$ref": "#/$defs/qaReviewCheckCurrent" }
+          },
+          "additionalProperties": { "$ref": "#/$defs/qaReviewCheckCurrent" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "qaCurrentManualScore": {
+      "type": "object",
+      "required": ["slide", "score", "dimensions", "reviewer", "evidencePath", "evidenceSha256", "width", "height"],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "score": { "type": "integer", "minimum": 4, "maximum": 5 },
+        "dimensions": {
+          "type": "object",
+          "required": [
+            "readability",
+            "layoutIntegrity",
+            "contentCompleteness",
+            "visualConsistency",
+            "imageIntegrity",
+            "visualSemanticMatch",
+            "visualContractFidelity"
+          ],
+          "properties": {
+            "readability": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "layoutIntegrity": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "contentCompleteness": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "visualConsistency": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "imageIntegrity": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "visualSemanticMatch": { "type": "integer", "minimum": 4, "maximum": 5 },
+            "visualContractFidelity": { "type": "integer", "minimum": 4, "maximum": 5 }
+          },
+          "additionalProperties": false
+        },
+        "reviewer": { "type": "string", "pattern": "\\S" },
+        "evidencePath": { "type": "string", "pattern": "\\S" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaLegacyAutomatedCheck": {
+      "type": "object",
+      "required": ["id", "status", "evidencePath"],
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "enum": ["PASS", "FAIL"] },
+        "evidencePath": { "type": "string" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "value": { "type": "number" },
+        "command": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaLegacyManualScore": {
+      "type": "object",
+      "required": ["slide", "score", "evidencePath"],
+      "properties": {
+        "slide": { "type": "integer", "minimum": 1 },
+        "score": { "type": "integer", "minimum": 1 },
+        "dimensions": { "type": "object", "additionalProperties": { "type": "integer" } },
+        "reviewer": { "type": "string" },
+        "evidencePath": { "type": "string" },
+        "evidenceSha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaInputArtifact": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
+    },
+    "qaReviewCheck": {
+      "type": "object",
+      "required": ["status", "notes"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL"] },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "qaReviewCheckCurrent": {
+      "type": "object",
+      "required": ["status", "notes"],
+      "properties": {
+        "status": { "const": "PASS" },
+        "notes": { "type": "string", "pattern": "\\S" }
       },
       "additionalProperties": false
     },
@@ -236,7 +835,47 @@
       "properties": {
         "artifactType": { "const": "themeCatalog" },
         "schemaVersion": { "const": "1.0.0" },
-        "themes": { "type": "array", "items": { "type": "object" }, "minItems": 1 }
+        "themes": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["typography"],
+            "properties": {
+              "typography": {
+                "type": "object",
+                "required": [
+                  "cjkTitleCandidates",
+                  "cjkBodyCandidates",
+                  "latinCandidates",
+                  "numberCandidates"
+                ],
+                "properties": {
+                  "cjkTitleCandidates": {
+                    "type": "array",
+                    "minItems": 3,
+                    "items": { "type": "string", "pattern": "\\S" }
+                  },
+                  "cjkBodyCandidates": {
+                    "type": "array",
+                    "minItems": 3,
+                    "items": { "type": "string", "pattern": "\\S" }
+                  },
+                  "latinCandidates": {
+                    "type": "array",
+                    "minItems": 3,
+                    "items": { "type": "string", "pattern": "\\S" }
+                  },
+                  "numberCandidates": {
+                    "type": "array",
+                    "minItems": 3,
+                    "items": { "type": "string", "pattern": "\\S" }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "additionalProperties": false
     }

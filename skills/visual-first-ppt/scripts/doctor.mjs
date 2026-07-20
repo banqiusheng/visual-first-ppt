@@ -16,12 +16,28 @@ const REQUIRED_SKILL_FILES = [
   "references/qa-and-delivery.md",
   "references/themes.md",
   "references/workflow.md",
+  "schemas/project-artifacts.schema.json",
   "scripts/build-qa-report.mjs",
+  "scripts/validate-current-qa.mjs",
   "scripts/compare_untouched_slides.py",
   "scripts/package_delivery.py",
   "scripts/project-state.mjs",
   "scripts/verify_handoff_paths.py",
   "assets/theme-catalog.json",
+  "assets/quality-contract.json",
+  "assets/layout-archetypes.json",
+  "schemas/quality-evidence.schema.json",
+  "scripts/validate-slide-specs.mjs",
+  "scripts/audit_pptx_quality.py",
+  "scripts/lib/atomic-json.mjs",
+  "scripts/lib/quality-contract.mjs",
+  "scripts/lib/content-quality.mjs",
+  "scripts/lib/quality-evidence.mjs",
+  "scripts/lib/schema-validator.mjs",
+  "scripts/lib/current-qa.mjs",
+  "scripts/lib/visual-contract.mjs",
+  "scripts/lib/prebuild-approval.mjs",
+  "scripts/lib/zip_safety.py",
 ];
 
 const CAPABILITIES = ["presentations", "imagegen"];
@@ -32,6 +48,7 @@ const HELP = `Usage:
   node skills/visual-first-ppt/scripts/doctor.mjs [--json] [--skill-root PATH]
 
 Run read-only checks for the Visual-First PPT Skill and its local requirements.
+This includes visual-quality runtime files such as validate-slide-specs.mjs and audit_pptx_quality.py.
 
 Options:
   --json             Print a machine-readable report.

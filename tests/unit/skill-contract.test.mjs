@@ -41,6 +41,32 @@ test("workflow defines all route, approval, blocker, and recovery gates", async 
   assert.match(workflow, /manifest path/);
 });
 
+test("workflow requires current prebuild and QA evidence at the build and final-review gates", async () => {
+  const workflow = await readReference("workflow.md");
+  const skill = await fs.readFile(path.join(skillRoot, "SKILL.md"), "utf8");
+
+  assert.match(
+    workflow,
+    /OUTLINE_APPROVED -> VISUAL_REVIEW -> VISUAL_LOCKED[\s\S]*compile slide-specs\/theme-lock[\s\S]*validate-slide-specs PASS[\s\S]*BUILDING/,
+  );
+  assert.match(workflow, /VISUAL_LOCKED -> BUILDING prebuild PASS/);
+  assert.match(
+    workflow,
+    /CHANGE_PREVIEW[\s\S]*compile slide-specs\/theme-lock[\s\S]*validate-slide-specs PASS[\s\S]*BUILDING/,
+  );
+  assert.match(workflow, /QA -> FINAL_REVIEW QA PASS/);
+  assert.match(workflow, /qualityContractVersion/);
+  assert.match(workflow, /legacy[\s\S]*adopt-quality[\s\S]*rebuild/is);
+
+  assert.match(skill, /validate-slide-specs\.mjs/);
+  assert.match(
+    skill,
+    /After the exact visual sample is locked[\s\S]*edit `CHANGE_PREVIEW`[\s\S]*approved artifact hash[\s\S]*notApplicableReason[\s\S]*N\/A reason/,
+  );
+  assert.match(skill, /prebuild PASS[\s\S]*BUILDING/);
+  assert.match(skill, /QA PASS[\s\S]*FINAL_REVIEW/);
+});
+
 test("intake and research contract is public-web by default and fail-closed on evidence", async () => {
   const intake = await readReference("intake-and-research.md");
   for (const marker of [
@@ -117,6 +143,26 @@ test("generation routing and slide-spec fields are explicit", async () => {
   assert.match(generation, /不得.*可编辑/s);
 });
 
+test("generation contract exposes the executable visual-quality limits and repair rules", async () => {
+  const generation = await readReference("generation-contract.md");
+
+  for (const token of [
+    "qualityContractVersion",
+    "validate-slide-specs.mjs",
+    "18pt",
+    "0.35 inch",
+    "0.30 inch",
+  ]) {
+    assert.ok(generation.includes(token), `missing quality token ${token}`);
+  }
+  assert.match(generation, /one core conclusion[\s\S]*3[–-]4 content blocks/is);
+  assert.match(generation, /split[\s\S]*complete semantic unit[\s\S]*never[\s\S]*below 18pt/is);
+  assert.match(generation, /generated image[\s\S]*unapproved text[\s\S]*pseudo-text/is);
+  assert.match(generation, /visualIntent[\s\S]*visualSemanticMatch/is);
+  assert.match(generation, /input hashes[\s\S]*approval hashes[\s\S]*current/is);
+  assert.match(generation, /repair[\s\S]*invalidate[\s\S]*(prebuild|QA)/is);
+});
+
 test("QA and delivery reference defines compatibility, hard thresholds, and packaging", async () => {
   const qa = await readReference("qa-and-delivery.md");
   assert.match(qa, /自动检查.*全尺寸人工复核.*目标客户端烟测/s);
@@ -124,6 +170,9 @@ test("QA and delivery reference defines compatibility, hard thresholds, and pack
   assert.match(qa, /overflow.*unexpectedOverlap.*unresolvedPlaceholder.*brokenRelationship.*dataMismatch.*必须为 0/s);
   assert.match(qa, /4\/5/);
   assert.match(qa, /package_delivery\.py.*--workspace.*--delivery-dir.*--output/s);
+  assert.match(qa, /validate-current-qa\.mjs[\s\S]*read-only|read-only[\s\S]*validate-current-qa\.mjs/is);
+  assert.match(qa, /project-manifest\.json[\s\S]*state\.json[\s\S]*qualityGates[\s\S]*qaReportHash/is);
+  assert.match(qa, /shared[\s\S]*current QA[\s\S]*(builder|state|package)/is);
   assert.match(qa, /Presentations.*最终回复.*文件链接/s);
   assert.match(qa, /verify_handoff_paths\.py.*PPTX.*PDF.*ZIP/is);
   assert.match(qa, /--persistent-root/);
@@ -134,6 +183,30 @@ test("QA and delivery reference defines compatibility, hard thresholds, and pack
     assert.match(qa, new RegExp(risk, "i"), `missing compatibility risk ${risk}`);
   }
   assert.match(qa, /默认阻塞.*明确批准.*降级/s);
+});
+
+test("QA reference defines the structured auditor, full-size reviews, and preservation exceptions", async () => {
+  const qa = await readReference("qa-and-delivery.md");
+
+  for (const token of [
+    "qualityContractVersion",
+    "audit_pptx_quality.py",
+    "contentVisibility",
+    "generatedImageTextReview",
+    "visualSemanticMatch",
+  ]) {
+    assert.ok(qa.includes(token), `missing QA quality token ${token}`);
+  }
+  assert.match(
+    qa,
+    /audit_pptx_quality\.py[\s\S]*--pptx[\s\S]*--slide-specs[\s\S]*--theme-lock[\s\S]*--object-inventory[\s\S]*--output/,
+  );
+  assert.match(qa, /contentVisibility[\s\S]*approved[\s\S]*contentId[\s\S]*fully visible/is);
+  assert.match(qa, /generatedImageTextReview[\s\S]*unapproved[\s\S]*(text|pseudo)/is);
+  assert.match(qa, /visualSemanticMatch[\s\S]*visualIntent/is);
+  assert.match(qa, /full-size[\s\S]*every slide[\s\S]*montage[\s\S]*not sufficient/is);
+  assert.match(qa, /template[\s\S]*edit[\s\S]*preserv[\s\S]*compatibility-audit/is);
+  assert.match(qa, /legacy[\s\S]*readable[\s\S]*migration[\s\S]*rebuild/is);
 });
 
 test("SKILL entrypoint is concise, valid, and directly routes every reference", async () => {
@@ -174,8 +247,17 @@ test("SKILL entrypoint is concise, valid, and directly routes every reference", 
   assert.match(skill, /create.*template.*edit/s);
   assert.match(skill, /OUTLINE_APPROVED.*VISUAL_LOCKED.*FINAL_APPROVED/s);
   assert.match(skill, /SCOPE_APPROVED.*CHANGE_PREVIEW.*FINAL_APPROVED/s);
+  assert.match(
+    skill,
+    /CHANGE_PREVIEW[\s\S]*approved artifact hash[\s\S]*notApplicableReason[\s\S]*N\/A reason/i,
+  );
   assert.match(skill, /Presentations/);
   assert.match(skill, /imagegen/);
+  assert.match(
+    skill,
+    /readability[\s\S]*layoutIntegrity[\s\S]*contentCompleteness[\s\S]*visualConsistency[\s\S]*imageIntegrity[\s\S]*visualSemanticMatch[\s\S]*visualContractFidelity[\s\S]*at least 4\/5/i,
+  );
+  assert.doesNotMatch(skill, /four-dimension/i);
   assert.match(skill, /validate.*DELIVERED/is);
   assert.match(skill, /production-record/);
   assert.match(skill, /verify_handoff_paths\.py/);

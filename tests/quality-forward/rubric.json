@@ -1,0 +1,85 @@
+{
+  "schemaVersion": "1.0.0",
+  "evidenceStatus": "PASS",
+  "conditionalBuildEvidence": {
+    "current-pptx-audit": {
+      "equals": {
+        "finalVerdict": "PASS"
+      }
+    },
+    "review-checks": {
+      "equals": {
+        "contentVisibility": "PASS",
+        "generatedImageTextReview": "PASS",
+        "visualSemanticMatch": "PASS"
+      }
+    }
+  },
+  "scenarios": {
+    "create-long-poem-quality": {
+      "route": "create",
+      "outcomes": {
+        "BLOCKED_PREBUILD": {
+          "requiredEvidence": {
+            "prebuild-decision": {
+              "equals": {
+                "requestedState": "BUILDING",
+                "blockedBeforeBuilding": true
+              },
+              "includes": {
+                "violationCodes": [
+                  "TYPOGRAPHY_FLOOR",
+                  "CONTENT_BLOCK_LIMIT",
+                  "CONTENT_HASH"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "template-dense-data-quality": {
+      "route": "template",
+      "outcomes": {
+        "REPAIRED_PREBUILD_PASS": {
+          "requiredEvidence": {
+            "repair-decision": {
+              "equals": {
+                "prebuildVerdict": "PASS",
+                "newPageCompliant": true,
+                "originalTemplatePagesUnchanged": true
+              }
+            }
+          }
+        },
+        "COMPATIBILITY_BLOCKED": {
+          "requiredEvidence": {
+            "compatibility-decision": {
+              "equals": {
+                "compatibilityBlocked": true,
+                "originalTemplatePagesUnchanged": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "edit-authorized-page-quality": {
+      "route": "edit",
+      "outcomes": {
+        "BLOCKED_FINAL_REVIEW": {
+          "requiredEvidence": {
+            "authorization-decision": {
+              "equals": {
+                "finalReviewBlocked": true,
+                "unauthorizedHashMismatch": true,
+                "unchangedEvidenceRequired": "compare_untouched_slides.py",
+                "qaPassClaimed": false
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

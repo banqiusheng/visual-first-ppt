@@ -15,7 +15,7 @@ body:
     attributes:
       label: Visual-First PPT version
       description: Provide the exact release tag or Plugin version.
-      placeholder: v0.2.0
+      placeholder: v0.3.0
     validations:
       required: true
   - type: dropdown

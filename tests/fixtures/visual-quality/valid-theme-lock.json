@@ -1,0 +1,7 @@
+{
+  "artifactType": "themeLock",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-quality-test",
+  "themeId": "quality-test-theme",
+  "sourcePriority": ["theme-catalog"]
+}

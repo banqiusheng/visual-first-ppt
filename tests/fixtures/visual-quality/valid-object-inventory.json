@@ -1,0 +1,24 @@
+{
+  "artifactType": "objectInventory",
+  "schemaVersion": "1.0.0",
+  "projectId": "ppt-quality-test",
+  "slides": [
+    {
+      "slide": 1,
+      "objects": [
+        {
+          "objectId": "slide-1:shape-2",
+          "type": "text",
+          "native": true,
+          "flattened": false
+        },
+        {
+          "objectId": "slide-1:shape-3",
+          "type": "text",
+          "native": true,
+          "flattened": false
+        }
+      ]
+    }
+  ]
+}

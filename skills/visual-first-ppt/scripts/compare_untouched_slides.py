@@ -7,6 +7,8 @@ import pathlib
 import zipfile
 import xml.etree.ElementTree as ElementTree
 
+from lib.zip_safety import hash_zip_member, read_zip_member, validate_zip_archive
+
 
 SLIDE_PREFIX = "ppt/slides/slide"
 SLIDE_SUFFIX = ".xml"
@@ -17,7 +19,11 @@ def _sha256(content):
 
 
 def _deck_hash(path):
-    return _sha256(path.read_bytes())
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _normalized_text(value):
@@ -71,9 +77,9 @@ def _parse_authorized_slides(value):
     return sorted(slide_numbers)
 
 
-def _slide_numbers(archive):
+def _slide_numbers(members):
     numbers = set()
-    for member in archive.namelist():
+    for member in members:
         if not member.startswith(SLIDE_PREFIX) or not member.endswith(SLIDE_SUFFIX):
             continue
         number_text = member[len(SLIDE_PREFIX) : -len(SLIDE_SUFFIX)]
@@ -94,25 +100,28 @@ def _is_slide_scoped_member(member):
     return False
 
 
-def _global_member_hash(archive, member):
-    payload = archive.read(member)
+def _global_member_hash(archive, member, members, label):
     if member.endswith(".xml") or member.endswith(".rels"):
+        payload = read_zip_member(archive, member, label, members)
         try:
             payload = _canonical_xml(payload)
         except (ElementTree.ParseError, ValueError):
             pass
-    return _sha256(payload)
+        return _sha256(payload)
+    return hash_zip_member(archive, member, label, members)
 
 
-def _changed_global_parts(source_archive, output_archive):
+def _changed_global_parts(
+    source_archive, output_archive, source_members_by_name, output_members_by_name,
+):
     source_members = {
         name
-        for name in source_archive.namelist()
+        for name in source_members_by_name
         if not name.endswith("/") and not _is_slide_scoped_member(name)
     }
     output_members = {
         name
-        for name in output_archive.namelist()
+        for name in output_members_by_name
         if not name.endswith("/") and not _is_slide_scoped_member(name)
     }
     changed = []
@@ -120,7 +129,11 @@ def _changed_global_parts(source_archive, output_archive):
         if member not in source_members or member not in output_members:
             changed.append(member)
             continue
-        if _global_member_hash(source_archive, member) != _global_member_hash(output_archive, member):
+        if _global_member_hash(
+            source_archive, member, source_members_by_name, "source PPTX",
+        ) != _global_member_hash(
+            output_archive, member, output_members_by_name, "output PPTX",
+        ):
             changed.append(member)
     return changed
 
@@ -129,10 +142,10 @@ def _archive_evidence_path(deck_path, member):
     return f"{deck_path.resolve()}!/{member}"
 
 
-def _xml_evidence(archive, deck_path, member):
+def _xml_evidence(archive, deck_path, member, members, label):
     evidence = {
         "path": _archive_evidence_path(deck_path, member),
-        "exists": member in archive.namelist(),
+        "exists": member in members,
         "valid": False,
         "sha256": None,
         "error": None,
@@ -142,7 +155,9 @@ def _xml_evidence(archive, deck_path, member):
         return evidence
 
     try:
-        evidence["sha256"] = _sha256(_canonical_xml(archive.read(member)))
+        evidence["sha256"] = _sha256(_canonical_xml(
+            read_zip_member(archive, member, label, members)
+        ))
         evidence["valid"] = True
     except (ElementTree.ParseError, ValueError) as error:
         evidence["error"] = str(error)
@@ -202,19 +217,25 @@ def _compare_slide(
     output_path,
     source_render_dir,
     output_render_dir,
+    source_members,
+    output_members,
 ):
     slide_member = f"ppt/slides/slide{slide_number}.xml"
     relationships_member = (
         f"ppt/slides/_rels/slide{slide_number}.xml.rels"
     )
 
-    source_xml = _xml_evidence(source_archive, source_path, slide_member)
-    output_xml = _xml_evidence(output_archive, output_path, slide_member)
+    source_xml = _xml_evidence(
+        source_archive, source_path, slide_member, source_members, "source PPTX",
+    )
+    output_xml = _xml_evidence(
+        output_archive, output_path, slide_member, output_members, "output PPTX",
+    )
     source_relationships = _xml_evidence(
-        source_archive, source_path, relationships_member
+        source_archive, source_path, relationships_member, source_members, "source PPTX",
     )
     output_relationships = _xml_evidence(
-        output_archive, output_path, relationships_member
+        output_archive, output_path, relationships_member, output_members, "output PPTX",
     )
     source_render = _render_evidence(source_render_dir, slide_number)
     output_render = _render_evidence(output_render_dir, slide_number)
@@ -260,12 +281,16 @@ def _comparison_report(arguments):
     try:
         with zipfile.ZipFile(arguments.source, "r") as source_archive:
             with zipfile.ZipFile(arguments.output, "r") as output_archive:
+                source_members = validate_zip_archive(source_archive, "source PPTX")
+                output_members = validate_zip_archive(output_archive, "output PPTX")
                 slide_numbers = sorted(
-                    _slide_numbers(source_archive) | _slide_numbers(output_archive)
+                    _slide_numbers(source_members) | _slide_numbers(output_members)
                 )
                 if not slide_numbers:
                     errors.append("source and output contain no slide XML files")
-                changed_global_parts = _changed_global_parts(source_archive, output_archive)
+                changed_global_parts = _changed_global_parts(
+                    source_archive, output_archive, source_members, output_members,
+                )
                 for slide_number in slide_numbers:
                     slides.append(
                         _compare_slide(
@@ -277,9 +302,11 @@ def _comparison_report(arguments):
                             arguments.output,
                             arguments.source_render_dir,
                             arguments.output_render_dir,
+                            source_members,
+                            output_members,
                         )
                     )
-    except (OSError, zipfile.BadZipFile) as error:
+    except (OSError, ValueError, zipfile.BadZipFile) as error:
         errors.append(str(error))
 
     changed_unauthorized = [
