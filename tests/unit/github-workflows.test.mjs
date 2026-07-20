@@ -87,8 +87,11 @@ test("workflow YAML parses with a quoted on key and exact least-privilege trigge
   assert.deepEqual(ci.on.push.branches, ["main", "codex/**"]);
   assert.deepEqual(ci.permissions, { contents: "read" });
 
-  assert.deepEqual(Object.keys(candidate.on), ["push"]);
+  assert.deepEqual(Object.keys(candidate.on).sort(), ["push", "workflow_dispatch"]);
   assert.deepEqual(candidate.on.push.tags, ["v*.*.*"]);
+  assert.deepEqual(Object.keys(candidate.on.workflow_dispatch.inputs), ["tag"]);
+  assert.equal(candidate.on.workflow_dispatch.inputs.tag.required, true);
+  assert.equal(candidate.on.workflow_dispatch.inputs.tag.type, "string");
   assert.deepEqual(candidate.permissions, { contents: "read" });
 
   assert.deepEqual(Object.keys(publish.on), ["workflow_dispatch"]);
@@ -166,10 +169,15 @@ test("candidate tags are annotated semver objects on origin/main and only become
   const workflows = loadWorkflows();
   const candidate = workflows["release-candidate.yml"];
   const steps = allSteps(candidate);
+  const inputGate = steps.findIndex((step) => step.name === "Validate requested tag input");
+  const checkoutIndex = steps.findIndex((step) =>
+    String(step.uses || "").startsWith("actions/checkout@"),
+  );
+  assert.ok(inputGate >= 0 && inputGate < checkoutIndex, "candidate tag must be validated before checkout");
   const checkout = steps.find((step) =>
     String(step.uses || "").startsWith("actions/checkout@"),
   );
-  assert.equal(checkout.with.ref, "${{ github.ref }}");
+  assert.equal(checkout.with.ref, "refs/tags/${{ inputs.tag || github.ref_name }}");
   const gate = steps.find((step) =>
     step.name === "Verify annotated tag, main ancestry, and version surfaces",
   );
@@ -181,6 +189,7 @@ test("candidate tags are annotated semver objects on origin/main and only become
   assert.equal(build.env.VERIFIED_TAG_OBJECT, "${{ steps.tag-gate.outputs.tag_object }}");
   assert.equal(build.env.VERIFIED_TAG_COMMIT, "${{ steps.tag-gate.outputs.tag_commit }}");
   assert.equal(build.env.VERIFIED_MAIN_COMMIT, "${{ steps.tag-gate.outputs.main_commit }}");
+  assert.equal(build.env.INPUT_TAG, "${{ inputs.tag || github.ref_name }}");
   for (const contract of [
     'test "$(git rev-parse "refs/tags/$TAG")" = "$VERIFIED_TAG_OBJECT"',
     'test "$(git rev-parse "refs/tags/$TAG^{commit}")" = "$VERIFIED_TAG_COMMIT"',
@@ -188,10 +197,19 @@ test("candidate tags are annotated semver objects on origin/main and only become
     'test "$(git rev-parse refs/remotes/origin/main)" = "$VERIFIED_MAIN_COMMIT"',
     "git diff --exit-code -- .",
     "git diff --cached --exit-code -- .",
-    "git status --porcelain=v1 --untracked-files=all --ignored=matching",
+    'INITIAL_WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"',
+    'WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all)"',
   ]) {
     assert.ok(build.run.includes(contract), `candidate build must recheck: ${contract}`);
   }
+  assert.ok(
+    build.run.indexOf("INITIAL_WORKTREE_STATUS") < build.run.indexOf("node --test"),
+    "candidate must reject hidden checkout files before tests run",
+  );
+  assert.ok(
+    build.run.indexOf("node --test") < build.run.indexOf('WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all)"'),
+    "candidate must check non-ignored test mutations after tests run",
+  );
   const shell = workflowRuns(candidate).join("\n");
   for (const contract of [
     "^v[0-9]+\\.[0-9]+\\.[0-9]+$",
@@ -213,6 +231,13 @@ test("candidate tags are annotated semver objects on origin/main and only become
   const content = read("release-candidate.yml");
   assert.match(content, /actions\/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02/);
   assert.doesNotMatch(content, /gh release|contents:\s*write/i);
+  const upload = steps.find((step) => String(step.uses || "").startsWith("actions/upload-artifact@"));
+  assert.equal(
+    upload.with.name,
+    "visual-first-ppt-release-candidate-${{ inputs.tag || github.ref_name }}",
+  );
+  assert.match(upload.with.path, /visual-first-ppt-skill-\$\{\{ inputs\.tag \|\| github\.ref_name \}\}\.zip/);
+  assert.match(upload.with.path, /visual-first-ppt-plugin-\$\{\{ inputs\.tag \|\| github\.ref_name \}\}\.zip/);
 });
 
 test("manual publish validates input before a full tag checkout and keeps GH_TOKEN in the final step", () => {
@@ -224,6 +249,19 @@ test("manual publish validates input before a full tag checkout and keeps GH_TOK
   assert.ok(inputGate >= 0 && inputGate < checkout, "tag input must be validated before checkout");
   assert.equal(steps[checkout].with.ref, "refs/tags/${{ inputs.tag }}");
   assert.equal(steps[checkout].with["fetch-depth"], 0);
+
+  const build = steps.find((step) => String(step.name || "").startsWith("Test, audit, and compare"));
+  assert.equal(build.env.INPUT_TAG, "${{ inputs.tag }}");
+  for (const contract of [
+    'INITIAL_WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all --ignored=matching)"',
+    'WORKTREE_STATUS="$(git status --porcelain=v1 --untracked-files=all)"',
+  ]) {
+    assert.ok(build.run.includes(contract), `publish build must recheck: ${contract}`);
+  }
+  assert.ok(
+    build.run.indexOf("INITIAL_WORKTREE_STATUS") < build.run.indexOf("node --test"),
+    "publish must reject hidden checkout files before tests run",
+  );
 
   const gate = steps.find((step) =>
     step.name === "Verify annotated tag, main ancestry, and version surfaces",
@@ -273,7 +311,7 @@ test("publish is fail-closed for existing releases and never replaces remote ass
     'TAG_COMMIT="$VERIFIED_TAG_COMMIT"',
     "git diff --exit-code -- .",
     "git diff --cached --exit-code -- .",
-    "git status --porcelain=v1 --untracked-files=all --ignored=matching",
+    "git status --porcelain=v1 --untracked-files=all",
   ]) {
     assert.ok(shell.includes(contract), `publish final step must recheck: ${contract}`);
   }
